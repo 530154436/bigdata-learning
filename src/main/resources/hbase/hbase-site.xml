@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+  <!-- HDFS core-site.xml 的 fs.defaultFS --> 
+  <property>
+    <name>hbase.rootdir</name>
+    <value>hdfs://cluster1:9000/hbase</value> 
+  </property>
+
+  <!-- HBase 的运行模式。为 false 表示单机模式，为 true 表示分布式模式 --> 
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>true</value> 
+  </property>
+
+  <property>
+    <name>hbase.master</name>
+    <value>60000</value> 
+  </property>
+
+  <property>
+    <name>hbase.tmp.dir</name>
+    <value>/home/hadoop_files/hadoop_tmp/hbase/tmp</value> 
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>cluster1,cluster2,cluster3</value>
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.dataDir</name>
+    <value>/home/hadoop_files/hadoop_data/zookeeper</value> 
+  </property>
+
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>2181</value> 
+  </property>
+
+  <property>
+    <name>zookeeper.session.timeout</name>
+    <value>120000</value> 
+  </property>
+
+  <property>
+    <name>hbase.master.info.port</name>
+    <value>60010</value> 
+  </property>
+
+</configuration>
+
+
