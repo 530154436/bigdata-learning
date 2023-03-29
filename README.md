@@ -29,6 +29,9 @@ cd target
 java -cp bigdata-learnning-1.0.jar;%SCALA_HOME%/lib/scala-library.jar baseline.ch0_HelloWorld
 ```
 
+### HiveUDF
+docs/HiveUDF.md
+
 ### 参考
 [大数据之Spark入门教程（Scala版）](http://dblab.xmu.edu.cn/blog/spark/)
 
