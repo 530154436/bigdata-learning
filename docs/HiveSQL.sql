@@ -28,10 +28,12 @@
 
         3. 聚合函数
 
-        4. 其他函数
+        4. 内嵌表生成函数(UDTF, Built-in Table-Generating Functions)
          explode
 
-        5. 性能优化
+        5. 窗口函数和分析函数
+
+        6. 性能优化
          公共表表达式 (CTE)
 */
 
@@ -174,7 +176,7 @@ SELECT get_json_object(replace('{"message_id":"e0384168-9055-4a3f-81ea-6b63edb55
 
 
 -- ########################################################################################################################
--- 其他函数
+-- 内嵌表生成函数(UDTF, Built-in Table-Generating Functions)
 -- ########################################################################################################################
 
 /*
@@ -186,6 +188,9 @@ explode() 炸裂函数
     Lateral view（侧视图）与UDTF函数一起使用:
     1）UDTF对每个输入行产生0或者多个输出行(拆分成多行); 不加lateral view的UDTF只能提取单个字段拆分,并不能塞回原来数据表中.
     2）Lateral view首先在基表的每个输入行应用UDTF，然后连接结果输出行与输入行组成拥有指定表别名的虚拟表。即将拆分的单个字段数据与原始表数据关联上。
+    Syntax：
+        lateralView: LATERAL VIEW udtf(expression) tableAlias AS columnAlias (',' columnAlias)*
+        fromClause: FROM baseTable (lateralView)*
 
 官方文档：https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF#LanguageManualUDF-Built-inTable-GeneratingFunctions(UDTF)
 */
@@ -200,7 +205,122 @@ select
 from (
          select 'A,B,C,D' as chars, 1 as id
      ) t
-    lateral view explode(split(chars, ',')) tf as col;
+lateral view explode(split(chars, ',')) tf as col;
+
+
+
+-- ########################################################################################################################
+-- 窗口函数(Windowing Functions)和窗口排序函数(Analytics Functions)
+-- ########################################################################################################################
+/*
+窗口函数( Window functions)也叫做开窗函数、OLAP函数
+1) 最大特点是:输入值是从SELECT语句的结果集中的行或多行的“窗口”中获取的。
+2) 如果函数具有OVER子句，则它是窗口函数。
+3) 窗口函数可以简单地解释为类似于聚合函数的计算函数，但是通过GROUP BY子句组合的常规聚合会隐藏正在聚合的各个行，最终输出一行。
+4) 窗口函数聚合后还可以访问当中的各个行，并且可以将这些行中的某些属性添加到结果集中。
+
+语法：
+    Function(arg1,..,argn) OVER([PARTITION BY <...>][ORDER BY <...>][<window expression>])
+
+其中Function(arg1,..,argn)可以是下面分类中的任意一个
+- 聚合函数:比如sum max avg count min等
+- 排序函数:比如rank row number警
+- 分析函数:比如lead lag first_value等
+
+[PARTITION BY <..>]：分组
+- 类似于group by 用于指定分组，每个分组你可以把它叫做窗口
+- 如果没有PARTITTON BY那整张表的所有行就是一组
+
+[ORDER BY <...>]：排序
+- 用于指定每个分组内的数据排序规则 支持ASC、DESC
+
+[<window expression>]：窗口表达式
+- 用于指定每个窗口中操作的数据范围默认是窗口中所有N，提供了控制行范围的能力，
+- 关键字是rows between，包括下面这几个选项
+    preceding: 往前
+    following: 往后
+    current row :当前行
+    unbounded: 边界
+    unbounded preceding: 表示从前面的起点
+    unbounded following :表示到后面的终点
+
+窗口排序函数–row_number家族
+适合TopNotch业务分析
+- rank()，在每个分组中，为每行分配一个从1开始的序列号，考虑重复，挤占后续位置；
+- dense_rank()，为每行分配一个从1开始的序列号，考虑重复，不挤占后续位置；
+- row_number(),为每行分配一个从1开始的唯一序列号，递增，不考虑重复。
+
+https://cwiki.apache.org/confluence/display/Hive/LanguageManual+WindowingAndAnalytics
+https://blog.csdn.net/weixin_43629813/article/details/129847325
+*/
+DROP TABLE IF EXISTS website_pv_infogroup;
+CREATE TABLE IF NOT EXISTS website_pv_infogroup(
+                                                   cookieid STRING COMMENT 'cookieid'
+    , create_time STRING COMMENT '创建时间'
+    , pv BIGINT COMMENT 'page view'
+)
+    COMMENT '测试示例-网站pv计算'
+    STORED AS ORC
+    TBLPROPERTIES ('external.table.purge' = 'TRUE', 'transactional'='false')
+;
+INSERT INTO website_pv_infogroup VALUES
+('cookieid1', '2023-01-01', 1)
+,('cookieid1', '2023-01-02', 4)
+,('cookieid1', '2023-01-03', 4)
+,('cookieid1', '2023-01-04', 2)
+,('cookieid1', '2023-01-05', 3)
+,('cookieid1', '2023-01-06', 7)
+,('cookieid1', '2023-01-07', 5)
+,('cookieid2', '2023-01-01', 7)
+,('cookieid2', '2023-01-02', 9)
+;
+
+/*
+求出每个用户总pv数 sum+group by
+ sum(…) over( )对表所有行求和
+ sum(…) over( order by …) 连续累积求和,默认从第一行到当前行
+ sum(…) over( partition by…) 同组内所行求和
+*/
+-- 按cookieid分组求和
+select cookieid, sum(pv) as total_pv from website_pv_infogroup group by cookieid;
+select cookieid, sum(pv) over(partition by cookieid) as total_pv from website_pv_infogroup;  -- 每行都保留
+
+-- 求出每个用户截止到当天，累积的总pV数
+select cookieid, create_time, sum(pv) over(partition by cookieid order by create_time) as total_pv from website_pv_infogroup;  -- 在每个分组内，连续累积求和
+
+/*
+求出每天uv数 count+group by
+ count(…) over( )对表所有行求和
+ count(…) over( partition by…) 同组内所行求和
+*/
+-- 按create_time分组求count
+select create_time, count(distinct cookieid) as total_uv from website_pv_infogroup group by create_time;
+select create_time, count(distinct cookieid) over(partition by create_time) as total_uv from website_pv_infogroup;  -- 每行都保留
+
+/*
+窗口表达式
+*/
+-- 向前3行至当前行累加
+select cookieid,create_time,pv,sum(pv) over(partition by cookieid order by create_time rows between 3 preceding and current row) as pv4 from website_pv_infogroup;
+-- 向前3行 向后1行累加
+select cookieid,create_time,pv,sum(pv) over(partition by cookieid order by create_time rows between 3 preceding and 1 following) as pv5 from website_pv_infogroup;
+-- 当前行至最后一行累加
+select cookieid,create_time,pv,sum(pv) over(partition by cookieid order by create_time rows between current row and unbounded following) as pv6 from website_pv_infogroup;
+-- 第一行到当前行累加: 为什么不是所有行？版本问题？
+select cookieid,create_time,pv,sum(pv) over(partition by cookieid order by create_time rows between unbounded preceding and unbounded following) as pv7 from website_pv_infogroup;
+
+/*
+row_number 每天pv数最多的用户排序
+*/
+select
+    cookieid
+     , create_time
+     , pv
+     , rank() over(partition by cookieid order by pv desc) as `rank`
+     , dense_rank()  over(partition by cookieid order by pv desc) as `dense_rank`
+     , row_number() over(partition by cookieid order by pv desc) as `row_number`
+from website_pv_infogroup
+;
 
 
 
