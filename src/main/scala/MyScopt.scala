@@ -19,7 +19,7 @@ object MyScopt {
         opt[String]('i', "input")
             .required()
             .valueName("<file>")
-            .action((x, c) => c.copy(input = x))
+            .action((x, c) => c.copy(input = x))  // 定义参数被解析后的行为：当前的配置c 的 output 属性被设置为参数的值 x。
             .text("input is a required file property")
         opt[String]('o', "output")
             .optional()
@@ -39,6 +39,10 @@ object MyScopt {
      * 主函数
      */
     def main(args: Array[String]): Unit = {
+
+        // 使用模式匹配(match)来处理解析结果:
+        // 如果解析成功，返回一个包含配置信息的 Some 对象，将其绑定到 config 变量中。
+        // 如果解析失败，返回一个 None 对象。
         parser.parse(args, Config()) match {
             case Some(config) => process(config)
             case _ => throw new RuntimeException("params parse error.")
