@@ -8,7 +8,7 @@ import scopt.OptionParser
 
  参数配置：-i C:\Users\chubin.zheng\JavaProjects\bigdata_learning\README.md
  */
-object MyScopt {
+object CmdOptionParser {
 
     /***
      * 解析命令行参数
