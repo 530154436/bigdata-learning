@@ -21,7 +21,7 @@ object ch3_2_列表 {
         println(list1.head, list1.tail)
 
         // 在已有列表前端增加元素
-        val list2: List[Any] = 0 :: list1
+        val list2: List[Any] =  "AA" :: list1
         println(list2, list2.getClass)
 
         // Nil对象
