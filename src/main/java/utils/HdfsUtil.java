@@ -12,8 +12,8 @@ public class HdfsUtil{
     private static FileSystem fs = null;
     static {
         config = new Configuration();
-        config.addResource("hadoop/hdfs-site.xml");
-        config.addResource("hadoop/core-site.xml");
+        config.addResource("pseudo/hadoop/hdfs-site.xml");
+        config.addResource("pseudo/hadoop/core-site.xml");
     }
     public static Configuration getConfiguration() {
         return config;

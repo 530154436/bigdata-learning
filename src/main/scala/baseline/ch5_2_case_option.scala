@@ -46,8 +46,8 @@ object ch5_2_case_option {
 
     def optionMatch(): Unit = {
         println("Option类型")
-        val books=Map("hadoop" -> 5, "spark" -> 10, "hbase" -> 7)
-        println(books.get("hadoop"))                    // Option[Int] = Some(5)
+        val books=Map("cluster/hadoop" -> 5, "spark" -> 10, "hbase" -> 7)
+        println(books.get("cluster/hadoop"))                    // Option[Int] = Some(5)
         println(books.get("hive"))                      // Option[Int] = None
         println(books.getOrElse("hive", "default"))     // Any = hive
 
