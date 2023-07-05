@@ -1,4 +1,4 @@
-package baseline
+package baseline.exercises
 
 import java.io.{BufferedReader, File, FileReader}
 import java.nio.file.Paths
@@ -9,30 +9,32 @@ import java.nio.file.Paths
  * 并在“${BASE_DIR}/test/data”目录下新建两个包含了一些语句的文本文件word1.txt和word2.txt（你可以在文本文件中随意
  * 输入一些单词，用空格隔开），我们会编写Scala程序对该目录下的这两个文件进行单词词频统计。
  */
-object ch7_case1_WordCount {
+object e01_WordCount {
 
     // 获取根目录：C:\Users\chubin.zheng\JavaProjects\bigdata_learning\
     private val BASE_DIR = System.getProperty("user.dir")
 
-    def wordCount(): Unit ={
+    def wordCount(): Unit = {
         // 获取所有的文件路径
-        val currentDir = Paths.get(BASE_DIR, "src", "main", "test", "data", "wordcount")
+        val currentDir = Paths.get(BASE_DIR, "data", "wordcount")
         val files: Array[File] = currentDir.toFile.listFiles()
-        for(file <- files) println(file)
+        for (file <- files) println(file)
 
         // 统计词频
         val mapper = scala.collection.mutable.Map[String, Int]()
-        files.foreach( file =>{
+        files.foreach(file => {
             // 逐行读取文件，避免文件太大内存溢出
             val br = new BufferedReader(new FileReader(file))
             var line: String = null
-            while ({ line = br.readLine(); line != null }) {
+            while ( {
+                line = br.readLine(); line != null
+            }) {
                 // 处理每行数据的逻辑
                 line.split("[\\s,.]").foreach(word =>
-                    if(word != "") {
-                        if(mapper.contains(word)){
+                    if (word != "") {
+                        if (mapper.contains(word)) {
                             mapper(word) += 1
-                        }else{
+                        } else {
                             mapper += (word -> 1)
                         }
                     }
