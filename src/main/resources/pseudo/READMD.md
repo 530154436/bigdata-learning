@@ -48,3 +48,4 @@ ${SPARK_HOME}/bin/load-spark-env.sh 添加这行：export SPARK_LOCAL_IP="127.0.
 
 #### 参考
 [厦门大学-Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0(2.7.1)/Ubuntu14.04(16.04)](https://dblab.xmu.edu.cn/blog/7/)
+[厦门大学-Spark2.1.0入门：Spark的安装和使用](https://dblab.xmu.edu.cn/blog/1307/)
