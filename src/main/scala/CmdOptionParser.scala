@@ -6,7 +6,7 @@ import scopt.OptionParser
     1. 使用 Scala 自带的 args 数组：在 Scala 中，main 函数的参数是 String 类型的数组，你可以直接对这个数组进行操作。
     2. 使用第三方库：Scala 有很多第三方库可以帮助你解析命令行参数，例如 scopt 和 argonaut，支持选项、参数、帮助信息等。
 
- 参数配置：-i C:\Users\chubin.zheng\JavaProjects\bigdata_learning\README.md
+ 参数配置：-i C:\Users\chubin.zheng\JavaProjects\bigdata-learning\README.md
  */
 object CmdOptionParser {
 
