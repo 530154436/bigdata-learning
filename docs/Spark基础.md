@@ -101,6 +101,10 @@ Spark的基本运行流程如下：<br>
 4. Executor向SparkContext申请Task，Task Scheduler将Task发放给Executor运行，并提供应用程序代码<br>
 5. Task在Executor上运行，把执行结果反馈给TaskScheduler，然后反馈给DAGScheduler，运行完毕后写入数据并释放所有资源<br>
 
+总体而言，Spark运行架构具有以下特点：<br>
+1. 每个Application都有自己专属的Executor进程，并且该进程在Application运行期间一直驻留。Executor进程以`多线程`的方式运行Task
+2. Spark运行过程与资源管理器无关，只要能够获取Executor进程并保持通信即可
+3. Task采用了数据本地性和推测执行等优化机制
 
 #### Spark运行原理
 ### 参考引用
