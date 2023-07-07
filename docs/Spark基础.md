@@ -86,20 +86,31 @@ Spark运行架构包括：<br>
 
 Spark任务调度模块主要包含两大部分：DAGScheduler和TaskScheduler：<br>
 <img src="images/spark_任务调度模块.png" width="50%" height="50%" alt="">
-+ DAGScheduler：根据Job构建基于Stage的DAG的工作流，并提交Stage给TaskScheduler
-+ TaskScheduler	将task发给Executor执行
++ RDD：Resillient Distributed Dataset（弹性分布式数据集）的简称，提供了一种`高度受限的共享内存模型`。
+
++ DAG：Directed Acyclic Graph（有向无环图）的简称，反映RDD之间的依赖关系
++ DAGScheduler：将DAG划分为不同的Stage，并以TaskSet的形式把Stage提交给TaskScheduler。
++ TaskScheduler：负责Application中不同job之间的调度，将TaskSet提交给Worker执行并返回结果，在Task执行失败时启动重试机制。
 
 #### Spark运行基本流程
-
-
-
-
-+ RDD：Resillient Distributed Dataset（弹性分布式数据集）的简称。<br>
-  分布式内存的一个抽象概念，提供了一种`高度受限的共享内存模型`
-+ DAG：Directed Acyclic Graph（有向无环图）的简称，反映RDD之间的依赖关系
+<img src="images/spark_运行流程.png" width="50%" height="50%" alt="">
+Spark的基本运行流程如下：<br>
+1. 首先为应用构建起基本的运行环境，即由Driver创建一个`SparkContext`，进行资源的申请、任务的分配和监控<br>
+2. 资源管理器为Executor分配资源，并启动Executor进程<br>
+3. SparkContext根据RDD的依赖关系构建DAG图，DAG图提交给DAGScheduler解析成Stage，然后把一个个TaskSet提交给底层调度器TaskScheduler处理<br>
+4. Executor向SparkContext申请Task，Task Scheduler将Task发放给Executor运行，并提供应用程序代码<br>
+5. Task在Executor上运行，把执行结果反馈给TaskScheduler，然后反馈给DAGScheduler，运行完毕后写入数据并释放所有资源<br>
 
 
 #### Spark运行原理
+### 参考引用
++ [Spark入门：Spark运行架构(Python版)](https://dblab.xmu.edu.cn/blog/1711/)
++ [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
++ [深入理解Spark任务调度](https://zhuanlan.zhihu.com/p/68393078)
++ [Spark 2.2.x 中文文档-集群模式概述](https://spark-reference-doc-cn.readthedocs.io/zh_CN/latest/deploy-guide/cluster-overview.html)
++ [Spark基本概念解析](https://andr-robot.github.io/Spark%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E8%A7%A3%E6%9E%90/)
++ [spark基本架构及原理](https://zhuanlan.zhihu.com/p/91143069)
++ [Spark原理框架和作业执行流程](https://blog.csdn.net/bocai8058/article/details/83051242)
 
 
 
