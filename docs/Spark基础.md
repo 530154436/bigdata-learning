@@ -163,6 +163,21 @@ Spark通过分析各个RDD的依赖关系生成了DAG，再通过分析各个`RD
 
 <img src="images/spark_RDD在Spark中的运行过程.png" width="50%" height="50%" alt=""><br>
 
+#### Spark三种部署方式
+Spark支持三种不同类型的部署方式，包括： 
++ Standalone（类似于MapReduce1.0，slot为资源分配单位）
++ Spark on Mesos（和Spark有血缘关系，更好支持Mesos） 
++ Spark on YARN
+
+用Spark架构具有如下优点：
++ 实现一键式安装和配置、线程级别的任务监控和告警
++ 降低硬件集群、软件维护、任务监控和应用开发的难度
++ 便于做成统一的硬件、计算平台资源池
++ Spark Streaming`无法实现毫秒级的流计算`
+
+<img src="images/spark_满足批处理和流处理需求.png" width="30%" height="20%" alt=""><br>
+
+
 ### 参考引用
 + [子雨大数据之Spark入门：Spark运行架构(Python版)](https://dblab.xmu.edu.cn/blog/1711/)
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
