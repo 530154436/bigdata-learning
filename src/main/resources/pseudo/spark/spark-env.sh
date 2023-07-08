@@ -69,5 +69,7 @@
 # - OPENBLAS_NUM_THREADS=1   Disable multi-threading of OpenBLAS
 
 export SPARK_DIST_CLASSPATH=$(/Users/chubin.zheng/Documents/software/hadoop-2.8.5/bin/hadoop classpath)
-
+export HADOOP_CONF_DIR=/Users/chubin.zheng/Documents/software/hadoop-2.8.5/etc/hadoop
+export SPARK_MASTER_IP=127.0.0.1
+export SPARK_LOCAL_IP=127.0.0.1
 
