@@ -2,6 +2,7 @@ package baseline.exercises
 
 import java.io.{BufferedReader, File, FileReader}
 import java.nio.file.Paths
+import conf.Global
 
 /**
  * 任务：按照函数式编程的风格，编写一个程序，对某个目录下所有文件中的单词进行词频统计
@@ -10,13 +11,9 @@ import java.nio.file.Paths
  * 输入一些单词，用空格隔开），我们会编写Scala程序对该目录下的这两个文件进行单词词频统计。
  */
 object e01_WordCount {
-
-    // 获取根目录：C:\Users\chubin.zheng\JavaProjects\bigdata_learning\
-    private val BASE_DIR = System.getProperty("user.dir")
-
     def wordCount(): Unit = {
         // 获取所有的文件路径
-        val currentDir = Paths.get(BASE_DIR, "data", "wordcount")
+        val currentDir = Paths.get(Global.BASE_DIR, "data", "wordcount")
         val files: Array[File] = currentDir.toFile.listFiles()
         for (file <- files) println(file)
 
