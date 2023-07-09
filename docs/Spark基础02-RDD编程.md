@@ -53,6 +53,7 @@ import conf.{Global, SparkGlobal}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import java.nio.file.{Path, Paths}
+import org.apache.commons.io.FileUtils
 
 def combineByKey(sparkSession: SparkSession): Unit ={
   val data = sparkSession.sparkContext.parallelize(
@@ -68,7 +69,12 @@ def combineByKey(sparkSession: SparkSession): Unit ={
   ).map{
     case (k, v) =>  (k, v._1, v._2/v._1)
   }
+
+  // 判断文件是否存在
   val file: Path = Paths.get(Global.BASE_DIR, "data", "output", "combineByKey.txt").toAbsolutePath
+  if(file.toFile.exists()){
+    FileUtils.deleteDirectory(file.toFile)
+  }
   res.repartition(1).saveAsTextFile(file.toString)
 }
 ```

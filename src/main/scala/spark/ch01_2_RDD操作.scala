@@ -1,6 +1,7 @@
 package spark
 
 import conf.{Global, SparkGlobal}
+import org.apache.commons.io.FileUtils
 import org.apache.spark.Partitioner
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.storage.StorageLevel.MEMORY_AND_DISK
@@ -126,7 +127,12 @@ object ch01_2_RDD操作 {
         println("partition")
         println(dataRP)
         dataRP.partitions.foreach(println)
+
+        // 判断文件是否存在
         val file: Path = Paths.get(Global.BASE_DIR, "data", "output", "partition.txt").toAbsolutePath
+        if (file.toFile.exists()) {
+            FileUtils.deleteDirectory(file.toFile)
+        }
         dataRP.saveAsTextFile(file.toString)
     }
 
