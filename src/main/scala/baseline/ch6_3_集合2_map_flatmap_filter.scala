@@ -16,7 +16,7 @@ object ch6_3_集合2_map_flatmap_filter {
 
     def map(): Unit ={
         println("map操作")
-        val list = List("cluster/hadoop", "hive", "spark")
+        val list = List("cluster/hadoop", "hive", "sparkRDD")
         val list1 = list.map(x => x.toUpperCase())
         println(list)
         println(list1)

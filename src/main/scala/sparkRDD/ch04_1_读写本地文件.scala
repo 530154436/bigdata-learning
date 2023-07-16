@@ -1,4 +1,4 @@
-package spark
+package sparkRDD
 
 import com.alibaba.fastjson.JSON
 import conf.{Global, SparkGlobal}

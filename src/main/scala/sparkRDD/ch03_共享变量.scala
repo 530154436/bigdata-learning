@@ -1,4 +1,4 @@
-package spark
+package sparkRDD
 
 import conf.SparkGlobal
 import org.apache.spark.sql.SparkSession

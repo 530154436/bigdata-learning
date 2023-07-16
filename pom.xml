@@ -95,7 +95,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>
-                                        META-INF/services/org.apache.spark.sql.sources.DataSourceRegister
+                                        META-INF/services/org.apache.sparkRDD.sql.sources.DataSourceRegister
                                     </resource>
                                 </transformer>
                             </transformers>

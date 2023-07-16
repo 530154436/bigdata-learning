@@ -1,4 +1,4 @@
-package spark
+package sparkRDD
 
 import conf.{Global, SparkGlobal}
 import org.apache.commons.io.FileUtils
@@ -118,9 +118,9 @@ object ch02_2_PairRDD操作 {
      * 题目：给定一组键值对("spark",2),("hadoop",6),("hadoop",4),("spark",6)，
      *  键值对的key表示图书名称，value表示某天图书销量，请计算每个键对应的平均值，也就是计算每种图书的每天平均销量。
      */
-    def example(sparkSession: SparkSession): Unit = {
+    def example_calc_avg(sparkSession: SparkSession): Unit = {
         val data = sparkSession.sparkContext.parallelize(
-            Array(("spark",2),("hadoop",6),("hadoop",4),("spark",6)))
+            Array(("sparkRDD",2),("hadoop",6),("hadoop",4),("sparkRDD",6)))
         data.mapValues(x => (x, 1)) // 计数
           .reduceByKey((v1, v2) => (v1._1 + v2._1, v1._2 + v2._2)) // 合并
           .mapValues(v => v._1 / v._2) // 计算平均值
@@ -143,6 +143,8 @@ object ch02_2_PairRDD操作 {
         mapValues(pairRDD)
         join(pairRDD, pairRDD2)
         combineByKey(SparkGlobal.sparkSession)
-        example(SparkGlobal.sparkSession)
+
+        // 计算平均值
+        example_calc_avg(SparkGlobal.sparkSession)
     }
 }

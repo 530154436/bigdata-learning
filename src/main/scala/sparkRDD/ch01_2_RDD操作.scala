@@ -1,4 +1,4 @@
-package spark
+package sparkRDD
 
 import conf.{Global, SparkGlobal}
 import org.apache.commons.io.FileUtils
