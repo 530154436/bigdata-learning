@@ -17,7 +17,7 @@ JSON有两种表示格式，即`单行模式`和`多行模式`，这两种模式
 
 
  */
-object ch01_dataframe的创建和保存 {
+object ch01_df的创建和保存 {
 
     def read_save_parquet(sparkSession: SparkSession): Unit = {
         val df = sparkSession.createDataFrame(

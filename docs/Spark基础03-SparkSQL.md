@@ -99,6 +99,116 @@ val df = sparkSession.read.format("text").load(path.toString)
 df.write.format("text").saveAsTable(s"file://${otherPath}")
 ```
 
+### DataFrame的基本操作
+#### DSL语法风格
+`DSL`（Domain Specific Language）意为“领域专用语言”。<br>
+DSL语法类似于RDD中的操作，允许开发者通过调用方法对DataFrame内部的数据进行分析。<br>
+DataFrame创建好以后，可以执行一些常用的DataFrame操作，包括：<br>
+printSchema()、show()、select()、filter()、groupBy()、sort()、withColumn()和drop()等。
+```scala
+// 从JSON文件创建DataFrame
+val df = sparkSession.read.format("json").load(path.toString)
+
+df.printSchema()
+//root
+//  |-- age: long (nullable = true)
+//  |-- name: string (nullable = true)
+
+df.show()
+// +----+-------+
+// | age|   name|
+// +----+-------+
+// |null|Michael|
+// |  30|   Andy|
+// |  19| Justin|
+// +----+-------+
+
+df.select(df("name"), df("age")+1).show()
+df.filter(df("age")>20).show()
+df.groupBy("age").count().show()
+df.sort(df("age").desc).show()
+df.sort(df("age").desc, df("name").asc).show()
+
+// withColumn
+val df2 = df.withColumn("IfWithAge", F.expr("if(age is null, 'No', 'Yes')"))
+df2.show()
+// +----+-------+---------+
+// | age|   name|IfWithAge|
+// +----+-------+---------+
+// |null|Michael|       No|
+// |  30|   Andy|      Yes|
+// |  19| Justin|      Yes|
+// +----+-------+---------+
+
+val df3 = df2.drop("IfWithAge")
+df3.show()
+
+// 其他常用操作
+df.select(F.sum("age"), F.avg("age"), F.min("age"), F.max("age")).show()
+// +--------+--------+--------+--------+
+// |sum(age)|avg(age)|min(age)|max(age)|
+// +--------+--------+--------+--------+
+// |      49|    24.5|      19|      30|
+// +--------+--------+--------+--------+
+```
+
+#### SQL语法风格
+熟练使用SQL语法的开发者，可以直接使用SQL语句进行数据操作。<br>
+相比于DSL语法风格，在执行SQL语句之前，需要通过DataFrame实例创建临时视图。<br>
+创建临时视图的方法是调用DataFrame实例的createTempView或createOrReplaceTempView方法，二者的区别是，后者会进行判断。<br>
++ createOrReplaceTempView方法<br>
+  如果在当前会话中存在相同名称的临时视图，则用新视图替换原来的临时视图
+  如果在当前会话中不存在相同名称的临时视图，则创建临时视图。
++ createTempView方法，如果在当前会话中存在相同名称的临时视图，则会直接报错。
+
+Spark SQL提供了丰富的函数供用户选择，一共200多个，基本涵盖了大部分的日常应用场景，包括：<br>
+转换函数、数学函数、字符串函数、二进制函数、日期时间函数、正则表达式函数、JSON函数、URL函数、聚合函数、窗口函数和集合函数等。<br>
+当Spark自带的这些系统函数无法满足用户需求时，用户还可以创建“`用户自定义函数`”。
+```scala
+df.createOrReplaceTempView("tmp_v_people")
+sparkSession.sql("SELECT * FROM tmp_v_people").show()
+sparkSession.sql("SELECT name FROM tmp_v_people WHERE age > 20").show()
+// +----+
+// |name|
+// +----+
+// |Andy|
+// +----+
+```
+
+假设在一张用户信息表中有name、age、create_time三列数据，要求：<br>
++ 使用Spark的系统函数from_unixtime， 将时间戳类型的create_time格式化成时间字符串
++ 使用用户自定义函数将用户名转化为大写英文字母
+```scala
+val schema = StructType(List(
+    StructField("name", StringType, nullable = true),
+    StructField("age", IntegerType, nullable = true),
+    StructField("create_time", LongType, nullable = true)
+))
+val javaList = new java.util.ArrayList[Row]()
+javaList.add(Row("Xiaomei",21,System.currentTimeMillis()/1000))
+javaList.add(Row("Xiaoming",22,System.currentTimeMillis()/1000))
+javaList.add(Row("Xiaoxue",23,System.currentTimeMillis()/1000))
+val df = sparkSession.createDataFrame(javaList, schema)
+
+df.createOrReplaceTempView("user_info")
+sparkSession.udf.register("toUpperCaseUDF", (column:String) => column.toUpperCase)
+sparkSession.sql(s"""
+   |SELECT
+   |    name
+   |    , toUpperCaseUDF(name) AS upperName
+   |    , age
+   |    , from_unixtime(create_time,'yyyy-MM-dd HH:mm:ss') AS time
+   |FROM user_info
+   |""".stripMargin).show()
+// +--------+---------+---+-------------------+
+// |    name|upperName|age|               time|
+// +--------+---------+---+-------------------+
+// | Xiaomei|  XIAOMEI| 21|2023-07-19 08:09:47|
+// |Xiaoming| XIAOMING| 22|2023-07-19 08:09:47|
+// | Xiaoxue|  XIAOXUE| 23|2023-07-19 08:09:47|
+// +--------+---------+---+-------------------+
+```
+
 ### 参考引用
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
 
