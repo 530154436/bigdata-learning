@@ -209,6 +209,99 @@ sparkSession.sql(s"""
 // +--------+---------+---+-------------------+
 ```
 
+### 从RDD转换得到DataFrame
+#### 利用反射机制推断RDD模式
+在利用反射机制推断RDD模式时，需要首先定义一个case class，因为，只有`case class`才能被Spark隐式地转换为DataFrame。
+```scala
+// 导入包，支持把一个RDD隐式转换为一个DataFrame
+import sparkSession.implicits._
+
+val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
+val df = sparkSession.sparkContext.textFile(path)
+  .map(_.split(","))
+  .map(attributes => Person(attributes(0), attributes(1).trim.toLong))
+  .toDF()
+df.show()
+```
+#### 使用编程方式定义RDD模式
+```scala
+// schema描述了模式信息，模式中包含name和age两个字段
+val fields = Array(
+    StructField("name", StringType, nullable = true),
+    StructField("age", IntegerType, nullable = true)
+)
+// shcema就是“表头”
+val schema = StructType(fields)
+
+val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
+val peopleRDD = sparkSession.sparkContext.textFile(path)
+val rowRDD = peopleRDD.map(_.split(","))
+  .map(attributes => Row(attributes(0), attributes(1).trim.toLong))
+rowRDD.foreach(println)
+
+//把“表头”和“表中的记录”拼装起来
+val peopleDF = sparkSession.createDataFrame(rowRDD, schema)
+peopleDF.show()
+```
+
+### DataFrame、DataSet和RDD的区别
+<div class="half">
+<img src="images/sparkSQL_df保存格式.png" width="30%" height="30%" alt="">
+<img src="images/sparkSQL_dataset保存格式.png" width="30%" height="30%" alt="">
+</div>
+<br>
+
++ RDD、DataFrame和DataSet的概念对比
+
+|   应用场景   | RDD  | DataFrame  | DataSet  |
+|:--------:|:----:|:----------:|:--------:|
+|   不可变性   |  是   |     是      |    是     |
+|    分区    |  是   |     是      |    是     |
+|    模式    |  没有  |     有      |    有     |
+|  查询优化器   |  没有  |     有      |    有     |
+|  API级别   |  低   |     高      |    高     |
+|  是否类型安全  |  是   |     否      |    是     |
+| 何时检测语法错误 | 编译时  |    编译时     |   编译时    |
+| 何时检测分析错误 | 编译时  |    运行时     |   编译时    |
+
++ Spark SQL中的查询优化<br>
+<img src="images/sparkSQL_查询优化.png" width="30%" height="30%" alt="">
+
++ RDD<br>
+`优点`:<br>
+（1）RDD中内置了很多函数操作（比如map、filter、sort等），方便处理结构化或非结构化数据；<br>
+（2）面向对象编程，直接存储Java对象，类型转化比较安全。<br>
+`缺点`:<br>
+（1）没有针对特殊场景进行优化，比如对于结构化数据处理相对于SQL来比显得非常麻烦；<br>
+（2）默认采用的是Java序列化方式，序列化结果比较大，而且数据存储在Java堆内存中，导致垃圾回收比较频繁。<br>
+
++ DataFrame<br>
+`优点`:<br>
+（1）结构化数据处理非常方便，支持Avro、 CSV、 Elasticsearch、Cassandra等类型数据，也支持Hive、MySQL等传统数据表；<br>
+（2）可以进行有针对性的优化，比如采用Kryo序列化，由于Spark中已经保存了数据结构元信息，因此，序列化时就不需要带上元信息，这就大大减少了序列化开销，而且数据保存在堆外内存中，减少了垃圾回收次数，所以运行更快。<br>
+`缺点`:<br>
+（1）不支持编译时类型安全，运行时才能确定是否有问题；
+（2）对于对象支持不友好，RDD内部数据直接以Java对象存储，而DataFrame内存存储的是Row对象，而不是自定义对象。
+
+`DataSet`整合了RDD和DataFrame的优点
++ 支持结构化和非结构化数据；
++ 支持自定义对象存储；
++ 支持结构化数据的SQL查询
++ 采用堆外内存存储，垃圾回收比较高效。
+
+在具体应用中应该采用RDD、DataFrame和DataSet中的哪一种呢？可以大体遵循以下原则：
+1. 如果需要丰富的语义、高层次的抽象和特定情景的API，则使用DataFrame或DataSet；
+2. 如果处理要求涉及到filter、map、aggregation、average、sum、SQL查询或其他lambda匿名函数，则使用DataFrame或DataSet；
+3. 如果希望在编译时获得更高的类型安全性，需要类型化的JVM对象，并且希望利用Tungsten编码进行高效的序列化和反序列化，则使用DataSet；
+4. 如果想统一和简化Spark的API，则使用DataFrame或DataSet；
+5. 如果与R语言或Python语言结合使用，则使用DataFrame；
+6. 如果需要更多的控制功能，尽量使用RDD。
+
+
++ RDD、DataFrame和DataSet之间的相互转换：<br>
+<img src="images/sparkSQL_RDD、DataFrame和DataSet之间的相互转换.png" width="30%" height="30%" alt="">
+
+
 ### 参考引用
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
 
