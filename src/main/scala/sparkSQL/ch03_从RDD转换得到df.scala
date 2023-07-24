@@ -16,6 +16,7 @@ object ch03_从RDD转换得到df {
         // 导入包，支持把一个RDD隐式转换为一个DataFrame
         import sparkSession.implicits._
 
+        // 利用反射机制推断RDD模式
         val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
         val df = sparkSession.sparkContext.textFile(path)
           .map(_.split(","))

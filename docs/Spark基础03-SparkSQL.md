@@ -244,7 +244,32 @@ val peopleDF = sparkSession.createDataFrame(rowRDD, schema)
 peopleDF.show()
 ```
 
-### DataFrame、DataSet和RDD的区别
+### DataSet
+#### 创建DataSet
++ 使用createDataset方法创建
+```scala
+val ds = sparkSession.createDataset(1 to 5)
+val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath
+val ds1 = sparkSession.createDataset(sparkSession.sparkContext.textFile(path.toString))
+```
++ 通过toDS方法生成DataSet
+```scala
+val data = List(Person("ZhangSan",23),Person("LiSi",35))
+val ds3 = data.toDS
+```
++ 通过DataFrame转化生成DataSet
+```scala
+val path1 = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
+val peopleDF = sparkSession.read.json(path1.toString)
+val ds4 = peopleDF.as[Person]
+```
+
+#### DataSet的基本操作
+和RDD、DataFrame一样，DataSet上也提供了大量的操作方法，比如map、filter、groupByKey等。<br>
+由于这些方法和RDD、DataFrame上的方法基本类似，因此，这里不再详细介绍。
+
+### DataFrame、DataSet和RDD
+#### DataFrame、DataSet和RDD的区别
 <div class="half">
 <img src="images/sparkSQL_df保存格式.png" width="30%" height="30%" alt="">
 <img src="images/sparkSQL_dataset保存格式.png" width="30%" height="30%" alt="">
@@ -265,23 +290,23 @@ peopleDF.show()
 | 何时检测分析错误 | 编译时  |    运行时     |   编译时    |
 
 + Spark SQL中的查询优化<br>
-<img src="images/sparkSQL_查询优化.png" width="30%" height="30%" alt="">
+  <img src="images/sparkSQL_查询优化.png" width="30%" height="30%" alt="">
 
 + RDD<br>
-`优点`:<br>
-（1）RDD中内置了很多函数操作（比如map、filter、sort等），方便处理结构化或非结构化数据；<br>
-（2）面向对象编程，直接存储Java对象，类型转化比较安全。<br>
-`缺点`:<br>
-（1）没有针对特殊场景进行优化，比如对于结构化数据处理相对于SQL来比显得非常麻烦；<br>
-（2）默认采用的是Java序列化方式，序列化结果比较大，而且数据存储在Java堆内存中，导致垃圾回收比较频繁。<br>
+  `优点`:<br>
+  （1）RDD中内置了很多函数操作（比如map、filter、sort等），方便处理结构化或非结构化数据；<br>
+  （2）面向对象编程，直接存储Java对象，类型转化比较安全。<br>
+  `缺点`:<br>
+  （1）没有针对特殊场景进行优化，比如对于结构化数据处理相对于SQL来比显得非常麻烦；<br>
+  （2）默认采用的是Java序列化方式，序列化结果比较大，而且数据存储在Java堆内存中，导致垃圾回收比较频繁。<br>
 
 + DataFrame<br>
-`优点`:<br>
-（1）结构化数据处理非常方便，支持Avro、 CSV、 Elasticsearch、Cassandra等类型数据，也支持Hive、MySQL等传统数据表；<br>
-（2）可以进行有针对性的优化，比如采用Kryo序列化，由于Spark中已经保存了数据结构元信息，因此，序列化时就不需要带上元信息，这就大大减少了序列化开销，而且数据保存在堆外内存中，减少了垃圾回收次数，所以运行更快。<br>
-`缺点`:<br>
-（1）不支持编译时类型安全，运行时才能确定是否有问题；
-（2）对于对象支持不友好，RDD内部数据直接以Java对象存储，而DataFrame内存存储的是Row对象，而不是自定义对象。
+  `优点`:<br>
+  （1）结构化数据处理非常方便，支持Avro、 CSV、 Elasticsearch、Cassandra等类型数据，也支持Hive、MySQL等传统数据表；<br>
+  （2）可以进行有针对性的优化，比如采用Kryo序列化，由于Spark中已经保存了数据结构元信息，因此，序列化时就不需要带上元信息，这就大大减少了序列化开销，而且数据保存在堆外内存中，减少了垃圾回收次数，所以运行更快。<br>
+  `缺点`:<br>
+  （1）不支持编译时类型安全，运行时才能确定是否有问题；
+  （2）对于对象支持不友好，RDD内部数据直接以Java对象存储，而DataFrame内存存储的是Row对象，而不是自定义对象。
 
 `DataSet`整合了RDD和DataFrame的优点
 + 支持结构化和非结构化数据；
@@ -297,9 +322,17 @@ peopleDF.show()
 5. 如果与R语言或Python语言结合使用，则使用DataFrame；
 6. 如果需要更多的控制功能，尽量使用RDD。
 
-
+#### RDD、DataFrame和DataSet之间的相互转换
 + RDD、DataFrame和DataSet之间的相互转换：<br>
-<img src="images/sparkSQL_RDD、DataFrame和DataSet之间的相互转换.png" width="30%" height="30%" alt="">
+  <img src="images/sparkSQL_RDD、DataFrame和DataSet之间的相互转换.png" width="30%" height="30%" alt="">
+
+##### RDD和DataFrame之间的转换
++ 从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法
+
+##### RDD和DataSet之间的转换
+##### DataFrame和DataSet之间的转换
+
+
 
 
 ### 参考引用
