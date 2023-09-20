@@ -74,10 +74,10 @@ RDD cache的生命周期是application级别的。
 也就是如果不显示unpersist释放缓存，RDD会一直存在（虽然当内存不够时按LRU算法进行清除），如果不正确地进行unpersist，让无用的RDD占用executor内存，会导致资源的浪费，影响任务的效率。
 
 #### 工作中碰到的
-背景：目前已将PyTorch训练的深度模型成功部署在GPU服务器上，希望通过Spark调用GPU预测服务对存储在hive的千万级数据进行预测、并且输出一些中间结果，方便定问题。
+背景：目前已将PyTorch训练的深度模型成功部署在GPU服务器上，希望通过Spark调用GPU预测服务对存储在hive的千万级数据进行预测、并且输出一些中间结果，方便定问题。<br>
 <img src="images_case/spark_案例1_预测过程.png" width="50%" height="50%" alt=""><br>
 
-问题：Spark重复调用了多次GPU服务。<br>
+问题：Spark对同一批数据重复计算（调用GPU预测服务）。<br>
 原因：mapPartitions属于转换操作，一开始没有调用cache()方法进行持久化，导致遇到后续的count()、show()、write()等方法，`都触发了一次从头开始的计算`。<br>
 <img src="images_case/spark_案例1_问题.png" width="50%" height="50%" alt=""><br>
 

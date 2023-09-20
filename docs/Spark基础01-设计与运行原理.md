@@ -114,7 +114,6 @@ RDD设计背景:<br>
 + RDD提供了一个抽象的数据架构，只需将具体的应用逻辑表达为一系列转换处理，`不同RDD之间的转换操作形成依赖关系`，可以实现管道化，`避免中间数据存储`<br>
 
 RDD(Resilient Distributed Datasets)基本概念：
-<img src="images/spark_rdd概念图.png" width="50%" height="50%" alt=""><br>
 + 一个RDD就是一个分布式对象集合，本质上是一个`只读的分区记录集合`。<br>
   每个RDD可分成多个分区，每个分区就是一个数据集片段<br>
   一个RDD的不同分区可以被保存到集群中不同的节点上，从而可以在集群中的不同节点上进行并行计算<br>
@@ -127,6 +126,8 @@ RDD(Resilient Distributed Datasets)基本概念：
 + RDD提供的转换接口都非常简单，都是类似map、filter、 groupBy、join等粗粒度的数据转换操作
 + RDD表面上功能很受限、不够强大，实际上RDD已经被实践证明可以高效地表达许多框架的编程模型（比如MapReduce、SQL、Pregel）
 + Spark用Scala语言实现了RDD的API，程序员可以通过调用API实现对RDD的各种操作
+  
+<img src="images/spark_rdd概念图.png" width="50%" height="50%" alt=""><br>
 
 **主要特点**
 + `基于内存`：RDD是位于内存中的对象集合。RDD可以存储在内存、磁盘或者内存加磁盘中。<br>
