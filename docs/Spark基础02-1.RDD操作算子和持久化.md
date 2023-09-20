@@ -78,7 +78,7 @@ RDD cache的生命周期是application级别的。
 <img src="images_case/spark_案例1_预测过程.png" width="50%" height="50%" alt=""><br>
 
 问题：Spark重复调用了多次GPU服务。<br>
-原因：mapPartitions属于转换操作，一开始没有调用cache()方法进行持久化，导致遇到后续的count()、show()、write()等方法，`都触发了一次从头开始的计算`。
+原因：mapPartitions属于转换操作，一开始没有调用cache()方法进行持久化，导致遇到后续的count()、show()、write()等方法，`都触发了一次从头开始的计算`。<br>
 <img src="images_case/spark_案例1_问题.png" width="50%" height="50%" alt=""><br>
 
 ### 参考引用
