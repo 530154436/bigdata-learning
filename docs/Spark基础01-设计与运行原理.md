@@ -113,16 +113,33 @@ RDD设计背景:<br>
 + 目前的MapReduce框架都是把中间结果写入到HDFS中，带来了大量的数据复制、磁盘IO和序列化开销<br>
 + RDD提供了一个抽象的数据架构，只需将具体的应用逻辑表达为一系列转换处理，`不同RDD之间的转换操作形成依赖关系`，可以实现管道化，`避免中间数据存储`<br>
 
-RDD基本概念：
+RDD(Resilient Distributed Datasets)基本概念：
+<img src="images/spark_rdd概念图.png" width="50%" height="50%" alt=""><br>
 + 一个RDD就是一个分布式对象集合，本质上是一个`只读的分区记录集合`。<br>
   每个RDD可分成多个分区，每个分区就是一个数据集片段<br>
   一个RDD的不同分区可以被保存到集群中不同的节点上，从而可以在集群中的不同节点上进行并行计算<br>
 + RDD提供了一种高度受限的共享内存模型，即RDD是只读的记录分区的集合，`不能直接修改`<br>
   只能基于稳定的物理存储中的数据集创建RDD，或者通过在其他RDD上执行确定的转换操作（如`map`、`join`和`group by`）而创建得到新的RDD
++ RDD不需要被物化，它通过血缘关系(lineage)来确定其是从RDD计算得来的。<br>
+  另外，用户可以控制RDD的持久化和分区，用户可以将需要被重用的RDD进行持久化操作(比如内存、或者磁盘)以提高计算效率。<br>
+  也可以按照记录的key将RDD的元素分布在不同的机器上，比如在对两个数据集进行JOIN操作时，可以确保以相同的方式进行hash分区。<br>
 + RDD提供了一组丰富的操作以支持常见的数据运算，分为 “动作”（`Action`）和“转换”（`Transformation`）两种类型
 + RDD提供的转换接口都非常简单，都是类似map、filter、 groupBy、join等粗粒度的数据转换操作
 + RDD表面上功能很受限、不够强大，实际上RDD已经被实践证明可以高效地表达许多框架的编程模型（比如MapReduce、SQL、Pregel）
 + Spark用Scala语言实现了RDD的API，程序员可以通过调用API实现对RDD的各种操作
+
+**主要特点**
++ `基于内存`：RDD是位于内存中的对象集合。RDD可以存储在内存、磁盘或者内存加磁盘中。<br>
+  Spark之所以速度快，是基于这样一个事实：数据存储在内存中，并且每个算子不会从磁盘上提取数据。
++ `分区`：分区是对逻辑数据集划分成不同的独立部分，可以减少网络流量传输，将相同的key的元素分布在相同的分区中可以减少shuffle带来的影响。<br>
+  RDD被分成了多个分区，这些分区分布在集群中的不同节点。
++ `强类型`：RDD中的数据是强类型的，当创建RDD的时候，所有的元素都是相同的类型，该类型依赖于数据集的数据类型。
++ `懒加载`：Spark的转换操作是懒加载模式，这就意味着只有在执行了action(比如count、collect等)操作之后，才会去执行一些列的算子操作。
++ `不可修改`： RDD一旦被创建，就不能被修改。只能从一个RDD转换成另外一个RDD。
++ `并行化`： RDD是可以被并行操作的，由于RDD是分区的，每个分区分布在不同的机器上，所以每个分区可以被并行操作。
++ `持久化`：由于RDD是懒加载的，只有action操作才会导致RDD的转换操作被执行，进而创建出相对应的RDD。<br>
+  对于一些被重复使用的RDD，可以对其进行持久化操作(比如将其保存在内存或磁盘中，Spark支持多种持久化策略)，从而提高计算效率。
+
 
 RDD典型的执行过程如下：<br>
 <img src="images/spark_rdd执行过程实例1.png" width="50%" height="50%" alt=""><br>
@@ -181,6 +198,7 @@ Spark支持三种不同类型的部署方式，包括：
 ### 参考引用
 + [子雨大数据之Spark入门：Spark运行架构(Python版)](https://dblab.xmu.edu.cn/blog/1711/)
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
++ [Spark-core编程指南](https://jiamaoxiang.top/2020/07/18/第二篇-Spark-core编程指南)
 + [深入理解Spark任务调度](https://zhuanlan.zhihu.com/p/68393078)
 + [Spark 2.2.x 中文文档-集群模式概述](https://spark-reference-doc-cn.readthedocs.io/zh_CN/latest/deploy-guide/cluster-overview.html)
 + [Spark基本概念解析](https://andr-robot.github.io/Spark%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E8%A7%A3%E6%9E%90/)
