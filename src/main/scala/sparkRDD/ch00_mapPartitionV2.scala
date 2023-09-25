@@ -6,21 +6,28 @@ import org.apache.spark.sql.Row
  * 自定义一个迭代器类，无需缓存数据
  * 参考：https://zhuanlan.zhihu.com/p/41879924
  */
-class BatchIterator(iter: Iterator[Row], batchSize: Int) extends Iterator[(String, String)] {
+class BatchIterator(iter: Iterator[Row], batchSize: Int, threshold: Int = 0) extends Iterator[(String, String)] {
     private var currentBatch: List[(String, String)] = List.empty[(String, String)]
     private var currentIndex: Int = 0
 
     override def hasNext: Boolean = {
-        currentIndex < currentBatch.length || iter.hasNext
-    }
-
-    override def next(): (String, String) = {
+        // 当前批次已处理完，获取下一个批次的数据、重置索引
         if (currentIndex >= currentBatch.length) {
-            // 当前批次已处理完，获取下一个批次的数据
             currentBatch = getNextBatch
             currentIndex = 0
         }
 
+        // 保证下一个批次批次非空
+        while (currentBatch.isEmpty && iter.hasNext) {
+            currentBatch = getNextBatch
+            currentIndex = 0
+        }
+
+        // 说明当前批次
+        currentIndex < currentBatch.length || iter.hasNext
+    }
+
+    override def next(): (String, String) = {
         val data = currentBatch(currentIndex)
         currentIndex += 1
         data
@@ -42,7 +49,7 @@ class BatchIterator(iter: Iterator[Row], batchSize: Int) extends Iterator[(Strin
         // 对该批次的数据调用接口进行处理(包括调用接口啥的)
         // val entities: Array[String] = server.extract_ner(sentences.toArray)
         for(id <- raw){
-            if(id >= 10){
+            if(id >= threshold){
                 batch.append((id.toString, (id+1).toString))
             }
         }
@@ -56,15 +63,17 @@ object ch00_mapPartitionV2 {
         val spark = SparkGlobal.getSparkSession("MapPartitionV2")
 
         // 生成示例数据 RDD
-        val inputDF = spark.range(1, 1000).toDF("id")
+        val inputDF = spark.range(1, 100).toDF("id").cache()
 
         // 使用自定义迭代器处理每个分区的数据
         import spark.implicits._
-        val res = inputDF.mapPartitions { iter =>
-            val batchSize = 100
-            new BatchIterator(iter, batchSize)
-        }.toDF("id", "id_plus_1")
-        res.show()
+        for (threshold <- 0 to 100) {
+            val res = inputDF.mapPartitions { iter =>
+                val batchSize = 10
+                new BatchIterator(iter, batchSize, threshold)
+            }.toDF("id", "id_plus_1")
+            println(s"阈值: ${threshold}, 数量: ${res.count()}")
+        }
     }
 }
 
