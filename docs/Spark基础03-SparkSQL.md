@@ -326,13 +326,15 @@ val ds4 = peopleDF.as[Person]
 + RDD、DataFrame和DataSet之间的相互转换：<br>
   <img src="images/sparkSQL_RDD、DataFrame和DataSet之间的相互转换.png" width="30%" height="30%" alt="">
 
-##### RDD和DataFrame之间的转换
-+ 从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法
-
-##### RDD和DataSet之间的转换
-##### DataFrame和DataSet之间的转换
-
-
++ RDD和DataFrame之间的转换<br>
+  从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法<br>
+  RDD转换成DataFrame，可以利用反射机制推断RDD模式（调用toDF方法）和使用编程方式定义RDD模式（会调用createDataFrame方法）
++ RDD和DataSet之间的转换<br>
+  在一个指定了case class的RDD上调用toDS方法，可以把一个RDD转换成DataSet<br>
+  在一个DataSet上调用rdd方法，可以把它转换为RD<br>
++ DataFrame和DataSet之间的转换<br>
+  在一个DataSet上调用toDF方法，就可以转换为DataFrame<br>
+  在一个DataFrame上调用as方法，就可以转换为DataSet
 
 
 ### 参考引用

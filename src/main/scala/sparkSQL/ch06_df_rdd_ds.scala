@@ -11,6 +11,10 @@ import java.nio.file.Paths
 object ch06_df_rdd_ds {
 
     case class Person(name:String, age:Int)
+
+    /**
+     * RDD和DataFrame之间的转换
+     */
     def rdd_df(sparkSession: SparkSession): Unit = {
         // 从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法。
         val path1 = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
@@ -19,6 +23,9 @@ object ch06_df_rdd_ds {
         peopleRDD.foreach(println)
     }
 
+    /**
+     * RDD和DataSet之间的转换
+     */
     def rdd_ds(sparkSession: SparkSession): Unit = {
         import sparkSession.implicits._
         val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath
@@ -33,6 +40,9 @@ object ch06_df_rdd_ds {
         println(anotherPeopleRDD.collect().mkString("Array(", ", ", ")"))
     }
 
+    /**
+     * DataFrame和DataSet之间的转换
+     */
     def df_ds(sparkSession: SparkSession): Unit = {
         import sparkSession.implicits._
 

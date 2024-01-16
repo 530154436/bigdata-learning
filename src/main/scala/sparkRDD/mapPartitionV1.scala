@@ -3,7 +3,7 @@ package sparkRDD
 import conf.SparkGlobal
 import org.apache.spark.sql.Row
 
-object ch00_mapPartitionV1 {
+object mapPartitionV1 {
     /**
      * mapPartition一般使用方法
      * 在mapPartition执行期间，在内存中定义一个数组并且将缓存所有的数据。假如数据集比较大，内存不足，会导致内存溢出，任务失败。
