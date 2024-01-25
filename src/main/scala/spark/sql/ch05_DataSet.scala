@@ -1,7 +1,8 @@
-package sparkSQL
+package spark.sql
 
 import conf.{Global, SparkGlobal}
-import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.SparkSession
+
 import java.nio.file.Paths
 
 /**
@@ -9,7 +10,8 @@ import java.nio.file.Paths
  */
 object ch05_DataSet {
 
-    case class Person(name:String,age:Int)
+    case class Person(name: String, age: Int)
+
     def create(sparkSession: SparkSession): Unit = {
         import sparkSession.implicits._
 
@@ -29,7 +31,7 @@ object ch05_DataSet {
         // +-----------+
 
         // 通过toDS方法生成DataSet
-        val data = List(Person("ZhangSan",23),Person("LiSi",35))
+        val data = List(Person("ZhangSan", 23), Person("LiSi", 35))
         val ds3 = data.toDS
         ds3.show()
 

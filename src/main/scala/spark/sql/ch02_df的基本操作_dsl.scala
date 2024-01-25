@@ -1,20 +1,20 @@
-package sparkSQL
+package spark.sql
 
 import conf.{Global, SparkGlobal}
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.{functions => F}
+import org.apache.spark.sql.functions
 
 import java.nio.file.Paths
 
 /**
-### DataFrame的基本操作
-#### DSL语法风格
-`DSL`（Domain Specific Language）意为“领域专用语言”。<br>
-DSL语法类似于RDD中的操作，允许开发者通过调用方法对DataFrame内部的数据进行分析。<br>
-DataFrame创建好以后，可以执行一些常用的DataFrame操作，包括：<br>
-printSchema()、show()、select()、filter()、groupBy()、sort()、withColumn()和drop()等。
-
-
+ * ### DataFrame的基本操作
+ * #### DSL语法风格
+ * `DSL`（Domain Specific Language）意为“领域专用语言”。<br>
+ * DSL语法类似于RDD中的操作，允许开发者通过调用方法对DataFrame内部的数据进行分析。<br>
+ * DataFrame创建好以后，可以执行一些常用的DataFrame操作，包括：<br>
+ * printSchema()、show()、select()、filter()、groupBy()、sort()、withColumn()和drop()等。
+ *
+ *
  */
 object ch02_df的基本操作_dsl {
 
@@ -38,14 +38,14 @@ object ch02_df的基本操作_dsl {
         // |  19| Justin|
         // +----+-------+
 
-        df.select(df("name"), df("age")+1).show()
-        df.filter(df("age")>20).show()
+        df.select(df("name"), df("age") + 1).show()
+        df.filter(df("age") > 20).show()
         df.groupBy("age").count().show()
         df.sort(df("age").desc).show()
         df.sort(df("age").desc, df("name").asc).show()
 
         // withColumn
-        val df2 = df.withColumn("IfWithAge", F.expr("if(age is null, 'No', 'Yes')"))
+        val df2 = df.withColumn("IfWithAge", functions.expr("if(age is null, 'No', 'Yes')"))
         df2.show()
         // +----+-------+---------+
         // | age|   name|IfWithAge|
@@ -59,8 +59,12 @@ object ch02_df的基本操作_dsl {
         df3.show()
 
         // 其他常用操作
-        df.select(F.sum("age"), F.avg("age"), F.min("age"), F.max("age"))
-          .show()
+        df.select(
+            functions.sum("age"),
+            functions.avg("age"),
+            functions.min("age"),
+            functions.max("age"))
+            .show()
         // +--------+--------+--------+--------+
         // |sum(age)|avg(age)|min(age)|max(age)|
         // +--------+--------+--------+--------+

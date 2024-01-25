@@ -1,7 +1,7 @@
-package sparkRDD
+package spark.rdd
 
+import org.apache.spark.sql.{Row, SparkSession}
 import conf.SparkGlobal
-import org.apache.spark.sql.Row
 
 object mapPartitionV1 {
     /**
@@ -17,7 +17,7 @@ object mapPartitionV1 {
             if (id >= 10) {
                 raw.append(id)
             }
-            if(raw.length >= batchSize || (!iter.hasNext && raw.nonEmpty)){
+            if (raw.length >= batchSize || (!iter.hasNext && raw.nonEmpty)) {
                 // 对该批次的数据调用接口进行处理(包括调用接口啥的)
                 // val entities: Array[String] = server.extract_ner(sentences.toArray)
                 for (id <- raw) {
@@ -39,10 +39,8 @@ object mapPartitionV1 {
 
         // 使用自定义迭代器处理每个分区的数据
         import spark.implicits._
-        val res = inputDF.mapPartitions { iter =>batchProcessing(iter, 100) }
-          .toDF("id", "id_plus_1")
+        val res = inputDF.mapPartitions { iter => batchProcessing(iter, 100) }
+            .toDF("id", "id_plus_1")
         res.show()
     }
 }
-
-

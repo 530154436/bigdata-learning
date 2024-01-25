@@ -1,4 +1,4 @@
-package sparkRDD.exercises
+package spark.rdd.exercises
 
 import java.nio.file.{Path, Paths}
 import conf.{Global, SparkGlobal}

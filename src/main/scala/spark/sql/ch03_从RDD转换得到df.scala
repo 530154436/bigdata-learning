@@ -1,17 +1,18 @@
-package sparkSQL
+package spark.sql
 
 import conf.{Global, SparkGlobal}
-import org.apache.spark.sql.types._
+import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType}
 import org.apache.spark.sql.{Row, SparkSession}
 
 import java.nio.file.Paths
 
 /**
-
+ *
  */
 object ch03_从RDD转换得到df {
 
     case class Person(name: String, age: Long)
+
     def reflectToRdd(sparkSession: SparkSession): Unit = {
         // 导入包，支持把一个RDD隐式转换为一个DataFrame
         import sparkSession.implicits._
@@ -19,9 +20,9 @@ object ch03_从RDD转换得到df {
         // 利用反射机制推断RDD模式
         val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
         val df = sparkSession.sparkContext.textFile(path)
-          .map(_.split(","))
-          .map(attributes => Person(attributes(0), attributes(1).trim.toLong))
-          .toDF()
+            .map(_.split(","))
+            .map(attributes => Person(attributes(0), attributes(1).trim.toLong))
+            .toDF()
         df.show()
     }
 
@@ -38,7 +39,7 @@ object ch03_从RDD转换得到df {
         val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
         val peopleRDD = sparkSession.sparkContext.textFile(path)
         val rowRDD = peopleRDD.map(_.split(","))
-          .map(attributes => Row(attributes(0), attributes(1).trim.toLong))
+            .map(attributes => Row(attributes(0), attributes(1).trim.toLong))
         rowRDD.foreach(println)
 
         //把“表头”和“表中的记录”拼装起来

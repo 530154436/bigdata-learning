@@ -1,13 +1,11 @@
-package sparkRDD
-
-import org.apache.spark.sql.SparkSession
-
+package spark.rdd
 import java.nio.file.{Path, Paths}
+import org.apache.spark.sql.SparkSession
 import conf.{Global, SparkGlobal}
 
 /**
  * 创建RDD
- *  (1) 从文件系统中加载数据创建RDD
+ * (1) 从文件系统中加载数据创建RDD
  * （2）从分布式文件系统HDFS中加载数据
  * （3）通过并行集合（数组）创建RDD
  */

@@ -1,4 +1,4 @@
-package sparkRDD.exercises
+package spark.rdd.exercises
 
 import conf.{Global, SparkGlobal}
 import org.apache.spark.sql.SparkSession

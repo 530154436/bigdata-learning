@@ -1,4 +1,5 @@
-package sparkRDD
+package spark.rdd
+
 import conf.SparkGlobal
 import org.apache.spark.sql.Row
 /**

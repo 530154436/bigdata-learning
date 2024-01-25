@@ -1,19 +1,18 @@
-package sparkRDD
-
-import com.alibaba.fastjson.JSON
+package spark.rdd
+import scala.util.parsing.json.JSON
+import java.nio.file.{Path, Paths}
+import org.apache.spark.sql.SparkSession
 import conf.{Global, SparkGlobal}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SparkSession
 
-import java.nio.file.{Path, Paths}
 
 /**
-### 数据读写
-#### 读写本地文件
-1.从文本文件中读取数据创建RDD
-2.把RDD写入到文本文件中
-3. JSON文件的读取：JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式
+ *  ### 数据读写
+ *  #### 读写本地文件
+ *  1.从文本文件中读取数据创建RDD
+ *  2.把RDD写入到文本文件中
+ *  3. JSON文件的读取：JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式
  */
 object ch04_1_读写本地文件 {
 
@@ -43,7 +42,7 @@ object ch04_1_读写本地文件 {
     def readFromJsonFile(sparkSession: SparkSession): Unit = {
         val file: Path = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
         val lines = sparkSession.sparkContext.textFile(file.toString)
-        val jSONObjects: RDD[Any] = lines.map(x => JSON.parseObject(x))
+        val jSONObjects: RDD[Any] = lines.map(x => JSON.parseFull(x))
         println("readFromJsonFile", lines.count())
         jSONObjects.foreach({
             case Some(map: Map[String, Any]) => println(map)
@@ -53,8 +52,8 @@ object ch04_1_读写本地文件 {
     }
 
     def main(args: Array[String]): Unit = {
-        readFromTextFile(SparkGlobal.sparkSession)
-        writeToTextFile(SparkGlobal.sparkSession)
+        //readFromTextFile(SparkGlobal.sparkSession)
+        //writeToTextFile(SparkGlobal.sparkSession)
         readFromJsonFile(SparkGlobal.sparkSession)
     }
 }

@@ -1,4 +1,4 @@
-package sparkSQL
+package spark.sql
 
 import conf.{Global, SparkGlobal}
 import org.apache.spark.sql.SparkSession
@@ -10,7 +10,7 @@ import java.nio.file.Paths
  */
 object ch06_df_rdd_ds {
 
-    case class Person(name:String, age:Int)
+    case class Person(name: String, age: Int)
 
     /**
      * RDD和DataFrame之间的转换
@@ -19,7 +19,7 @@ object ch06_df_rdd_ds {
         // 从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法。
         val path1 = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
         val peopleDF = sparkSession.read.json(path1.toString)
-        val peopleRDD= peopleDF.rdd
+        val peopleRDD = peopleDF.rdd
         peopleRDD.foreach(println)
     }
 
@@ -30,9 +30,9 @@ object ch06_df_rdd_ds {
         import sparkSession.implicits._
         val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath
         val rdd = sparkSession.sparkContext
-          .textFile(path.toString)
-          .map(_.split(","))
-          .map(attributes => Person(attributes(0), attributes(1).trim.toInt))
+            .textFile(path.toString)
+            .map(_.split(","))
+            .map(attributes => Person(attributes(0), attributes(1).trim.toInt))
         val ds = rdd.toDS()
         ds.show()
 

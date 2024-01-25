@@ -1,6 +1,6 @@
-package sparkSQL
+package spark.sql
 
-import conf.{Global, SparkGlobal}
+import conf.SparkGlobal
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.avg
 
@@ -12,7 +12,7 @@ object example_calc_avg {
     def example_calc_avg(sparkSession: SparkSession): Unit = {
         val df = sparkSession.createDataFrame(
             Array(("sparkRDD", 2), ("hadoop", 6), ("hadoop", 4), ("sparkRDD", 6)))
-          .toDF("book","amount")
+            .toDF("book", "amount")
         df.show()
 
         val aggDF = df.groupBy("book").agg(avg("amount"))
