@@ -12,7 +12,7 @@
 5. 数据顺序颠倒，或者不完整，**系统无法控制将要处理的新到达的数据元素的顺序**
 
 #### 批量计算和实时计算
-<img src="images/spark/sparkStreaming_数据的两种处理模型.png" width="50%" height="50%" align="center">
+<img src="images/spark/sparkStreaming_数据的两种处理模型.png" width="250" height="200" align="center">
 批量计算：充裕时间处理静态数据，如Hadoop<br>
 流计算：<br>
 * 流数据不适合采用批量计算，因为流数据不适合用传统的关系模型建模。<br>
