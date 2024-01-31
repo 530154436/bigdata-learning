@@ -67,7 +67,7 @@ Spark生态系统组件的应用场景
 ### Spark运行架构
 #### 基本概念和架构设计
 Spark运行架构包括：<br>
-<img src="images/spark_运行架构.png" width="50%" height="50%" alt="">
+<img src="images/spark/spark_运行架构.png" width="50%" height="50%" alt="">
 
 + Cluster Manager（集群资源管理器）：用于在集群上分配资源的外部服务，如Standalone集群管理器Master、Mesos或者YARN。
 + Worker Node（工作节点）：集群中可以运行应用程序代码的任意一个节点。运行一个或多个Executor进程。
@@ -85,7 +85,7 @@ Spark运行架构包括：<br>
 + Task（任务）：运行在 Executor 的工作单元，是运行Application的基本单位。
 
 Spark任务调度模块主要包含两大部分：DAGScheduler和TaskScheduler：<br>
-<img src="images/spark_任务调度模块.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_任务调度模块.png" width="50%" height="50%" alt=""><br>
 + RDD：Resillient Distributed Dataset（弹性分布式数据集）的简称，提供了一种`高度受限的共享内存模型`。
 
 + DAG：Directed Acyclic Graph（有向无环图）的简称，反映RDD之间的依赖关系
@@ -93,7 +93,7 @@ Spark任务调度模块主要包含两大部分：DAGScheduler和TaskScheduler�
 + TaskScheduler：负责Application中不同job之间的调度，将TaskSet提交给Worker执行并返回结果，在Task执行失败时启动重试机制。
 
 #### Spark运行基本流程
-<img src="images/spark_运行流程.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_运行流程.png" width="50%" height="50%" alt=""><br>
 Spark的基本运行流程如下：<br>
 1. 首先为应用构建起基本的运行环境，即由Driver创建一个`SparkContext`，进行资源的申请、任务的分配和监控<br>
 2. 资源管理器为Executor分配资源，并启动Executor进程<br>
@@ -127,7 +127,7 @@ RDD(Resilient Distributed Datasets)基本概念：
 + RDD表面上功能很受限、不够强大，实际上RDD已经被实践证明可以高效地表达许多框架的编程模型（比如MapReduce、SQL、Pregel）
 + Spark用Scala语言实现了RDD的API，程序员可以通过调用API实现对RDD的各种操作
   
-<img src="images/spark_rdd概念图.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_rdd概念图.png" width="50%" height="50%" alt=""><br>
 
 **主要特点**
 + `基于内存`：RDD是位于内存中的对象集合。RDD可以存储在内存、磁盘或者内存加磁盘中。<br>
@@ -143,7 +143,7 @@ RDD(Resilient Distributed Datasets)基本概念：
 
 
 RDD典型的执行过程如下：<br>
-<img src="images/spark_rdd执行过程实例1.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_rdd执行过程实例1.png" width="50%" height="50%" alt=""><br>
 1. RDD读入外部数据源进行创建
 2. RDD经过一系列的转换（Transformation）操作，每一次都会产生不同的RDD，供给下一个转换操作使用
 3. 最后一个RDD经过“动作”操作进行转换，并输出到外部数据源
@@ -157,17 +157,17 @@ Spark采用RDD以后能够实现高效计算的原因主要在于：
 
 #### RDD之间的依赖关系和Stage划分
 `窄依赖`：表现为一个父RDD的分区对应于一个子RDD的分区或多个父RDD的分区对应于一个子RDD的分区<br>
-<img src="images/spark_窄依赖.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_窄依赖.png" width="50%" height="50%" alt=""><br>
 
 `宽依赖`：表现为存在一个父RDD的一个分区对应一个子RDD的多个分区<br>
-<img src="images/spark_宽依赖.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_宽依赖.png" width="50%" height="50%" alt=""><br>
 
 Spark通过分析各个RDD的依赖关系生成了DAG，再通过分析各个`RDD中的分区之间的依赖关系`来决定如何划分Stage，具体划分方法是：<br>
 + 在DAG中进行反向解析，遇到宽依赖就断开
 + 遇到窄依赖就把当前的RDD加入到Stage中
 + 将窄依赖尽量划分在同一个Stage中，可以实现流水线计算
 
-<img src="images/spark_根据RDD分区的依赖关系划分Stage.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_根据RDD分区的依赖关系划分Stage.png" width="50%" height="50%" alt=""><br>
 + 在该实例中，被分成三个Stage，在Stage2中，从map到union都是窄依赖，这两步操作可以形成一个流水线操作
 + 分区7通过map操作生成的分区9， 可以不用等待分区8到分区10这个map操作的计算结束，而是继续进行union操作，得到分区13
 + 流水线执行大大提高了计算的效率
@@ -179,7 +179,7 @@ Spark通过分析各个RDD的依赖关系生成了DAG，再通过分析各个`RD
 3. DAGScheduler负责把DAG图分解成多个Stage，每个Stage中包含了多个Task，
 4. 每个Task会被TaskScheduler分发给各个WorkerNode上的Executor去执行。
 
-<img src="images/spark_RDD在Spark中的运行过程.png" width="50%" height="50%" alt=""><br>
+<img src="images/spark/spark_RDD在Spark中的运行过程.png" width="50%" height="50%" alt=""><br>
 
 #### Spark三种部署方式
 Spark支持三种不同类型的部署方式，包括： 
@@ -193,7 +193,7 @@ Spark支持三种不同类型的部署方式，包括：
 + 便于做成统一的硬件、计算平台资源池
 + Spark Streaming`无法实现毫秒级的流计算`
 
-<img src="images/spark_满足批处理和流处理需求.png" width="30%" height="20%" alt=""><br>
+<img src="images/spark/spark_满足批处理和流处理需求.png" width="30%" height="20%" alt=""><br>
 
 
 ### 参考引用

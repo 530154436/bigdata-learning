@@ -7,7 +7,7 @@
 <img src="images/spark/sparkSQL_shark_hive.png" width="70%" height="70%" alt="">
 
 Hive中SQL查询的MapReduce作业转化过程：<br>
-<img src="images/sparkSQL_Hive中SQL查询的MapReduce作业转化过程.png" width="30%" height="30%" align="center">
+<img src="images/spark/sparkSQL_Hive中SQL查询的MapReduce作业转化过程.png" width="30%" height="30%" align="center">
 
 Shark的出现，使得SQL-on-Hadoop的性能比Hive有了10-100倍的提高。<br>
 Shark的设计导致了两个问题：
@@ -23,7 +23,7 @@ Shark的设计导致了两个问题：
 Spark SQL增加了DataFrame（即带有Schema信息的RDD），使用户可以在Spark SQL中执行SQL语句。<br>
 数据既可以来自RDD，也可以是Hive、HDFS、Cassandra等外部数据源，还可以是JSON格式的数据。<br>
 Spark SQL目前支持Scala、Java、Python三种语言，支持SQL-2003规范。<br>
-<img src="images/sparkSQL_支持的数据格式和编程语言.png" width="50%" height="50%" align="center">
+<img src="images/spark/sparkSQL_支持的数据格式和编程语言.png" width="50%" height="50%" align="center">
 
 `为什么推出Spark SQL？`
 + 关系数据库已经很流行
@@ -290,7 +290,7 @@ val ds4 = peopleDF.as[Person]
 | 何时检测分析错误 | 编译时  |    运行时     |   编译时    |
 
 + Spark SQL中的查询优化<br>
-  <img src="images/sparkSQL_查询优化.png" width="30%" height="30%" alt="">
+  <img src="images/spark/sparkSQL_查询优化.png" width="30%" height="30%" alt="">
 
 + RDD<br>
   `优点`:<br>
@@ -324,7 +324,7 @@ val ds4 = peopleDF.as[Person]
 
 #### RDD、DataFrame和DataSet之间的相互转换
 + RDD、DataFrame和DataSet之间的相互转换：<br>
-  <img src="images/sparkSQL_RDD、DataFrame和DataSet之间的相互转换.png" width="30%" height="30%" alt="">
+  <img src="images/spark/sparkSQL_RDD、DataFrame和DataSet之间的相互转换.png" width="30%" height="30%" alt="">
 
 + RDD和DataFrame之间的转换<br>
   从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法<br>
