@@ -4,7 +4,7 @@
 `Shark`即Hive on Spark，Shark在HiveQL方面重用了Hive中HiveQL的解析、逻辑执行计划翻译、执行计划优化等逻辑。<br>
 可以近似认为仅将物理执行计划从MapReduce作业替换成了Spark作业，通过Hive的HiveQL解析，把HiveQL翻译成Spark上的RDD操作。
 
-<img src="images/sparkSQL_shark_hive.png" width="70%" height="70%" alt="">
+<img src="images/spark/sparkSQL_shark_hive.png" width="70%" height="70%" alt="">
 
 Hive中SQL查询的MapReduce作业转化过程：<br>
 <img src="images/sparkSQL_Hive中SQL查询的MapReduce作业转化过程.png" width="30%" height="30%" align="center">
@@ -50,7 +50,7 @@ Spark能够轻松实现从MySQL到DataFrame的转化，并且支持SQL查询。<
 + RDD是分布式的 `Java对象的集合`，但是，对象内部结构对于RDD而言却是不可知的
 + DataFrame是一种`以RDD为基础的分布式数据集`，提供了详细的结构信息
 
-<img src="images/sparkSQL_DataFrame与RDD的区别.png" width="50%" height="50%" align="center">
+<img src="images/spark/sparkSQL_DataFrame与RDD的区别.png" width="50%" height="50%" align="center">
 
 DataFrame的优点：
 + 可以在Spark组件间获得更好的性能和更优的空间效率。
@@ -271,8 +271,8 @@ val ds4 = peopleDF.as[Person]
 ### DataFrame、DataSet和RDD
 #### DataFrame、DataSet和RDD的区别
 <div class="half">
-<img src="images/sparkSQL_df保存格式.png" width="30%" height="30%" alt="">
-<img src="images/sparkSQL_dataset保存格式.png" width="30%" height="30%" alt="">
+<img src="images/spark/sparkSQL_df保存格式.png" width="30%" height="30%" alt="">
+<img src="images/spark/sparkSQL_dataset保存格式.png" width="30%" height="30%" alt="">
 </div>
 <br>
 

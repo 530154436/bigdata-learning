@@ -20,8 +20,8 @@ groupByKey也是对每个key进行操作，但只生成一个sequence，groupByK
 + 由于它不接收函数，Spark只能先将所有的键值对(key-value pair)都移动，这样的后果是集群节点之间的开销很大，导致传输延时
 
 <div class="half">
-<img src="images/spark_groupbykey.png" width="30%" height="30%" alt="">
-<img src="images/spark_reducebykey.png" width="30%" height="30%" alt="">
+<img src="images/spark/spark_groupbykey.png" width="30%" height="30%" alt="">
+<img src="images/spark/spark_reducebykey.png" width="30%" height="30%" alt="">
 </div>
 <br>
 

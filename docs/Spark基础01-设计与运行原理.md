@@ -52,7 +52,7 @@ Spark的生态系统主要包含了以下组件：
 + `Spark MLlib`：一个常用机器学习算法库，算法被实现为对RDD的Spark操作。
 + `Spark GraphX`：控制图、并行图操作和计算的一组算法和工具的集合。
 
-<img src="images/spark_BDAS架构.png" width="50%" height="50%" alt="">
+<img src="images/spark/spark_BDAS架构.png" width="50%" height="50%" alt="">
 
 Spark生态系统组件的应用场景
 
@@ -76,7 +76,7 @@ Spark运行架构包括：<br>
 + SparkSession（Spark会话）：实质上是SQLContext和HiveContext的组合，内部封装了sparkContext。
 + Executor（执行进程）：运行在工作节点的一个JVM`进程`，用于运行计算任务，并在内存或磁盘上保存数据。
 
-<img src="images/spark_application概念.png" width="50%" height="50%" alt="">
+<img src="images/spark/spark_application概念.png" width="50%" height="50%" alt="">
 
 + Application（应用程序）：用户编写的Spark应用程序，由集群上的一个驱动器（driver）和多个作业（Job）组成。
 + Job（作业）：一个Job包含多个RDD及作用于相应RDD上的各种操作，一个Job由多个Stage构成。
