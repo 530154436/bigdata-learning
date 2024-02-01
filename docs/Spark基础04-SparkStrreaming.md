@@ -62,9 +62,14 @@
 ### Spark Streaming
 ### DStream操作概述
 ### 基本输入源
+```markdown
+1. only one SparkContext may be running in this JVM (see SPARK-2243)
+  => 创建StreamingContext时，已经存在一个SparkContext实例，从而导致错误。
+```
 ### 高级数据源
 ### 转换操作
 ### 输出操作
+
 
 ### 参考引用
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)

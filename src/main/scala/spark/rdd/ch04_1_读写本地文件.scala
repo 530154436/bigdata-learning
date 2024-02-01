@@ -52,8 +52,9 @@ object ch04_1_读写本地文件 {
     }
 
     def main(args: Array[String]): Unit = {
-        //readFromTextFile(SparkGlobal.sparkSession)
-        //writeToTextFile(SparkGlobal.sparkSession)
-        readFromJsonFile(SparkGlobal.sparkSession)
+        val sparkSession = SparkGlobal.getSparkSession()
+        //readFromTextFile(sparkSession)
+        //writeToTextFile(sparkSession)
+        readFromJsonFile(sparkSession)
     }
 }

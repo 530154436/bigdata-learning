@@ -33,13 +33,14 @@ object ch01_1_RDD创建 {
     }
 
     def main(args: Array[String]): Unit = {
+        val sparkSession = SparkGlobal.getSparkSession()
         //（1）从本地文件系统中加载数据
-        createFromFile(SparkGlobal.sparkSession)
+        createFromFile(sparkSession)
 
         //（2）从分布式文件系统HDFS中加载数据
-        createFromHdfs(SparkGlobal.sparkSession)
+        createFromHdfs(sparkSession)
 
         //（3）通过并行集合（数组）创建RDD
-        createFromParallelize(SparkGlobal.sparkSession)
+        createFromParallelize(sparkSession)
     }
 }

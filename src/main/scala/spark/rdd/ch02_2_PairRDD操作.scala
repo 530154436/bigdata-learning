@@ -131,8 +131,9 @@ object ch02_2_PairRDD操作 {
         val list = List("Hadoop", "Spark", "Hive", "Spark", "Flink")
         val list2 = List("Hive", "Spark")
 
-        val pairRDD = SparkGlobal.sparkSession.sparkContext.parallelize(list).map(word => (word, 1))
-        val pairRDD2 = SparkGlobal.sparkSession.sparkContext.parallelize(list2).map(word => (word, 1))
+        val sparkSession = SparkGlobal.getSparkSession()
+        val pairRDD = sparkSession.sparkContext.parallelize(list).map(word => (word, 1))
+        val pairRDD2 = sparkSession.sparkContext.parallelize(list2).map(word => (word, 1))
 
         reduceByKey(pairRDD)
         groupByKey(pairRDD)
@@ -142,9 +143,9 @@ object ch02_2_PairRDD操作 {
         sortBy(pairRDD)
         mapValues(pairRDD)
         join(pairRDD, pairRDD2)
-        combineByKey(SparkGlobal.sparkSession)
+        combineByKey(sparkSession)
 
         // 计算平均值
-        example_calc_avg(SparkGlobal.sparkSession)
+        example_calc_avg(sparkSession)
     }
 }

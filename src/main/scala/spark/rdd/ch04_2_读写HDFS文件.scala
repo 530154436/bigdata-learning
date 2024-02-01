@@ -24,7 +24,8 @@ object ch04_2_读写HDFS文件 {
     }
 
     def main(args: Array[String]): Unit = {
-        readFromHDFSFile(SparkGlobal.sparkSession)
-        writeToHDFSFile(SparkGlobal.sparkSession)
+        val sparkSession = SparkGlobal.getSparkSession()
+        readFromHDFSFile(sparkSession)
+        writeToHDFSFile(sparkSession)
     }
 }

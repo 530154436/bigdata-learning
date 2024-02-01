@@ -48,7 +48,8 @@ object ch03_共享变量 {
     }
 
     def main(args: Array[String]): Unit = {
-        broadCastValue(SparkGlobal.sparkSession)
-        accumulator(SparkGlobal.sparkSession)
+        val sparkSession = SparkGlobal.getSparkSession()
+        broadCastValue(sparkSession)
+        accumulator(sparkSession)
     }
 }

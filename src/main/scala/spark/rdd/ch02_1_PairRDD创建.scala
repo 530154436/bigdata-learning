@@ -30,9 +30,10 @@ object ch02_1_PairRDD创建 {
     }
 
     def main(args: Array[String]): Unit = {
+        val sparkSession = SparkGlobal.getSparkSession()
         // 从本地文件系统中加载数据
-        createFromFile(SparkGlobal.sparkSession)
+        createFromFile(sparkSession)
         // 通过并行集合（数组）创建PairRDD
-        createFromParallelize(SparkGlobal.sparkSession)
+        createFromParallelize(sparkSession)
     }
 }

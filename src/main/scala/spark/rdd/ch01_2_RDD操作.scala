@@ -137,8 +137,8 @@ object ch01_2_RDD操作 {
     }
 
     def main(args: Array[String]): Unit = {
-        map_reduce(SparkGlobal.sparkSession)
-        persist(SparkGlobal.sparkSession)
-        partition(SparkGlobal.sparkSession)
+        map_reduce(SparkGlobal.getSparkSession())
+        persist(SparkGlobal.getSparkSession())
+        partition(SparkGlobal.getSparkSession())
     }
 }
