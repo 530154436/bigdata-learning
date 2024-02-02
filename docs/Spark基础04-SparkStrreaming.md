@@ -65,6 +65,10 @@
 ```markdown
 1. only one SparkContext may be running in this JVM (see SPARK-2243)
   => 创建StreamingContext时，已经存在一个SparkContext实例，从而导致错误。
+2. windows下nc命令无效
+   下载netcat(https://eternallybored.org/misc/netcat/netcat-win32-1.12.zip)
+   解压，将nc.exe拷贝到C:\Windows下。
+   nc -l -p 9999
 ```
 ### 高级数据源
 ### 转换操作
