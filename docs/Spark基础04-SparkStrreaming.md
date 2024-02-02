@@ -83,14 +83,18 @@ Spark Streaming通过input DStream与外部数据源进行连接，读取相关�
 
 #### Spark Streaming与Storm的对比
 Spark Streaming和Storm最大的区别在于，Spark Streaming`无法实现毫秒级的流计算`，而Storm可以实现毫秒级响应。<br>
-Spark Streaming构建在Spark上，一方面是因为Spark的低延迟执行引擎（100ms+）可以用于实时计算，另一方面，相比于Storm，RDD数据集更容易做高效的容错处理<br>
-Spark Streaming采用的小批量处理的方式使得它可以同时兼容批量和实时数据处理的逻辑和算法，因此，方便了一些需要历史数据和实时数据联合分析的特定应用场合<br>
+Spark Streaming构建在Spark上，一方面是因为Spark的低延迟执行引擎（100ms+）可以用于实时计算，另一方面，相比于Storm，RDD数据集更容易做高效的容错处理。<br>
+Spark Streaming采用的小批量处理的方式使得它可以同时兼容批量和实时数据处理的逻辑和算法，因此，方便了一些需要历史数据和实时数据联合分析的特定应用场合。<br>
 采用Spark架构具有如下优点：
 - 实现一键式安装和配置、线程级别的任务监控和告警；
 - 降低硬件集群、软件维护、任务监控和应用开发的难度；
 - 便于做成统一的硬件、计算平台资源池。
 
-### DStream操作
+### DStream转换操作
+DStream转换操作包括无状态转换和有状态转换。
+- `无状态转换`：每个批次的处理不依赖于之前批次的数据。
+- `有状态转换`：当前批次的处理需要使用之前批次的数据或者中间结果。
+
 #### 输入源
 创建StreamingContext对象
 ```markdown
@@ -102,7 +106,7 @@ val ssc = new StreamingContext(conf, Seconds(1))
 
 示例程序:
 - [文件流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_1_%E6%96%87%E4%BB%B6%E6%B5%81.scala)
-- [文件流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_2_%E5%A5%97%E6%8E%A5%E5%AD%97%E6%B5%81.scala)
+- [套接字流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_2_%E5%A5%97%E6%8E%A5%E5%AD%97%E6%B5%81.scala)
 - [RDD队列流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_3_RDD%E9%98%9F%E5%88%97%E6%B5%81.scala)
 
 遇到的问题:
@@ -114,12 +118,8 @@ val ssc = new StreamingContext(conf, Seconds(1))
    解压，将nc.exe拷贝到C:\Windows下。
    nc -l -p 9999
 ```
-#### 转换操作
-DStream转换操作包括无状态转换和有状态转换。
-- `无状态转换`：每个批次的处理不依赖于之前批次的数据。
-- `有状态转换`：当前批次的处理需要使用之前批次的数据或者中间结果。
 
-##### DStream无状态转换操作
+#### DStream无状态转换操作
 - map(func) ：对源DStream的每个元素，采用func函数进行转换，得到一个新的DStream
 - flatMap(func)： 与map相似，但是每个输入项可用被映射为0个或者多个输出项
 - filter(func)： 返回一个新的DStream，仅包含源DStream中满足函数func的项
@@ -127,39 +127,86 @@ DStream转换操作包括无状态转换和有状态转换。
 - reduce(func)：利用函数func聚集源DStream中每个RDD的元素，返回一个包含单元素RDDs的新DStream
 - count()：统计源DStream中每个RDD的元素数量
 - union(otherStream)： 返回一个新的DStream，包含源DStream和其他DStream的元素
-- countByValue()：应用于元素类型为K的DStream上，返回一个（K，V）键值对类型的新DStream，每个键的值是在原DStream的每个RDD中的出现次数
-- reduceByKey(func, [numTasks])：当在一个由(K,V)键值对组成的DStream上执行该操作时，返回一个新的由(K,V)键值对组成的DStream，每一个key的值均由给定的recuce函数（func）聚集起来
-- join(otherStream, [numTasks])：当应用于两个DStream（一个包含（K,V）键值对,一个包含(K,W)键值对），返回一个包含(K, (V, W))键值对的新Dstream
-- cogroup(otherStream, [numTasks])：当应用于两个DStream（一个包含（K,V）键值对,一个包含(K,W)键值对），返回一个包含(K, Seq[V], Seq[W])的元组
-- `transform`(func)：通过对源DStream的每个RDD应用RDD-to-RDD函数，创建一个新的DStream。支持在新的DStream中做任何RDD操作
+- countByValue()：<br>
+  应用于元素类型为K的DStream上，返回一个（K，V）键值对类型的新DStream，每个键的值是在原DStream的每个RDD中的出现次数
+- reduceByKey(func, [numTasks])：<br>
+  当在一个由(K,V)键值对组成的DStream上执行该操作时，返回一个新的由(K,V)键值对组成的DStream，每一个key的值均由给定的recuce函数（func）聚集起来
+- join(otherStream, [numTasks])：<br>
+  当应用于两个DStream（一个包含（K,V）键值对,一个包含(K,W)键值对），返回一个包含(K, (V, W))键值对的新Dstream
+- cogroup(otherStream, [numTasks])：
+  <br>当应用于两个DStream（一个包含（K,V）键值对,一个包含(K,W)键值对），返回一个包含(K, Seq[V], Seq[W])的元组
+- `transform`(func)：<br>
+  通过对源DStream的每个RDD应用RDD-to-RDD函数，创建一个新的DStream。支持在新的DStream中做任何RDD操作
+
+示例程序:
+- [套接字流(DStream transform)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch02_transform.scala)
 
 ##### DStream有状态转换操作
 对于DStream有状态转换操作而言，当前批次的处理`需要使用之前批次的数据`或者中间结果。<br>
-有状态转换包括`基于滑动窗口的转换`和`追踪状态变化`(updateStateByKey)的转换。<br>
+有状态转换包括`基于滑动窗口的转换`(window)和`追踪状态变化`(updateStateByKey)的转换。<br>
+
+##### window 操作
 **滑动窗口转换操作**
 1. 事先设定一个`滑动窗口的长度`（也就是窗口的持续时间）
 2. 设定滑动窗口的时间间隔（每隔多长时间执行一次计算），让窗口按照`指定时间间隔`在源DStream上滑动
-3. 每次窗口停放的位置上，都会有一部分Dstream（或者一部分RDD）被框入窗口内，形成一个小段的Dstream，可以启动对这个小段DStream的计算
+3. 每次窗口停放的位置上，都会有一部分Dstream（或者一部分RDD）被框入窗口内，形成一个小段的Dstream，可以启动对这个小段DStream的计算。<br>
+   即一个窗口可以包含多个时间段，通过整合多个批次的结果，计算出整个窗口的结果。
 
 <img src="images/spark/sparkStreaming_滑动窗口转换操作.png" width="50%" height="50%" align="center"><br>
 
 
+观察上图, 窗口在DStream上每滑动一次, 落在窗口内的那些RDD会结合在一起, 然后在上面操作产生新的RDD,组成了 window DStream。
+在上面图的情况下, 操作会至少应用在3个数据单元上, 每次滑动2个时间单位. 所以, 窗口操作需要2个参数:
+- 窗口长度：窗口的持久时间(执行一次持续多少个时间单位)(图中是 3)
+- 滑动步长：窗口操作被执行的间隔(每多少个时间单位执行一次).(图中是 2 )
+  
+`注意`: 这两个参数必须是源 DStream 的 interval 的倍数.
+
 一些窗口转换操作的含义：
-- window(windowLength, slideInterval) 基于源DStream产生的窗口化的批数据，计算得到一个新的Dstream
-- countByWindow(windowLength, slideInterval) 返回流中元素的一个滑动窗口数
-- reduceByWindow(func, windowLength, slideInterval) 返回一个单元素流。<br>
+- window(windowLength, slideInterval)：基于源DStream产生的窗口化的批数据，计算得到一个新的Dstream
+- countByWindow(windowLength, slideInterval)：返回流中元素的一个滑动窗口数
+- reduceByWindow(func, windowLength, slideInterval)：返回一个单元素流。<br>
   利用函数func聚集滑动时间间隔的流的元素创建这个单元素流。函数func必须满足结合律，从而可以支持并行计算
-- reduceByKeyAndWindow(func, windowLength, slideInterval, [numTasks]) 
-  应用到一个(K,V)键值对组成的DStream上时，会返回一个由(K,V)键值对组成的新的DStream。<br>
-  每一个key的值均由给定的reduce函数(func函数)进行聚合计算。<br>
-  注意：在默认情况下，这个算子利用了Spark默认的并发任务数去分组。可以通过numTasks参数的设置来指定不同的任务数<br>
+- `reduceByKeyAndWindow`(func, windowLength, slideInterval)<br>
+   示例程序： [套接字流(DStream transform)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch02_window.scala)
+```markdown
+reduceByKeyAndWindow(reduceFunc, windowLength, slideInterval)
+reduceByKeyAndWindow(reduceFunc, invReduceFunc, windowLength, slideInterval)
+  参数1: reduce 计算规则
+  [参数: invReduceFunc 计算规则]
+  参数2: 窗口长度
+  参数3: 窗口滑动步长. 每隔这么长时间计算一次.
+
+  比没有invReduceFunc高效. 会利用旧值来进行计算.
+  invReduceFunc: (V, V) => V 窗口移动了, 上一个窗口和新的窗口会有重叠部分, 重叠部分的值可以不用重复计算了.
+                             第一个参数就是新的值, 第二个参数是旧的值.
+
+example.（间隔10000ms计算）
+val lines: ReceiverInputDStream[String] = ssc.socketTextStream(ch01_2_套接字流.hostname, ch01_2_套接字流.port)
+val wordAndOne: DStream[(String, Int)] = lines.flatMap(_.split(",")).map((_, 1))
+ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString)   // invReduceFunc 需设置检查点目录，不然报错
+val wordCount: DStream[(String, Int)] = wordAndOne.reduceByKeyAndWindow((x: Int, y: Int) => x + y, (x: Int, y: Int) => x - y, Seconds(15), Seconds(10))
+-------------------------------------------
+Time: 1706878095000 ms
+-------------------------------------------
+(Andy,1)
+(30,1)
+-------------------------------------------
+Time: 1706878105000 ms
+-------------------------------------------
+(20,2)
+(Andy,1)
+(ALICE,2)
+```
+##### updateStateByKey
+
 
 #### 输出操作
 
 
 ### 参考引用
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
-
++ [大数据Spark-尚硅谷](https://zhenchao125.github.io/bigdata_spark_atguigu/)
 
 
 
