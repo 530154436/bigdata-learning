@@ -59,9 +59,39 @@
 2. 用户通过流处理系统获取的是实时结果，而通过传统的数据处理系统，获取的是过去某一时刻的结果
 3. 流处理系统无需用户主动发出查询，实时查询服务可以主动将实时结果推送给用户
 
-### Spark Streaming
-### DStream操作概述
-### 基本输入源
+### SparkStreaming
+Spark Streaming可整合多种输入数据源，如Kafka、Flume、HDFS，甚至是普通的TCP套接字。经处理后的数据可存储至文件系统、数据库，或显示在仪表盘里。<br>
+基本原理：将实时输入数据流以`时间片`（秒级）为单位进行拆分，然后经Spark引擎以`类似批处理的方式处理每个时间片数据`。<br>
+<img src="images/spark/sparkStreaming_执行流程.png" width="50%" height="50%" align="center"><br>
+
+#### DStream概述
+Spark Streaming最主要的抽象是`DStream`（Discretized Stream，离散化数据流），表示连续不断的数据流。
+- 在内部实现上，Spark Streaming的输入数据按照时间片（如1秒）分成一段一段
+- 每一段数据转换为Spark中的RDD，这些分段就是Dstream，并且对DStream的操作都最终转变为对相应的RDD的操作
+
+<img src="images/spark/sparkStreaming_DStream操作示意图.png" width="50%" height="50%" align="center"><br>
+
+完整WordCount示例<br>
+<img src="images/spark/sparkStreaming_WordCount.png" width="50%" height="50%" align="center"><br>
+#### 工作机制
+
+
+### DStream操作
+#### 输入源
+创建StreamingContext对象
+```markdown
+import org.apache.spark._
+import org.apache.spark.streaming._
+val conf = new SparkConf().setAppName("TestDStream").setMaster("local[2]")
+val ssc = new StreamingContext(conf, Seconds(1))
+```
+
+示例程序:
+- [文件流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_1_%E6%96%87%E4%BB%B6%E6%B5%81.scala)
+- [文件流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_2_%E5%A5%97%E6%8E%A5%E5%AD%97%E6%B5%81.scala)
+- [RDD队列流(DStream)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch01_3_RDD%E9%98%9F%E5%88%97%E6%B5%81.scala)
+
+遇到的问题:
 ```markdown
 1. only one SparkContext may be running in this JVM (see SPARK-2243)
   => 创建StreamingContext时，已经存在一个SparkContext实例，从而导致错误。
@@ -70,9 +100,8 @@
    解压，将nc.exe拷贝到C:\Windows下。
    nc -l -p 9999
 ```
-### 高级数据源
-### 转换操作
-### 输出操作
+#### 转换操作
+#### 输出操作
 
 
 ### 参考引用

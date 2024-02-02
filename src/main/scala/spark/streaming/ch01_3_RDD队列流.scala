@@ -8,6 +8,8 @@ import scala.collection.mutable
 /**
  * 在调试Spark Streaming应用程序的时候，我们可以使用streamingContext.queueStream(queueOfRDD)创建基于RDD队列的DStream
  * 功能是：每隔1秒创建一个RDD，Streaming每隔2秒就对数据进行处理
+ *
+ * 通过使用ssc.queueStream(queueOfRDDs)来创建DStream，每一个推送到这个队列中的RDD，都会作为一个DStream处理。
  */
 object ch01_3_RDD队列流 {
     def main(args: Array[String]): Unit ={

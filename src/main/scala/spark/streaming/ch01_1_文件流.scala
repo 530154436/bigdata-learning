@@ -1,6 +1,8 @@
 package spark.streaming
 import conf.{Global, SparkGlobal}
+import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+
 import java.nio.file.Paths
 
 /**
@@ -16,11 +18,11 @@ object ch01_1_文件流 {
 
         // 监听本地目录:
         val directory = Paths.get(Global.BASE_DIR, "data", "resources").toAbsolutePath
-        val lines = ssc.textFileStream(s"file:///${directory}")
+        val lines: DStream[String]  = ssc.textFileStream(s"file:///${directory}")
 
         // 统计词频
-        val words = lines.flatMap(x => x.split(","))
-        val wordCount = words.map(x => (x, 1)).reduceByKey((x, y) => x + y)
+        val words: DStream[String] = lines.flatMap(x => x.split(","))
+        val wordCount: DStream[(String, Int)] = words.map(x => (x, 1)).reduceByKey((x, y) => x + y)
         wordCount.print()
 
         ssc.start()
