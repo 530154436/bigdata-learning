@@ -69,8 +69,26 @@ Spark Streaming最主要的抽象是`DStream`（Discretized Stream，离散化�
 
 完整WordCount示例<br>
 <img src="images/spark/sparkStreaming_WordCount.png" width="50%" height="50%" align="center"><br>
-#### 工作机制
 
+#### 工作机制
+在Spark Streaming中，会有一个组件`Receiver`，作为一个长期运行的task跑在一个Executor上。
+每个Receiver都会负责一个`input DStream`（比如从文件中读取数据的文件流，比如套接字流，或者从Kafka中读取的一个输入流等等）。
+Spark Streaming通过input DStream与外部数据源进行连接，读取相关数据。<br>
+<img src="images/spark/sparkStreaming_架构.png" width="50%" height="50%" align="center"><br>
+
+
+- 为了更好的协调数据接收速率与资源处理能力，1.5版本开始 Spark Streaming 可以动态控制数据接收速率来适配集群数据处理能力。
+- 背压机制（即Spark Streaming Backpressure）: 根据 JobScheduler 反馈作业的执行信息来`动态调整 Receiver 数据接收率`。
+- 通过属性spark.streaming.backpressure.enabled来控制是否启用backpressure机制，默认值false，即不启用。
+
+#### Spark Streaming与Storm的对比
+Spark Streaming和Storm最大的区别在于，Spark Streaming`无法实现毫秒级的流计算`，而Storm可以实现毫秒级响应。<br>
+Spark Streaming构建在Spark上，一方面是因为Spark的低延迟执行引擎（100ms+）可以用于实时计算，另一方面，相比于Storm，RDD数据集更容易做高效的容错处理<br>
+Spark Streaming采用的小批量处理的方式使得它可以同时兼容批量和实时数据处理的逻辑和算法，因此，方便了一些需要历史数据和实时数据联合分析的特定应用场合<br>
+采用Spark架构具有如下优点：
+- 实现一键式安装和配置、线程级别的任务监控和告警；
+- 降低硬件集群、软件维护、任务监控和应用开发的难度；
+- 便于做成统一的硬件、计算平台资源池。
 
 ### DStream操作
 #### 输入源
@@ -97,6 +115,45 @@ val ssc = new StreamingContext(conf, Seconds(1))
    nc -l -p 9999
 ```
 #### 转换操作
+DStream转换操作包括无状态转换和有状态转换。
+- `无状态转换`：每个批次的处理不依赖于之前批次的数据。
+- `有状态转换`：当前批次的处理需要使用之前批次的数据或者中间结果。
+
+##### DStream无状态转换操作
+- map(func) ：对源DStream的每个元素，采用func函数进行转换，得到一个新的DStream
+- flatMap(func)： 与map相似，但是每个输入项可用被映射为0个或者多个输出项
+- filter(func)： 返回一个新的DStream，仅包含源DStream中满足函数func的项
+- repartition(numPartitions)： 通过创建更多或者更少的分区改变DStream的并行程度
+- reduce(func)：利用函数func聚集源DStream中每个RDD的元素，返回一个包含单元素RDDs的新DStream
+- count()：统计源DStream中每个RDD的元素数量
+- union(otherStream)： 返回一个新的DStream，包含源DStream和其他DStream的元素
+- countByValue()：应用于元素类型为K的DStream上，返回一个（K，V）键值对类型的新DStream，每个键的值是在原DStream的每个RDD中的出现次数
+- reduceByKey(func, [numTasks])：当在一个由(K,V)键值对组成的DStream上执行该操作时，返回一个新的由(K,V)键值对组成的DStream，每一个key的值均由给定的recuce函数（func）聚集起来
+- join(otherStream, [numTasks])：当应用于两个DStream（一个包含（K,V）键值对,一个包含(K,W)键值对），返回一个包含(K, (V, W))键值对的新Dstream
+- cogroup(otherStream, [numTasks])：当应用于两个DStream（一个包含（K,V）键值对,一个包含(K,W)键值对），返回一个包含(K, Seq[V], Seq[W])的元组
+- `transform`(func)：通过对源DStream的每个RDD应用RDD-to-RDD函数，创建一个新的DStream。支持在新的DStream中做任何RDD操作
+
+##### DStream有状态转换操作
+对于DStream有状态转换操作而言，当前批次的处理`需要使用之前批次的数据`或者中间结果。<br>
+有状态转换包括`基于滑动窗口的转换`和`追踪状态变化`(updateStateByKey)的转换。<br>
+**滑动窗口转换操作**
+1. 事先设定一个`滑动窗口的长度`（也就是窗口的持续时间）
+2. 设定滑动窗口的时间间隔（每隔多长时间执行一次计算），让窗口按照`指定时间间隔`在源DStream上滑动
+3. 每次窗口停放的位置上，都会有一部分Dstream（或者一部分RDD）被框入窗口内，形成一个小段的Dstream，可以启动对这个小段DStream的计算
+
+<img src="images/spark/sparkStreaming_滑动窗口转换操作.png" width="50%" height="50%" align="center"><br>
+
+
+一些窗口转换操作的含义：
+- window(windowLength, slideInterval) 基于源DStream产生的窗口化的批数据，计算得到一个新的Dstream
+- countByWindow(windowLength, slideInterval) 返回流中元素的一个滑动窗口数
+- reduceByWindow(func, windowLength, slideInterval) 返回一个单元素流。<br>
+  利用函数func聚集滑动时间间隔的流的元素创建这个单元素流。函数func必须满足结合律，从而可以支持并行计算
+- reduceByKeyAndWindow(func, windowLength, slideInterval, [numTasks]) 
+  应用到一个(K,V)键值对组成的DStream上时，会返回一个由(K,V)键值对组成的新的DStream。<br>
+  每一个key的值均由给定的reduce函数(func函数)进行聚合计算。<br>
+  注意：在默认情况下，这个算子利用了Spark默认的并发任务数去分组。可以通过numTasks参数的设置来指定不同的任务数<br>
+
 #### 输出操作
 
 

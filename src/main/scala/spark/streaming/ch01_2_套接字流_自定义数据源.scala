@@ -24,7 +24,7 @@ object ch01_2_套接字流_自定义数据源 {
             .toAbsolutePath
             .toFile
         val port = 9999
-        val millisecond = 5000
+        val millisecond = 3000
 
         val buffer = Source.fromFile(fileName)
         val lines = buffer.getLines().toList
