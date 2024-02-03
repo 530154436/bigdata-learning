@@ -72,10 +72,17 @@ Spark Streaming最主要的抽象是`DStream`（Discretized Stream，离散化�
 
 #### 工作机制
 在Spark Streaming中，会有一个组件`Receiver`，作为一个长期运行的task跑在一个Executor上。
-每个Receiver都会负责一个`input DStream`（比如从文件中读取数据的文件流，比如套接字流，或者从Kafka中读取的一个输入流等等）。
+每个Receiver都会负责一个`input DStream`（比如从文件中读取数据的文件流，比如套接字流，或者从Kafka中读取的一个输入流等等）。<br>
 Spark Streaming通过input DStream与外部数据源进行连接，读取相关数据。<br>
-<img src="images/spark/sparkStreaming_架构.png" width="50%" height="50%" align="center"><br>
 
+编写Spark Streaming程序的`基本步骤`：
+1. 通过创建输入DStream来定义输入源
+2. 通过对DStream应用转换操作和输出操作来定义流计算
+3. 用streamingContext.start()来开始接收数据和处理流程
+4. 通过streamingContext.awaitTermination()方法来等待处理结束（手动结束或因为错误而结束）
+5. 可以通过streamingContext.stop()来手动结束流计算进程
+
+<img src="images/spark/sparkStreaming_架构.png" width="50%" height="50%" align="center"><br>
 
 - 为了更好的协调数据接收速率与资源处理能力，1.5版本开始 Spark Streaming 可以动态控制数据接收速率来适配集群数据处理能力。
 - 背压机制（即Spark Streaming Backpressure）: 根据 JobScheduler 反馈作业的执行信息来`动态调整 Receiver 数据接收率`。
