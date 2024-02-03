@@ -168,7 +168,7 @@ val ssc = new StreamingContext(conf, Seconds(1))
 - reduceByWindow(func, windowLength, slideInterval)：返回一个单元素流。<br>
   利用函数func聚集滑动时间间隔的流的元素创建这个单元素流。函数func必须满足结合律，从而可以支持并行计算
 - `reduceByKeyAndWindow`(func, windowLength, slideInterval)<br>
-   示例程序： [套接字流(DStream transform)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch02_window.scala)
+   示例程序： [套接字流(DStream reduceByKeyAndWindow)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch02_window.scala)
 ```markdown
 reduceByKeyAndWindow(reduceFunc, windowLength, slideInterval)
 reduceByKeyAndWindow(reduceFunc, invReduceFunc, windowLength, slideInterval)
@@ -198,8 +198,28 @@ Time: 1706878105000 ms
 (Andy,1)
 (ALICE,2)
 ```
-##### updateStateByKey
+<img src="images/spark/sparkStreaming_window操作.png" width="50%" height="50%" align="center"><br>
 
+##### updateStateByKey
+updateStateByKey操作允许在使用新信息不断更新状态的同时能够保留他的状态。需要做两件事情:
+1. 定义状态. 状态可以是任意数据类型
+2. 定义状态更新函数. 指定一个函数, 这个函数负责使用以前的状态和新值来更新状态.
+
+在每个阶段, Spark 都会在所有已经存在的 key 上使用状态更新函数, 而不管是否有新的数据在.<br>
+需要在跨批次之间维护状态时，就必须使用updateStateByKey操作。<br>
+
+```markdown
+def updateStateByKey[S: ClassTag](updateFunc: (Seq[V], Option[S]) => Option[S]): DStream[(K, S)]
+
+其中，V和S表示数据类型，如Int。
+第1个输入参数属于Seq[V]类型，表示当前key对应的所有value，
+第2个输入参数属于Option[S]类型，表示当前key的历史状态，函数返回值类型Option[S]，表示当前key的新状态。
+```
+词频统计实例：
+- 对于有状态转换操作而言，本批次的词频统计，会在之前批次的词频统计结果的基础上进行不断累加，所以，最终统计得到的词频，是所有批次的单词的总的词频统计结果。
+- 示例程序： [套接字流(DStream updateStateByKey)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch02_updateStateByKey.scala)
+
+<img src="images/spark/sparkStreaming_updateStateByKey.png" width="50%" height="50%" align="center"><br>
 
 #### 输出操作
 
