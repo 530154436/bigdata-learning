@@ -55,26 +55,23 @@ Structured Streaming 的**核心思想**是:`把持续不断的实时数据流�
 
 #### 处理模型
 ##### 微批处理
-- Structured Streaming默认使用`微批处理`执行模型，定期检查流数据源，并对自上一批次结束后到达的新数据执行批量查询
-- 数据到达和得到处理并输出结果之间的`延时超过100毫秒`
+Structured Streaming默认使用`微批处理`执行模型，定期检查流数据源，并对自上一批次结束后到达的新数据执行批量查询.<br>
+数据到达和得到处理并输出结果之间的`延时超过100毫秒`.<br>
 
 <img src="images/spark/structedStreaming_微批处理.png" width="50%" height="40%" align="center"><br>
 
 ##### 持续处理
-- Spark从2.3.0版本开始引入了`持续处理`的试验性功能，可以实现流计算的毫秒级延迟
-- 在持续处理模式下，Spark不再根据触发器来周期性启动任务，而是启动一系列的连续读取、处理和写入结果的长时间运行的任务
+Spark从2.3.0版本开始引入了`持续处理`的试验性功能，可以实现流计算的毫秒级延迟.<br>
+在持续处理模式下，Spark不再根据触发器来周期性启动任务，而是启动一系列的连续读取、处理和写入结果的长时间运行的任务.<br>
 
 <img src="images/spark/structedStreaming_持续处理.png" width="50%" height="40%" align="center"><br>
 
-#### 编写Structured Streaming程序的基本步骤
+### 操作Streaming DataFrame/DataSet
 #### 输入源
 #### 输出操作
 #### 容错处理
 #### 迟到数据处理
 #### 查询的管理和监控
-
-
-#### 批量计算和实时计算
 
 
 ### 参考引用
