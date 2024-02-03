@@ -180,23 +180,6 @@ reduceByKeyAndWindow(reduceFunc, invReduceFunc, windowLength, slideInterval)
   比没有invReduceFunc高效. 会利用旧值来进行计算.
   invReduceFunc: (V, V) => V 窗口移动了, 上一个窗口和新的窗口会有重叠部分, 重叠部分的值可以不用重复计算了.
                              第一个参数就是新的值, 第二个参数是旧的值.
-
-example.（间隔10000ms计算）
-val lines: ReceiverInputDStream[String] = ssc.socketTextStream(ch01_2_套接字流.hostname, ch01_2_套接字流.port)
-val wordAndOne: DStream[(String, Int)] = lines.flatMap(_.split(",")).map((_, 1))
-ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString)   // invReduceFunc 需设置检查点目录，不然报错
-val wordCount: DStream[(String, Int)] = wordAndOne.reduceByKeyAndWindow((x: Int, y: Int) => x + y, (x: Int, y: Int) => x - y, Seconds(15), Seconds(10))
--------------------------------------------
-Time: 1706878095000 ms
--------------------------------------------
-(Andy,1)
-(30,1)
--------------------------------------------
-Time: 1706878105000 ms
--------------------------------------------
-(20,2)
-(Andy,1)
-(ALICE,2)
 ```
 <img src="images/spark/sparkStreaming_window操作.png" width="50%" height="50%" align="center"><br>
 
@@ -222,7 +205,14 @@ def updateStateByKey[S: ClassTag](updateFunc: (Seq[V], Option[S]) => Option[S]):
 <img src="images/spark/sparkStreaming_updateStateByKey.png" width="50%" height="50%" align="center"><br>
 
 #### 输出操作
+在Spark应用中，外部系统经常需要使用到Spark DStream处理后的数据，因此，需要采用输出操作把DStream的数据输出到数据库或者文件系统中
+- 示例程序： [套接字流(DStream输出到文本文件)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch03_DStream输出到文本文件.scala)
+- 示例程序： [套接字流(DStream输出到MySQL)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/streaming/ch03_DStream输出到MySQL.scala)
 
+注意：
+1. MySQL连接不能写在driver层面（序列化）；
+2. 如果写在foreach则每个RDD中的每一条数据都创建，得不偿失；
+3. 增加foreachPartition，在分区创建（获取）。
 
 ### 参考引用
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
