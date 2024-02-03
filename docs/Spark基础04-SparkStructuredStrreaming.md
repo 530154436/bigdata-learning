@@ -1,6 +1,5 @@
 [TOC]
-### Structured Streaming
-
+### 概述
 #### 背景
 Spark Streaming采用了`DStream API`，它是基于Spark批处理的RDD API构建的，有着和RDD一样的基础语义和容错模型。<br>
 虽然Spark Streaming可以满足大多数流处理场景的应用需求，但是，它并非无懈可击，以下是Spark Streaming的`不足之处`：
@@ -17,7 +16,7 @@ Spark Streaming采用了`DStream API`，它是基于Spark批处理的RDD API构�
 
 Spark Streaming的上述缺陷，导致了Structured Streaming的诞生，并且，前者深刻地影响了后者的设计理念。
 
-#### 概述
+#### 特性
 从 spark2.0 开始, spark 引入了一套新的流式计算模型: Structured Streaming。<br>
 该组件进一步降低了处理数据的延迟时间, 它实现了"`有且仅有一次(Exectly Once)`" 语义, 可以保证数据被精准消费。<br>
 Structured Streaming 基于 Spark SQl 引擎, 是一个具有弹性和容错的流式处理引擎。<br>
@@ -32,21 +31,21 @@ Structured Streaming 基于 Spark SQl 引擎, 是一个具有弹性和容错的�
 默认情况下, Structured Streaming 查询使用`微批处理引擎`(micro-batch processing engine)处理,微批处理引擎把流数据当做一系列的小批job(small batch jobs)来处理。<br>
 所以, 延迟低至 100 毫秒, 从 Spark2.3, 引入了一个新的低延迟处理模型: `Continuous Processing`, 延迟低至 1 毫秒.
 
-##### Structured Streaming和Spark SQL、Spark Streaming关系
+#### Structured Streaming和Spark SQL、Spark Streaming关系
 | | Structured Streaming | Spark SQL | Spark Streaming |
 |:---:|:---|:---|:---|
 |数据抽象| Dataset/DataFrame | Dataset/DataFrame | DStream(一系列RDD)|
 |数据流|结构化数据流| 静态数据 | 数据流 |
 |实时响应|采用微批处理模型时可以实现100毫秒级别的实时响应<br>采用持续处理模型时可以支持毫秒级的实时响应| - | 秒级实时响应|
 
-##### Structured Streaming与其他流处理技术的对比
+#### Structured Streaming与其他流处理技术的对比
 <img src="images/spark/structedStreaming_流处理框架对比.png" width="50%" height="50%" align="center"><br>
 
-#### 工作机制
+### 工作原理
 Structured Streaming 的**核心思想**是:`把持续不断的实时数据流当做一个不断追加的表`。<br>
 可以把流计算等同于在一个静态表上的批处理查询，Spark会在不断添加数据的无界输入表上运行计算，并进行`增量查询`。
 
-##### 编程模型
+#### 编程模型
 把输入数据流当做输入表(Input Table). 到达流中的每个数据项(data item)类似于被追加到输入表中的一行.<br>
 <img src="images/spark/structedStreaming_输入表.png" width="50%" height="50%" align="center"><br>
 
@@ -54,14 +53,14 @@ Structured Streaming 的**核心思想**是:`把持续不断的实时数据流�
 无论何时更新结果表, 我们都希望将更改的结果行写入到`外部接收器`(external sink).<br>
 <img src="images/spark/structedStreaming_编程模型.png" width="40%" height="40%" align="center"><br>
 
-##### 处理模型
-微批处理
+#### 处理模型
+##### 微批处理
 - Structured Streaming默认使用`微批处理`执行模型，定期检查流数据源，并对自上一批次结束后到达的新数据执行批量查询
 - 数据到达和得到处理并输出结果之间的`延时超过100毫秒`
 
 <img src="images/spark/structedStreaming_微批处理.png" width="50%" height="40%" align="center"><br>
 
-持续处理
+##### 持续处理
 - Spark从2.3.0版本开始引入了`持续处理`的试验性功能，可以实现流计算的毫秒级延迟
 - 在持续处理模式下，Spark不再根据触发器来周期性启动任务，而是启动一系列的连续读取、处理和写入结果的长时间运行的任务
 
