@@ -52,20 +52,20 @@ Structured Streaming 的**核心思想**是:`把持续不断的实时数据流�
 
 在无界表上对输入的查询将生成`结果表`(Result Table)，系统每隔一定的周期(触发间隔, trigger interval,例如1s)，新行被追加到输入表，然后触发对无界表的计算并更新结果表.
 无论何时更新结果表, 我们都希望将更改的结果行写入到`外部接收器`(external sink).<br>
-<img src="images/spark/structedStreaming_编程模型.png" width="30%" height="30%" align="center"><br>
+<img src="images/spark/structedStreaming_编程模型.png" width="40%" height="40%" align="center"><br>
 
 ##### 处理模型
 微批处理
 - Structured Streaming默认使用`微批处理`执行模型，定期检查流数据源，并对自上一批次结束后到达的新数据执行批量查询
 - 数据到达和得到处理并输出结果之间的`延时超过100毫秒`
 
-<img src="images/spark/structedStreaming_微批处理.png" width="30%" height="30%" align="center"><br>
+<img src="images/spark/structedStreaming_微批处理.png" width="50%" height="40%" align="center"><br>
 
 持续处理
 - Spark从2.3.0版本开始引入了`持续处理`的试验性功能，可以实现流计算的毫秒级延迟
 - 在持续处理模式下，Spark不再根据触发器来周期性启动任务，而是启动一系列的连续读取、处理和写入结果的长时间运行的任务
 
-<img src="images/spark/structedStreaming_持续处理.png" width="30%" height="30%" align="center"><br>
+<img src="images/spark/structedStreaming_持续处理.png" width="50%" height="40%" align="center"><br>
 
 #### 编写Structured Streaming程序的基本步骤
 #### 输入源
