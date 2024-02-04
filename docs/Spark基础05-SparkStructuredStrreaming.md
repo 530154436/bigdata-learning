@@ -73,9 +73,16 @@ Spark从2.3.0版本开始引入了`持续处理`的试验性功能，可以实�
 
 ### 操作Streaming DataFrame/DataSet
 #### 输入源
+`Rate源`可每秒生成特定个数的数据行，每个数据行包括**时间戳**和**值**字段。时间戳是消息发送的时间，值是从开始到当前消息发送的总个数，从0开始。Rate源一般用来作为调试或性能基准测试。
+Rate源的选项（option）包括：
+- rowsPerSecond: 每秒产生多少行数据，默认为1。
+- rampUpTime: 生成速度达到rowsPerSecond需要多少启动时间，使用比秒更精细的粒度将会被截断为整数秒，默认0秒。
+- numPartitions: 使用的分区数，默认是Spark的默认分区数。
+
 示例程序:
 - [文件源](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch01_1_File源.scala)
 - [Socket源](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch01_3_Socket源.scala)
+- [Rate源](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch01_4_Rate源.scala)
 
 #### 输出操作
 #### 容错处理
