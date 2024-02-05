@@ -98,6 +98,11 @@ Rate源的选项（option）包括：
 [foreachBatch接收器(foreachBatch sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch02_foreachBatch接收器.scala)
 
 
+#### 操作Streaming DataFrame
+我们可以在streaming DataFrames/Datasets上应用各种操作. 主要分两种:
+- 直接执行 sql
+- 特定类型的 api(DSL)
+
 #### 容错处理
 
 

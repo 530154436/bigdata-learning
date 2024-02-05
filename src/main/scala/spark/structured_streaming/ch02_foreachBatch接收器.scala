@@ -2,16 +2,15 @@ package spark.structured_streaming
 
 import conf.{Global, SparkGlobal}
 import org.apache.spark.sql.streaming.StreamingQuery
-import org.apache.spark.sql.{DataFrame, ForeachWriter, Row}
+import org.apache.spark.sql.DataFrame
 import spark.streaming.ch01_2_套接字流_自定义数据源
 
 import java.nio.file.Paths
-import java.sql.{Connection, DriverManager, PreparedStatement}
 import java.util.Properties
 
 
 /**
- * Foreach Sink：会遍历表中的每一行, 允许将流查询结果按开发者指定的逻辑输出.
+ * foreachBatch接收器：只能用于输出批处理的数据.
  *
  * -> 先启动 ch01_2_套接字流_自定义数据源.scala, 在启动这个脚本
  */
