@@ -11,10 +11,6 @@ import org.apache.spark.sql.types.{StringType, StructField, StructType, Timestam
  * 创建程序生成JSON格式的File源测试数据: -> 先执行ch01_1_SparkFileSourceGenerate
  * 创建程序对数据进行统计
  */
-class SparkFileSourceGenerate() {
-}
-
-
 object ch01_1_File源 {
     def main(args: Array[String]): Unit = {
         // 定义模式，为时间戳类型的eventTime、字符串类型的操作和省份组成

@@ -12,6 +12,10 @@ import scala.io.Source
  * 客户端：启动ch01_2_套接字流，屏幕上不断打印出词频统计信息
  */
 object ch01_2_套接字流_自定义数据源 {
+
+    val hostname = "127.0.0.1"
+    val port = 9999
+
     // 返回位于0到length-1之间的一个随机数
     def index(length: Int): Int = {
         val rdm = new Random
@@ -23,7 +27,6 @@ object ch01_2_套接字流_自定义数据源 {
             .get(Global.BASE_DIR, "data", "resources", "people.txt")
             .toAbsolutePath
             .toFile
-        val port = 9999
         val millisecond = 3000
 
         val buffer = Source.fromFile(fileName)

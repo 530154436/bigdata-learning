@@ -53,11 +53,6 @@ Structured Streaming 的**核心思想**是:`把持续不断的实时数据流�
 无论何时更新结果表, 我们都希望将更改的结果行写入到`外部接收器`(external sink).<br>
 <img src="images/spark/structedStreaming_编程模型.png" width="40%" height="40%" align="center"><br>
 
-输出(Output)定义为写到外部存储. `输出模式`(outputMode)有 3 种:
-- `Complete Mode` 整个更新的结果表会被写入到外部存储.
-- `Append Mode` 从上次触发结束开始算起, 仅仅把那些新追加到结果表中的行写到外部存储(类似于无状态的转换). 
-- `Update Mode` 从上次触发结束开始算起, 仅仅在结果表中更新的行会写入到外部存储.
-
 #### 处理模型
 ##### 微批处理
 Structured Streaming默认使用`微批处理`执行模型，定期检查流数据源，并对自上一批次结束后到达的新数据执行批量查询.<br>
@@ -85,6 +80,15 @@ Rate源的选项（option）包括：
 - [Rate源](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch01_4_Rate源.scala)
 
 #### 输出操作
+输出(Output)定义为写到外部存储. `输出模式`(outputMode)有 3 种:
+- `Complete Mode` 整个更新的结果表会被写入到外部存储.
+- `Append Mode` 从上次触发结束开始算起, 仅仅把那些新追加到结果表中的行写到外部存储(类似于无状态的转换).
+- `Update Mode` 从上次触发结束开始算起, 仅仅在结果表中更新的行会写入到外部存储，当查询不包括聚合时，这个模式等同于Append模式。
+
+<img src="images/spark/structedStreaming_输出模式.png" width="60%" height="40%" align="center"><br>
+
+<img src="images/spark/structedStreaming_接收器.png" width="60%" height="40%" align="center"><br>
+
 #### 容错处理
 #### 迟到数据处理
 #### 查询的管理和监控
