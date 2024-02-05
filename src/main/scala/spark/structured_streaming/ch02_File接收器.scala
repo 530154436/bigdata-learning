@@ -1,6 +1,7 @@
 package spark.structured_streaming
 
 import conf.{Global, SparkGlobal}
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.{asc, window}
 import org.apache.spark.sql.streaming.{StreamingQuery, Trigger}
 import org.apache.spark.sql.types.{StringType, StructField, StructType, TimestampType}
@@ -18,7 +19,7 @@ import java.nio.file.Paths
 
  -> 先启动 ch01_2_套接字流_自定义数据源.scala, 在启动这个脚本
  */
-object ch02_接收器 {
+object ch02_File接收器 {
     def main(args: Array[String]): Unit = {
         val sparkSession = SparkGlobal.getSparkSession(name = "StructuredNetworkWordCountFileSink")
         sparkSession.sparkContext.setLogLevel("WARN")
@@ -32,18 +33,20 @@ object ch02_接收器 {
 
         // 定义完查询语句: 分组计数 [value: string]
         import sparkSession.implicits._
-        val words = lines.as[String].flatMap(_.split(","))
-        val all_length_5_words = words.filter(_.length() == 5)
+        val words: DataFrame = lines.as[String].flatMap(line => {
+            line.split(",").map(word => {
+                (word, word.reverse)
+            })
+        }).toDF("原单词", "反转单词")
 
         // 启动流计算并输出结果
-        // invReduceFunc 需设置检查点目录，不然报错
-        val checkpointDir = Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString
-        val parquetDir = Paths.get(Global.BASE_DIR, "data", "parquet").toAbsolutePath.toString
+        val checkpointDir = Paths.get(Global.BASE_DIR, "data", "sink", "fileCheckpoint").toAbsolutePath.toString
+        val parquetDir = Paths.get(Global.BASE_DIR, "data", "sink", "fileSink").toAbsolutePath.toString
 
-        val query: StreamingQuery = all_length_5_words
+        val query: StreamingQuery = words
             .writeStream
             .outputMode("append")
-            .format("parquet")
+            .format("json")  // 支持 "orc", "json", "csv"
             .option("path", s"file:///${parquetDir}")
             .option("checkpointLocation", s"file:///${checkpointDir}")
             .trigger(Trigger.ProcessingTime("10 seconds"))
