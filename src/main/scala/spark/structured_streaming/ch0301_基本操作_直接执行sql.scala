@@ -11,7 +11,7 @@ import java.nio.file.Paths
 /**
  * 在 DF/DS 上大多数通用操作都支持作用在 Streaming DataFrame/Streaming DataSet 上
  */
-object ch03_基本操作_直接执行sql {
+object ch0301_基本操作_直接执行sql {
     def main(args: Array[String]): Unit = {
         val sparkSession = SparkGlobal.getSparkSession(name = "StructuredStreaming")
         sparkSession.sparkContext.setLogLevel("WARN")

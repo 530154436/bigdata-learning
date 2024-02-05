@@ -3,13 +3,13 @@ package spark.structured_streaming
 import conf.Global
 import utils.FileUtil
 
-import java.io.{File, PrintWriter}
+import java.io.PrintWriter
 import java.nio.file.{Path, Paths}
 import java.util.Date
 import scala.util.Random
 
-object ch01_1_SparkFileSourceGenerate {
-    val TEST_DATA_DIR: Path = Paths.get(Global.BASE_DIR, "data", "structuredStreaming", "fileSource")
+object ch0302_事件时间_EventTimeSourceGenerate {
+    val TEST_DATA_DIR: Path = Paths.get(Global.BASE_DIR, "data", "structuredStreaming", "eventTime")
     val ACTION_DEF = List("login", "logout", "purchase")
     val DISTRICT_DEF = List("fujian", "beijing", "shanghai", "guangzhou")
 

@@ -2,11 +2,8 @@ package spark.structured_streaming
 
 import conf.{Global, SparkGlobal}
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions.{asc, window}
 import org.apache.spark.sql.streaming.{StreamingQuery, Trigger}
-import org.apache.spark.sql.types.{StringType, StructField, StructType, TimestampType}
 import spark.streaming.ch01_2_套接字流_自定义数据源
-import spark.structured_streaming.ch01_3_Socket源.{hostname, port}
 
 import java.nio.file.Paths
 
@@ -19,7 +16,7 @@ import java.nio.file.Paths
 
  -> 先启动 ch01_2_套接字流_自定义数据源.scala, 在启动这个脚本
  */
-object ch02_File接收器 {
+object ch0201_File接收器 {
     def main(args: Array[String]): Unit = {
         val sparkSession = SparkGlobal.getSparkSession(name = "StructuredNetworkWordCountFileSink")
         sparkSession.sparkContext.setLogLevel("WARN")

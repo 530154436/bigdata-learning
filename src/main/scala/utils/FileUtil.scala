@@ -17,4 +17,17 @@ object FileUtil {
             file.delete()
         }
     }
+
+    /**
+     * 删除指定目录的所有文件夹和键
+     */
+    def deleteAll(dir: File): Unit = {
+        if(dir.exists()) {
+            val files : Array[File] = dir.listFiles()
+            for(file <- files) {
+                FileUtil.delete(file)
+            }
+        }
+        dir.delete()
+    }
 }

@@ -91,17 +91,18 @@ Rate源的选项（option）包括：
 
 
 示例程序:
-- [文件接收器(file sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch02_File接收器.scala)
+- [文件接收器(file sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch0201_File接收器.scala)
 - Foreach Sink：会遍历表中的每一行, 允许将流查询结果按开发者指定的逻辑输出.<br>
-[foreach接收器(foreach sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch02_foreach接收器.scala)
+[foreach接收器(foreach sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch0202_foreach接收器.scala)
 - ForeachBatch Sink：该功能只能用于输出批处理的数据.<br>
-[foreachBatch接收器(foreachBatch sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch02_foreachBatch接收器.scala)
+[foreachBatch接收器(foreachBatch sink)](https://github.com/530154436/bigdata-learning/blob/main/src/main/scala/spark/structured_streaming/ch0203_foreachBatch接收器.scala)
 
 
 #### 操作Streaming DataFrame
-我们可以在streaming DataFrames/Datasets上应用各种操作. 主要分两种:
-- 直接执行 sql
-- 特定类型的 api(DSL)
+我们可以在streaming DataFrames/Datasets上应用各种操作.
+
+
+
 
 #### 容错处理
 
