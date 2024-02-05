@@ -14,7 +14,7 @@ import java.sql.{Connection, DriverManager, PreparedStatement}
 
  -> 先启动 ch01_2_套接字流_自定义数据源.scala, 在启动这个脚本
  */
-object ch02_Foreach接收器 {
+object ch02_foreach接收器 {
     def main(args: Array[String]): Unit = {
         val sparkSession = SparkGlobal.getSparkSession(name = "StructuredStreamingSink")
         sparkSession.sparkContext.setLogLevel("WARN")

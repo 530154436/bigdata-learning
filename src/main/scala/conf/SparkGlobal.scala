@@ -7,7 +7,7 @@ object SparkGlobal {
         val sparkSession: SparkSession = SparkSession
           .builder()
           .appName(name)
-          .config("spark.master", "local[4]") // 需设置spark.master为local[N]才能直接运行，N为并发数
+          .config("spark.master", "local[2]") // 需设置spark.master为local[N]才能直接运行，N为并发数
           .enableHiveSupport()
           .getOrCreate()
         sparkSession
