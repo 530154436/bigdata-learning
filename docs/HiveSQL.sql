@@ -51,7 +51,7 @@ SELECT substring("abcd", 1)    -- abcd
 UNION ALL
 SELECT substring("abcd", 2)    -- bcd
 UNION ALL
-SELECT substring("aba", 2, 3)  -- ba
+SELECT substring("320000", 3)  -- 0000
 ;
 
 
@@ -62,11 +62,15 @@ SELECT substring("aba", 2, 3)  -- ba
 --          count: 计数
 -- 函数作用：如果count是正数，返回从左往右数，第N个分隔符的左边的全部内容;
 --          如果count是负数，返回从右往左数，第N个分隔符的右边的全部内容。
+SELECT substring_index("aba",';', 1)  -- aba
+UNION ALL
 SELECT substring_index("a;b;c;d",';', 1)  -- a
 UNION ALL
-SELECT substring_index("a;b;c;d",';', -1) -- d
+SELECT substring_index("a;b;c;d",';', -3) -- b;c;d
 UNION ALL
 SELECT substring_index("a;b;c;d",';', 3)  -- a;b;c
+UNION ALL
+SELECT substring_index(";;;;;;;;;;",';', 1)  -- ""
 ;
 
 
@@ -82,6 +86,14 @@ UNION ALL
 SELECT instr("abaaa", "c") -- 0
 ;
 
+SELECT locate("锁芯", "紧紧的锁芯")
+SELECT locate("紧紧的锁芯", "锁芯")
+;
+
+SELECT instr("123\t456\n235,789", "\n");
+SELECT instr("123\t456\n235,789", "\s");
+
+SELECT '"sfdad"';
 
 ---------------------------------------------------------------------------------------------------------------------------
 -- 函数原型：string regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)
@@ -108,6 +120,38 @@ SELECT regexp_replace('香港岛,保定市,果洛藏族自治州,延边朝鲜族
 SELECT regexp_replace(regexp_replace(',123,456,235,789,', '^([,]+)', ''), '([,]+)$', '')
 ;
 
+--- 去除特殊符号
+SELECT regexp_replace('123\t456  \n235,7""89', '([\\s\\n\\t"]+)', '')
+;
+
+
+SELECT regexp_replace('123\t456\n\n23\r5,78"9改造\\x07郯城县城造郯', '([\\n\\r"]+)|(\\\\x([0-9A-Fa-f]{2}))', '')
+;
+-- 1,3-二取代脲类与硫脲类衍生物;1,3-二取代脲类与硫脲类衍生物应用
+SELECT regexp_replace(replace('["1,3-二取代脲类与硫脲类衍生物","1,3-二取代脲类与硫脲类衍生物应用"]', '","', ';'), '[\\"\\[\\]]', '')
+
+
+
+SELECT concat_ws(";", spalit('900e53ad2c6485ac348bead384d0b107;e72aa855041294f70eb035be690afe80;370492b653fbf27d40dc4f20dabc5beb', ";"), spalit('900e53ad2c6485ac348bead384d0b107;e72aa855041294f70eb035be690afe80;370492b653fbf27d40dc4f20dabc5beb', ";"))
+;
+
+
+SELECT str_to_map("J00000000,C00000000") AS a
+;
+SELECT str_to_map("J00000000:1,C00000000:1") AS a
+;
+
+SELECT MAP(split('J00000000,C00000000,J00000000', ','), split('1,1,1', ','));
+SELECT split("0000000000;12140212MB0083985A;6e60cf40-3ba3-11eb-9bd5-00163e0ca5c5", ";")[1]
+     , split("0000000000;12140212MB0083985A;6e60cf40-3ba3-11eb-9bd5-00163e0ca5c5", ";")[2]
+;
+
+SELECT
+    split("2012-03-27;a319b1c84dfb93e72480f23649ab3f12;昌民 CM", ";")[0]
+     , split("2012-03-27;a319b1c84dfb93e72480f23649ab3f12;昌民 CM", ";")[1]
+     , split("2012-03-27;a319b1c84dfb93e72480f23649ab3f12;昌民 CM", ";")[2]
+;
+
 
 ---------------------------------------------------------------------------------------------------------------------------
 -- 函数原型：string regexp_extract(string source, string pattern[, bigint occurrence])
@@ -119,6 +163,8 @@ SELECT regexp_replace(regexp_replace(',123,456,235,789,', '^([,]+)', ''), '([,]+
 
 SELECT regexp_extract('["电池传送及推送机构"]', '\\"(.*?)\\"', 1)                  -- 电池传送及推送机构
 SELECT regexp_extract('["踏梯","作业机械平台总成","作业机械"]', '\\"(.*?)\\"', 1)   -- 踏梯
+SELECT regexp_extract('["宽体卡车","防护机构"]', '\\"(.*?)\\"', 1);
+SELECT regexp_extract('["1,3-二取代脲类与硫脲类衍生物","1,3-二取代脲类与硫脲类衍生物应用"]', '\\"(.*?)\\"', 1)
 
 
 -- 抽取产业词
@@ -131,6 +177,8 @@ SELECT regexp_extract('ESSI:("E202") AND (AP_PVC:(河北省))', 'AP_PVC.*?\\((.*
 SELECT regexp_extract('ESSI:("E") AND (AP_PVC:(北京) AND AN_CITY:(北京市))', 'AN_CITY.*?\\((.*?)\\)');
 SELECT regexp_extract('ESSI:("A1") AND (AP_PVC:(天津) AND AN_CITY:(天津市) AND AN_COUNTY:(河东区))', 'AN_COUNTY.*?\\((.*?)\\)');
 
+SELECT length(regexp_extract('123\t456\n235,789', '(\\n)'));
+SELECT length(regexp_extract('123\t456\n235,789', '(\\s)'));
 
 
 SELECT concat("10", "0000")
@@ -140,6 +188,15 @@ SELECT concat_ws("-", "10", "0000");
 
 -- 解析json字符串
 SELECT get_json_object('{"a":1,"c":"111"}', '$.a') AS a;
+SELECT get_json_object(replace('{"message_id":"AR092681A1"，"message_name":"METODO"}', "，", ","), '$.message_name') AS a;
+-- ["513654552264708096","ISO/IEC27001信息安全管理体系"]
+SELECT get_json_object('[["513654552264708096", "ISO/IEC27001信息安全管理体系"], ["467351043605270528", "SA8000社会责任管理体系认证"]]', '$[0]');
+
+
+select lpad('20', 8, '0');
+select concat_ws("::", lpad('20', 8, '0'), "AAA", "BBB", "20");
+select regexp_replace(concat_ws("::", lpad('20', 8, '0'), "AAA", "BBB", "20"), "^\\d+::", "");
+select regexp_replace(regexp_replace("00121::adfasd;00058::123sdf", "((^\\d{5})|(;\\d{5}))::", ";"), "^;", "");
 
 
 -- ########################################################################################################################
@@ -150,6 +207,8 @@ SELECT get_json_object('{"a":1,"c":"111"}', '$.a') AS a;
 SELECT from_unixtime(unix_timestamp('2023-03-20 20:02:02','yyyy-MM-dd HH:mm:ss'), "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
 
+SELECT CAST(date_format("2023-03-20 20:02:02", "yyyy-MM-dd") AS STRING)
+SELECT CAST(date_format("2023-03-20 20:02:02.0", "yyyy-MM-dd HH:mm:ss") AS STRING)
 ---------------------------------------------------------------------------------------------------------------------------
 
 -- 获取当前日期
@@ -157,23 +216,123 @@ SELECT current_date();
 
 -- 获取n天前的日期
 SELECT date_sub(current_date(), 30);
+SELECT date_sub("2023-06-07", 30);
+
+-- 获取n天后的日期
+SELECT date_add("2023-06-07", 30);
+-- 报错：DATE_ADD() only takes TINYINT/SMALLINT/INT types as second argument, got INTERVAL_YEAR_MONTH
+-- SELECT date_add("2023-06-07", INTERVAL 6 MONTH);
+
 
 -- 计算日期差值
 SELECT datediff('2023-03-21', '2023-03-20');
 SELECT datediff(to_date('2023-03-20 20:02:02'), to_date('2023-03-15 20:02:02'));
 
+-- 计算日期之间的月份差
+SELECT ceil(months_between(end_date, start_date)) AS num_months
+FROM (
+         select
+             '2020-01-01' as start_date,
+             '2020-03-05' as end_date
+     ) t
+;
 
 -- json
 SELECT get_json_object(replace('{"message_id":"e0384168-9055-4a3f-81ea-6b63edb5500f"，"message_name":"欧菲光集团股份有限公司"}', "，", ","), '$.message_name')
 ;
 
+-- 获取年份、月份
+SELECT year("2023-06-07");
+SELECT month("2023-06-07");
+SELECT CONCAT(YEAR("2023-06-07"), '-', LPAD(MONTH("2023-06-07"), 2, '0'));
+
+-- 衰减系数
+SELECT exp(-ln(2) / 3 * 0);
+
+
+-- 列出两个日期之间的所有日期
+select
+    start_date,
+    end_date,
+    date_add(start_date, pos) as mid_date,
+    pos
+from(
+        select
+            '2020-01-01' as start_date,
+            '2020-03-05' as end_date
+    ) tmp
+    lateral view posexplode(split(space(datediff(end_date, start_date)), '')) t as pos, val
+;
+
+
+-- 列出两个月份之间的所有月份
+select
+    start_date,
+    end_date,
+    mid_month
+from (
+         select
+             start_date,
+             end_date,
+             CONCAT(YEAR(start_date), '-', LPAD(MONTH(start_date), 2, '0')) AS start_month,
+             CONCAT(YEAR(end_date), '-', LPAD(MONTH(end_date), 2, '0')) AS end_month,
+             CONCAT(YEAR(add_months(start_date, pos)), '-', LPAD(MONTH(add_months(start_date, pos)), 2, '0')) as mid_month,
+             pos
+         from(
+                 select
+                     '2020-01-30' as start_date,
+                     '2023-05-01' as end_date
+             ) tmp
+             lateral view posexplode(split(space(CAST(ceil(months_between(end_date, start_date)) AS INT)), '')) t as pos, val
+     ) t
+WHERE start_month <= mid_month AND mid_month <= end_month
+;
+
+
+
+
 
 -- ########################################################################################################################
 -- 聚合函数
 -- ########################################################################################################################
+DROP TABLE IF EXISTS website_pv_infogroup_1;
+CREATE TABLE IF NOT EXISTS website_pv_infogroup_1(
+                                                     cookieid STRING COMMENT 'cookieid'
+    , create_time STRING COMMENT '创建时间'
+    , pv BIGINT COMMENT 'page view'
+)
+    COMMENT '测试示例-网站pv计算'
+    STORED AS ORC
+    TBLPROPERTIES ('external.table.purge' = 'TRUE', 'transactional'='false')
+;
+INSERT INTO website_pv_infogroup_1 VALUES
+('cookieid1', '2023-01-01', null)
+                                        ,('cookieid1', '2023-01-02', 4)
+                                        ,('cookieid1', '2023-01-03', 4)
+                                        ,('cookieid1', '2023-01-04', null)
+                                        ,('cookieid1', '2023-01-05', null)
+                                        ,('cookieid1', '2023-01-06', null)
+                                        ,('cookieid1', '2023-01-07', 5)
+                                        ,('cookieid2', '2023-01-01', 7)
+                                        ,('cookieid2', '2023-01-02', 9)
+;
+
+SELECT
+    cookieid
+     , collect_list(pv) AS pvs
+FROM website_pv_infogroup_1
+GROUP BY cookieid
+;
 
 
+SELECT round(10.222454, 3);
+SELECT round(0.210, 3);
 
+
+-- 百分位[0.0,0.0,11.0,100.0,250.0,500.0,2000.0,9272.0,144603.0]
+SELECT percentile(CAST(reg_capi AS BIGINT), array(0, 0.01, 0.05, 0.1, 0.2,0.25,0.5,0.75,0.95))
+FROM tmp_v_algo_rs_ent_feature
+;
 
 -- ########################################################################################################################
 -- 内嵌表生成函数(UDTF, Built-in Table-Generating Functions)
@@ -205,7 +364,7 @@ select
 from (
          select 'A,B,C,D' as chars, 1 as id
      ) t
-lateral view explode(split(chars, ',')) tf as col;
+    lateral view explode(split(chars, ',')) tf as col;
 
 
 
@@ -265,14 +424,14 @@ CREATE TABLE IF NOT EXISTS website_pv_infogroup(
 ;
 INSERT INTO website_pv_infogroup VALUES
 ('cookieid1', '2023-01-01', 1)
-,('cookieid1', '2023-01-02', 4)
-,('cookieid1', '2023-01-03', 4)
-,('cookieid1', '2023-01-04', 2)
-,('cookieid1', '2023-01-05', 3)
-,('cookieid1', '2023-01-06', 7)
-,('cookieid1', '2023-01-07', 5)
-,('cookieid2', '2023-01-01', 7)
-,('cookieid2', '2023-01-02', 9)
+                                      ,('cookieid1', '2023-01-02', 4)
+                                      ,('cookieid1', '2023-01-03', 4)
+                                      ,('cookieid1', '2023-01-04', 2)
+                                      ,('cookieid1', '2023-01-05', 3)
+                                      ,('cookieid1', '2023-01-06', 7)
+                                      ,('cookieid1', '2023-01-07', 5)
+                                      ,('cookieid2', '2023-01-01', 7)
+                                      ,('cookieid2', '2023-01-02', 9)
 ;
 
 /*
@@ -317,8 +476,8 @@ select
      , create_time
      , pv
      , rank() over(partition by cookieid order by pv desc) as `rank`
-     , dense_rank()  over(partition by cookieid order by pv desc) as `dense_rank`
-     , row_number() over(partition by cookieid order by pv desc) as `row_number`
+    , dense_rank()  over(partition by cookieid order by pv desc) as `dense_rank`
+    , row_number() over(partition by cookieid order by pv desc) as `row_number`
 from website_pv_infogroup
 ;
 
@@ -362,6 +521,90 @@ union all
 SELECT * FROM t2   -- c0 0.5134221478450147
 ;
 
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+/*
+csv 文件导入混合云开发和管控平台hive表操作步骤
+1st  先将csv文件转为 utf-8 编码格式，解决导入后编码乱码问题
+2nd  将csv 文件拖拽到 文件管理 路径下
+3rd  将 文件路径下刚拖入的csv文件导入 14 号机器：进入14号机器dos界面，执行命令
+     hdfs dfs -put -f /tmp/zhengchubin/syn_data/file_name.csv /dtb-dev/102/dev_Algo_Recommend/blacklist
+4th  再开发环境创建一个hive表：注意表的设置：示例如下：详见如下建表语句
+     特别注意：
+        ROW FORMAT DELIMITED
+        FIELDS TERMINATED BY ','
+        STORED AS TEXTfile
+5th  将3rd导入14号的的 csv文件导入开发环境, 数据开发平台执行load操作：
+     load data inpath '/dtb-dev/102/dev_Algo_Recommend/blacklist/file_name.csv' overwrite into table  algo_recommend_dev.table_name_list;
+6th  进入14号机器dos界面，执行命令：切换到测试环境
+     kinit -kt /tmp/qzdsf_test.keytab  qzdsf_test
+     beeline -u "jdbc:hive2://vip-address.prd.qizhidao.com:10099/;principal=hive/_HOST@QIZHIDAO.COM"
+7th  在测试环境建表，执行4th中的建表语句：
+     user algo_recommend_test;
+8th  把dev环境的hive表数据同步到test环境：
+     insert overwrite table algo_recommend_test.table_name_list select * from algo_recommend_dev.table_name_list;
+9th  执行命令：切换到生产环境
+     kinit -kt /tmp/qzdsf_prd.keytab  qzdsf_prd
+     beeline -u "jdbc:hive2://vip-address.prd.qizhidao.com:10099/;principal=hive/_HOST@QIZHIDAO.COM"
+10th 在生产环境建表，执行4th中的建表语句：
+     user algo_recommend;
+11th  把dev环境的hive表数据同步到prd环境：
+     insert overwrite table algo_recommend.table_name_list select * from algo_recommend_dev.table_name_list;
+*/
+
+-- 4th 建表示例
+DROP TABLE IF EXISTS table_name_list;
+CREATE EXTERNAL TABLE IF not EXISTS `table_name_list`(
+    `word` string COMMENT '黑名单词',
+    `type` string COMMENT '词类型 1:技术词 2:产品词 3:关键词 4:功效词 '
+    )
+    COMMENT '专利词黑名单'
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    STORED AS TEXTfile
+    TBLPROPERTIES ('external.table.purge' = 'TRUE')
+    ;
+
+-- 5th 导入 csv 到dev hive 示例：
+    load data inpath '/dtb-dev/102/dev_Algo_Recommend/blacklist/file_name.csv' overwrite into table  algo_recommend_dev.table_name_list;
+-- 6th
+    kinit -kt /tmp/qzdsf_test.keytab  qzdsf_test
+    beeline -u "jdbc:hive2://vip-address.prd.qizhidao.com:10099/;principal=hive/_HOST@QIZHIDAO.COM"
+-- 7th test建表示例
+    use algo_recommend_test;
+DROP TABLE IF EXISTS table_name_list;
+CREATE EXTERNAL TABLE IF not EXISTS `table_name_list`(
+    `word` string COMMENT '黑名单词',
+    `type` string COMMENT '词类型 1:技术词 2:产品词 3:关键词 4:功效词 '
+    )
+    COMMENT '专利词黑名单'
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    STORED AS TEXTfile
+    TBLPROPERTIES ('external.table.purge' = 'TRUE')
+    ;
+-- 8th 导入数据到test
+    insert overwrite table algo_recommend_test.table_name_list select * from algo_recommend_dev.table_name_list;
+-- 9th 切换生产环境
+kinit -kt /tmp/qzdsf_prd.keytab  qzdsf_prd
+    beeline -u "jdbc:hive2://vip-address.prd.qizhidao.com:10099/;principal=hive/_HOST@QIZHIDAO.COM"
+-- 10th prd建表
+    user algo_recommend;
+DROP TABLE IF EXISTS table_name_list;
+CREATE EXTERNAL TABLE IF not EXISTS `table_name_list`(
+    `word` string COMMENT '黑名单词',
+    `type` string COMMENT '词类型 1:技术词 2:产品词 3:关键词 4:功效词 '
+    )
+    COMMENT '专利词黑名单'
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    STORED AS TEXTfile
+    TBLPROPERTIES ('external.table.purge' = 'TRUE')
+    ;
+-- 11th 导入数据到prd
+    insert overwrite table algo_recommend.table_name_list select * from algo_recommend_dev.table_name_list;
 
 ---------------------------------------------------------------------------------------------------------------------------
 
