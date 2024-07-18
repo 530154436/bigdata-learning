@@ -1,6 +1,6 @@
 package utils
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions.{col, count, desc, explode, rank, split}
+import org.apache.spark.sql.functions.{col, collect_list, concat_ws, count, desc, explode, rank, row_number, split}
 import org.apache.spark.sql.DataFrame
 
 
@@ -40,16 +40,21 @@ object AggFunc4DF {
      * 862755675366961152|电池|2|1
      * 862755675366961152|电池外壳|1|2
      * 862755675366961152|用电系统|1|3
+     * 或
+     * company_id|tech_word_top3
+     * 862755675366961152|电池:2;电池外壳:1;用电系统:1
      */
     def getTopNKeyword(df: DataFrame,
                        groupByCols: Seq[String],
                        aggColName: String,
                        delimiter: String = ";",
-                       topN: Int = 3
+                       filterSet: Set[String]=null,
+                       topN: Int = 3,
+                       resultExplode: Boolean = false
                        ): DataFrame = {
         val resultCol = s"${aggColName}_top${topN}"
         // 拆分关键词字符串并展开为多个行
-        val explodedDF = df
+        val explodedDF: DataFrame = df
             .select((groupByCols :+ aggColName).map(col): _*)
             .filter(row => row.getAs[String](aggColName)!=null&&row.getAs[String](aggColName)!="")
             .withColumn(resultCol, explode(split(col(aggColName), delimiter)))
@@ -62,8 +67,23 @@ object AggFunc4DF {
         val windowSpec = Window
             .partitionBy(groupByCols.map(col): _*)
             .orderBy(desc("count"))
-        val topNProductsDF = productCountDF.withColumn("rank", rank().over(windowSpec))
+        val topNProductsDF: DataFrame = productCountDF
+            .withColumn("rank", row_number().over(windowSpec))
             .filter(s"rank <= ${topN}")
-        topNProductsDF
+
+        // 结果聚合
+        if(resultExplode){
+            topNProductsDF
+        }else{
+            val result = topNProductsDF
+                .groupBy(groupByCols.map(col): _*)
+                .agg(
+                    concat_ws(
+                        ";",
+                        collect_list(concat_ws(":", col(resultCol), col("count"))
+                    )).alias(resultCol)
+                )
+            result
+        }
     }
 }

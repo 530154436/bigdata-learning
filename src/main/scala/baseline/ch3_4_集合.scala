@@ -35,10 +35,19 @@ object ch3_4_集合 {
 
         myMutableSet += "Scala"
         println(myMutableSet)
+
+        // 使用 ++= 操作符将 myMutableSet 的元素添加到 myMutableSet2 中
+        val myMutableSet2 = scala.collection.mutable.Set("HaHa", "Spark")
+        myMutableSet2 ++= myMutableSet
+        println(myMutableSet2.toSet)
+
+        // 求差集
+        myMutableSet2 --= myMutableSet
+        println(myMutableSet2.toSet)
     }
 
     def main(args: Array[String]): Unit = {
         mutableSet()
-        immutableSet()
+        //immutableSet()
     }
 }
