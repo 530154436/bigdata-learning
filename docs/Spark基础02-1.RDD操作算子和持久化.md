@@ -75,11 +75,11 @@ RDD cache的生命周期是application级别的。
 
 #### 工作中碰到的
 背景：目前已将PyTorch训练的深度模型成功部署在GPU服务器上，希望通过Spark调用GPU预测服务对存储在hive的千万级数据进行预测、并且输出一些中间结果，方便定问题。<br>
-<img src="images_case/spark_案例1_预测过程.png" width="50%" height="50%" alt=""><br>
+<img src="images_qa/spark_案例1_预测过程.png" width="50%" height="50%" alt=""><br>
 
 问题：Spark对同一批数据重复计算（调用GPU预测服务）。<br>
 原因：mapPartitions属于转换操作，一开始没有调用cache()方法进行持久化，导致遇到后续的count()、show()、write()等方法，`都触发了一次从头开始的计算`。<br>
-<img src="images_case/spark_案例1_问题.png" width="50%" height="50%" alt=""><br>
+<img src="images_qa/spark_案例1_问题.png" width="50%" height="50%" alt=""><br>
 
 ### 参考引用
 + [Spark-core编程指南](https://jiamaoxiang.top/2020/07/18/第二篇-Spark-core编程指南)

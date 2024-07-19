@@ -39,10 +39,10 @@ FROM t01
 ```
 
 `原因`：<br>
-<img src="images/spark/SparkQA_Spark读取到的Hive表为空.png" width="50%" height="50%" alt=""><br>
-如果表在 HDFS 中的路径包含子目录 `HIVE_UNION_SUBDIR_1`，这可能是由于在写入表数据时启用了`动态分区`或 `union all` 语句导致的。这种情况下，Spark 可能无法正确读取包含子目录的数据。
+<img src="images_qa/spark_读取到的Hive表为空.png" width="50%" height="50%" alt=""><br>
+如果表在 HDFS 中的路径包含子目录 `HIVE_UNION_SUBDIR_1`，这可能是由于在写入表数据时启用了 `union all` 语句导致的。这种情况下，Spark 可能无法正确读取包含子目录的数据。
 
-`解决方法`：<br>
+`解决方法1`：<br>
 通过 Hive 命令重新插入数据，将数据从子目录合并到主目录。
 ```
 CREATE TABLE dws_algo_rs_smart_panel_ent_keywords_history_tmp AS
@@ -54,6 +54,10 @@ SELECT * FROM dws_algo_rs_smart_panel_ent_keywords_history_tmp;
 DROP TABLE dws_algo_rs_smart_panel_ent_keywords_history_tmp;
 ```
 
+`解决方法2`：<br>
+将`union all`改为`union`.
+
+#### 2、Spark读取到的Hive表为空
 
 
 
