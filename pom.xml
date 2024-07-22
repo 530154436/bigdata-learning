@@ -6,91 +6,24 @@
 
     <groupId>org.zcb</groupId>
     <artifactId>bigdata-learnning</artifactId>
+    <packaging>pom</packaging>
     <version>1.0</version>
+    <modules>
+        <module>bigdata-common</module>
+        <module>bigdata-spark</module>
+        <module>bigdata-hadoop</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <hadoop.version>2.8.5</hadoop.version>
+        <hadoop.version>3.1.1</hadoop.version>
         <hbase.version>2.2.3</hbase.version>
         <kafka.version>2.4.1</kafka.version>
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <spark.version>2.4.5</spark.version>
     </properties>
-
-    <dependencies>
-        <!-- 查找依赖:https://mvnrepository.com/-->
-
-        <!-- spark -->
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-hive_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-
-        <!-- JDBC -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.40</version>
-        </dependency>
-
-        <!-- 解析命令行参数 -->
-        <dependency>
-            <groupId>com.github.scopt</groupId>
-            <artifactId>scopt_2.11</artifactId>
-            <version>3.7.0</version>
-        </dependency>
-
-        <!-- Json文件解析 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe.play</groupId>
-            <artifactId>play-json_2.11</artifactId>
-            <version>2.7.4</version>
-        </dependency>
-
-        <!-- spark读写redis -->
-        <dependency>
-            <groupId>com.redislabs</groupId>
-            <artifactId>spark-redis_${scala.binary.version}</artifactId>
-            <version>2.6.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.spark</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
