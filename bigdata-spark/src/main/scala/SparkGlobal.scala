@@ -1,3 +1,7 @@
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
+
+
 object SparkGlobal {
     def getSparkSession(name: String = "SparkApp"): SparkSession = {
         val sparkSession: SparkSession = SparkSession

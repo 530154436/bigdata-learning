@@ -1,5 +1,6 @@
 package utils
 
+import conf.Global
 import java.nio.file.Paths
 
 object KerberosAuth {

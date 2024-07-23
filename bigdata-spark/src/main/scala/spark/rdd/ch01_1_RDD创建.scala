@@ -1,7 +1,8 @@
 package spark.rdd
+import conf.Global
+
 import java.nio.file.{Path, Paths}
 import org.apache.spark.sql.SparkSession
-import org.zcb.conf.Global
 
 /**
  * 创建RDD
