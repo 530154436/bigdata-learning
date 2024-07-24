@@ -82,7 +82,7 @@ object ch01_df的创建和保存 {
         df.show()
 
         // 把DataFrame保存成文本文件
-        df.write.format("text").save(s"file://${otherPath}")
+        df.write.format("text").save(s"file:///${otherPath}")
     }
 
     def main(args: Array[String]): Unit = {
