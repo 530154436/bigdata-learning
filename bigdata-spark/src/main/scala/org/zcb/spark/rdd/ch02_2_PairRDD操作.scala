@@ -1,11 +1,12 @@
 package org.zcb.spark.rdd
 
-import org.zcb.common.conf.Global
 import org.apache.commons.io.FileUtils
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
-
 import java.nio.file.{Path, Paths}
+
+import org.zcb.common.conf.Global
+import org.zcb.spark.SparkGlobal
 
 /**
  *  ### PairRDD转换操作

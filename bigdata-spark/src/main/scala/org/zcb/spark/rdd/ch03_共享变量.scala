@@ -1,5 +1,6 @@
 package org.zcb.spark.rdd
 import org.apache.spark.sql.SparkSession
+import org.zcb.spark.SparkGlobal
 
 /**
  *  ### 共享变量

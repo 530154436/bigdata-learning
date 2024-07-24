@@ -3,6 +3,7 @@ package org.zcb.spark.rdd.exercises
 import java.nio.file.{Path, Paths}
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.SparkSession
+import org.zcb.spark.SparkGlobal
 
 /**
 任务描述：求Top N个payment值

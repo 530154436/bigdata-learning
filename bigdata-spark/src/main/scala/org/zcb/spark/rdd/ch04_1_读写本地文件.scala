@@ -1,11 +1,11 @@
 package org.zcb.spark.rdd
-import scala.util.parsing.json.JSON
+import org.json4s.jackson.JsonMethods
 import java.nio.file.{Path, Paths}
 import org.apache.spark.sql.SparkSession
 import org.zcb.common.conf.Global
 import org.apache.commons.io.FileUtils
 import org.apache.spark.rdd.RDD
-
+import org.zcb.spark.SparkGlobal
 
 /**
  *  ### 数据读写
@@ -42,7 +42,7 @@ object ch04_1_读写本地文件 {
     def readFromJsonFile(sparkSession: SparkSession): Unit = {
         val file: Path = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
         val lines = sparkSession.sparkContext.textFile(file.toString)
-        val jSONObjects: RDD[Any] = lines.map(x => JSON.parseFull(x))
+        val jSONObjects: RDD[Any] = lines.map(x => JsonMethods.parse(x))
         println("readFromJsonFile", lines.count())
         jSONObjects.foreach({
             case Some(map: Map[String, Any]) => println(map)

@@ -1,5 +1,9 @@
 package org.zcb.spark.utils
 
+
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.security.UserGroupInformation
+import org.apache.spark.SparkConf
 import org.zcb.common.conf.Global
 
 import java.nio.file.Paths

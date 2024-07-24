@@ -1,6 +1,7 @@
 package org.zcb.spark.structured_streaming
 
 import org.zcb.common.conf.Global
+import org.zcb.common.utils.FileUtil
 
 import java.io.{File, PrintWriter}
 import java.nio.file.{Path, Paths}

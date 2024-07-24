@@ -2,6 +2,7 @@ package org.zcb.spark.sql
 
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.{Row, SparkSession}
+import org.zcb.spark.SparkGlobal
 
 import java.util.Properties
 

@@ -1,6 +1,7 @@
 package org.zcb.spark.rdd
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
+import org.zcb.spark.SparkGlobal
 
 /**
  *  #### 读写HDFS文件

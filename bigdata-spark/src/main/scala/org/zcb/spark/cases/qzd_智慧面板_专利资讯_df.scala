@@ -3,7 +3,8 @@ package org.zcb.spark.cases
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.functions.{col, collect_list, concat_ws, date_format, to_date}
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.zcb.common.utils.AggFunc4DF
+import org.zcb.common.utils.DateUtils
+import org.zcb.spark.SparkGlobal
 import org.zcb.spark.utils.{AggFunc4DF, UdfFunc}
 
 import java.nio.file.{Path, Paths}
@@ -141,7 +142,7 @@ object qzd_智慧面板_专利资讯_df {
         //(List(433207268495855616, 武汉华星光电技术有限公司, 武汉天马微电子有限公司, 技术主题标准词, 2024-07-09),盖板显示装置:1)
         //(List(4332072, 武汉华星光电技术有限公司, 武汉天马微电子有限公司, 功效标准词, 2024-07-09),制作简单:2;尺寸小:2;散热效果好:2)
         //keywordDiff.foreach(println)
-        keywordDiff
+        //keywordDiff
         val df_agg1 = sparkSession
             .createDataFrame(
                 keywordDiff.toSeq.map { case (keywords, diff) =>

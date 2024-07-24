@@ -5,8 +5,9 @@ import org.apache.commons.io.FileUtils
 import org.apache.spark.Partitioner
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.storage.StorageLevel.MEMORY_AND_DISK
-
 import java.nio.file.{Path, Paths}
+import org.zcb.spark.SparkGlobal
+
 
 /**
 ### RDD操作
@@ -133,7 +134,7 @@ object ch01_2_RDD操作 {
         if (file.toFile.exists()) {
             FileUtils.deleteDirectory(file.toFile)
         }
-        dataRP.saveAsTextFile(file.toString)
+        //dataRP.saveAsTextFile(file.toString)
     }
 
     def main(args: Array[String]): Unit = {

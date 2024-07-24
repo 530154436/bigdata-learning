@@ -3,6 +3,7 @@ package org.zcb.spark.structured_streaming
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.streaming.StreamingQuery
 import org.apache.spark.sql.DataFrame
+import org.zcb.spark.SparkGlobal
 import org.zcb.spark.streaming.ch01_2_套接字流_自定义数据源
 
 import java.nio.file.Paths

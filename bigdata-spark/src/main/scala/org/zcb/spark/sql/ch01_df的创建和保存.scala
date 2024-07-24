@@ -2,6 +2,7 @@ package org.zcb.spark.sql
 
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.SparkSession
+import org.zcb.spark.SparkGlobal
 
 import java.nio.file.Paths
 

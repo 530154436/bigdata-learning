@@ -3,6 +3,7 @@ package org.zcb.spark.streaming
 import org.zcb.common.conf.Global
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.zcb.spark.SparkGlobal
 
 import java.nio.file.Paths
 import java.sql.{Connection, DriverManager, PreparedStatement}

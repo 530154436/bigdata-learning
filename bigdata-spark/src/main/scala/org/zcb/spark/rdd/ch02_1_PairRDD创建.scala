@@ -2,6 +2,7 @@ package org.zcb.spark.rdd
 import java.nio.file.{Path, Paths}
 import org.apache.spark.sql.SparkSession
 import org.zcb.common.conf.Global
+import org.zcb.spark.SparkGlobal
 
 /**
  *  ### PairRDD创建

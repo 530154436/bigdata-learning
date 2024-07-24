@@ -2,6 +2,7 @@ package org.zcb.spark.structured_streaming
 
 import org.apache.spark.sql.{DataFrame, Dataset}
 import org.apache.spark.sql.streaming.{StreamingQuery, Trigger}
+import org.zcb.spark.SparkGlobal
 
 /**
  * -> 先启动 ch01_2_套接字流_自定义数据源.scala, 在启动这个脚本

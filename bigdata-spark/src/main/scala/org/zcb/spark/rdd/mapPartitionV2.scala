@@ -1,6 +1,7 @@
 package org.zcb.spark.rdd
 
 import org.apache.spark.sql.Row
+import org.zcb.spark.SparkGlobal
 /**
  * mapPartition高效用法
  * 自定义一个迭代器类，无需缓存数据

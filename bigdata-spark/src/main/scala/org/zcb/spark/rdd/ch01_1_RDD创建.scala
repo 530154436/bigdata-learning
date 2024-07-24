@@ -3,6 +3,7 @@ import org.zcb.common.conf.Global
 
 import java.nio.file.{Path, Paths}
 import org.apache.spark.sql.SparkSession
+import org.zcb.spark.SparkGlobal
 
 /**
  * 创建RDD

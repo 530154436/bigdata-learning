@@ -4,6 +4,7 @@ import org.zcb.common.conf.Global
 import org.apache.spark.sql.{DataFrame, Dataset}
 import org.apache.spark.sql.streaming.StreamingQuery
 import org.apache.spark.sql.types.{LongType, StringType, StructField, StructType}
+import org.zcb.spark.SparkGlobal
 
 import java.nio.file.Paths
 

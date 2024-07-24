@@ -3,6 +3,7 @@ package org.zcb.spark.structured_streaming
 import org.apache.spark.sql.functions.{asc, window}
 import org.apache.spark.sql.streaming.{StreamingQuery, Trigger}
 import org.apache.spark.sql.types.{StringType, StructField, StructType, TimestampType}
+import org.zcb.spark.SparkGlobal
 
 
 /**

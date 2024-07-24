@@ -3,6 +3,7 @@ package org.zcb.spark.sql
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Row, SparkSession}
+import org.zcb.spark.SparkGlobal
 
 import java.nio.file.Paths
 

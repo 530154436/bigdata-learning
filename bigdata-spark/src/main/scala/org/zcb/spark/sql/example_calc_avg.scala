@@ -2,6 +2,7 @@ package org.zcb.spark.sql
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.avg
+import org.zcb.spark.SparkGlobal
 
 object example_calc_avg {
     /**

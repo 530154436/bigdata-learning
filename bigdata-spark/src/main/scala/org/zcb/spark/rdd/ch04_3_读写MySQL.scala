@@ -3,6 +3,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.{JdbcRDD, RDD}
 
 import java.sql.DriverManager
+import org.zcb.spark.SparkGlobal
 
 /**
  *  #### 读写MySQL

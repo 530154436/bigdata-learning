@@ -1,6 +1,7 @@
 package org.zcb.spark.rdd
 
 import org.apache.spark.sql.{Row, SparkSession}
+import org.zcb.spark.SparkGlobal
 
 object mapPartitionV1 {
     /**

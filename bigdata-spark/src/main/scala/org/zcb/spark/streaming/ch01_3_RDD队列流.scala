@@ -2,6 +2,7 @@ package org.zcb.spark.streaming
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.zcb.spark.SparkGlobal
 
 import scala.collection.mutable
 
