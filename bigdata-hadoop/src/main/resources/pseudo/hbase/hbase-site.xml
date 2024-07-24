@@ -6,7 +6,7 @@
   <!-- HDFS core-site.xml 的 fs.defaultFS --> 
   <property>
     <name>hbase.rootdir</name>
-    <value>hdfs://cluster1:9000/hbase</value> 
+    <value>org.zcb.hadoop.hdfs://cluster1:9000/hbase</value>
   </property>
 
   <!-- HBase 的运行模式。为 false 表示单机模式，为 true 表示分布式模式 --> 

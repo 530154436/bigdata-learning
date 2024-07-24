@@ -1,7 +1,6 @@
+import org.zcb.hbase.HBaseUtil;
 import org.apache.hadoop.hbase.TableName;
-import utils.HBaseUtil;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 

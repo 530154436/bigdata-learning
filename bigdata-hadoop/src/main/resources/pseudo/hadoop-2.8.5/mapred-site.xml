@@ -19,7 +19,7 @@
 <configuration>
 	<!--mapreduce运用了yarn框架，设置name为yarn-->
 	<property>
-		<name>mapreduce.framework.name</name>
+		<name>org.zcb.hadoop.mapreduce.framework.name</name>
 		<value>yarn</value>
 	</property>
 </configuration>

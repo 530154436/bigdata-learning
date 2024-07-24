@@ -19,7 +19,7 @@
 	<!--NameNode 的URI-->
 	<property>
 		<name>fs.defaultFS</name>
-		<value>hdfs://localhost:9000/</value> <!--hdfs://host:port/-->
+		<value>org.zcb.hadoop.hdfs://localhost:9000/</value> <!--org.zcb.hadoop.hdfs://host:port/-->
 	</property>
 
 	<!--hadoop临时文件的存放目录-->

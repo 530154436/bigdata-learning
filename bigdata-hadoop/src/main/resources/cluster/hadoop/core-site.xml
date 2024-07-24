@@ -6,7 +6,7 @@
     <!-- 设置主节点 -->
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://cluster1:9000</value>
+        <value>org.zcb.hadoop.hdfs://cluster1:9000</value>
     </property>
 
     <!-- 指定缓存文件存储的路径 -->
@@ -18,7 +18,7 @@
         <value>/tmp</value>
     </property>
 
-    <!-- 配置 hdfs 文件被永久删除前保留的时间(单位:分钟)，默认值为 0 表明垃圾回收站功能关闭 -->
+    <!-- 配置 org.zcb.hadoop.hdfs 文件被永久删除前保留的时间(单位:分钟)，默认值为 0 表明垃圾回收站功能关闭 -->
     <property>
         <name>fs.trash.interval</name>
         <value>1440</value>

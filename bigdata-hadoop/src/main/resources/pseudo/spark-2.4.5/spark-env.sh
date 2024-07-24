@@ -33,7 +33,7 @@
 # - MESOS_NATIVE_JAVA_LIBRARY, to point to your libmesos.so if you use Mesos
 
 # Options read in YARN client/cluster mode
-# - SPARK_CONF_DIR, Alternate conf dir. (Default: ${SPARK_HOME}/conf)
+# - SPARK_CONF_DIR, Alternate org.zcb.common.conf dir. (Default: ${SPARK_HOME}/org.zcb.common.conf)
 # - HADOOP_CONF_DIR, to point Spark towards Hadoop configuration files
 # - YARN_CONF_DIR, to point Spark towards YARN configuration files when you use YARN
 # - SPARK_EXECUTOR_CORES, Number of cores for the executors (Default: 1).
@@ -57,7 +57,7 @@
 # - SPARK_PUBLIC_DNS, to set the public dns name of the master or workers
 
 # Generic options for the daemons used in the standalone deploy mode
-# - SPARK_CONF_DIR      Alternate conf dir. (Default: ${SPARK_HOME}/conf)
+# - SPARK_CONF_DIR      Alternate org.zcb.common.conf dir. (Default: ${SPARK_HOME}/org.zcb.common.conf)
 # - SPARK_LOG_DIR       Where log files are stored.  (Default: ${SPARK_HOME}/logs)
 # - SPARK_PID_DIR       Where the pid file is stored. (Default: /tmp)
 # - SPARK_IDENT_STRING  A string representing this instance of spark. (Default: $USER)
