@@ -11,7 +11,7 @@
     <modules>
         <module>bigdata-common</module>
         <module>bigdata-spark</module>
-        <module>bigdata-hadoop</module>
+<!--        <module>bigdata-hadoop</module>-->
     </modules>
 
     <properties>
@@ -24,59 +24,4 @@
         <scala.binary.version>2.11</scala.binary.version>
         <spark.version>2.4.5</spark.version>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <minimizeJar>false</minimizeJar>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <artifactSet>
-                                <includes>
-                                    <!-- groupId: artifactId -->
-                                    <!-- <include>*:*</include> -->
-                                    <include>mysql:mysql-connector-java</include>
-                                    <include>com.github.scopt:scopt_2.11</include>
-                                    <include>com.alibaba:fastjson</include>
-                                </includes>
-                                <excludes>
-                                </excludes>
-                            </artifactSet>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>reference.conf</resource>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>
-                                        META-INF/services/org.apache.sparkRDD.sql.sources.DataSourceRegister
-                                    </resource>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-            </plugin>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.3.2</version>
-            </plugin>
-        </plugins>
-    </build>
 </project>

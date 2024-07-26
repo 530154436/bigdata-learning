@@ -4,19 +4,19 @@
 ```python
 cd \Users\chubin.zheng\JavaProjects\bigdata-learnning
 # 编译
-scalac baseline\ch0_HelloWorld
+scalac org.zcb.common.baseline\ch0_HelloWorld
 # 执行
-scala baseline.ch4_1_类
-java -classpath %SCALA_HOME%/lib/scala-library.jar;. baseline.ch0_HelloWorld
+scala org.zcb.common.baseline.ch4_1_类
+java -classpath %SCALA_HOME%/lib/scala-library.jar;. org.zcb.common.baseline.ch0_HelloWorld
 ```
 + Macos
 ```python
 cd /Users/chubin.zheng/Documents/JavaProjects/bigdata-learnning
 # 编译
-scalac baseline.ch0_HelloWorld
+scalac org.zcb.common.baseline.ch0_HelloWorld
 # 执行
-scala baseline.ch4_1_类
-java -classpath .:$SCALA_HOME/lib/scala-library.jar baseline.ch0_HelloWorld
+scala org.zcb.common.baseline.ch4_1_类
+java -classpath .:$SCALA_HOME/lib/scala-library.jar org.zcb.common.baseline.ch0_HelloWorld
 ```
 
 ### 编译与执行Java+Scala
@@ -26,7 +26,7 @@ java -classpath .:$SCALA_HOME/lib/scala-library.jar baseline.ch0_HelloWorld
 mvn clean scala:compile compile package
 # 执行
 cd target
-java -cp bigdata-learnning-1.0.jar;%SCALA_HOME%/lib/scala-library.jar baseline.ch0_HelloWorld
+java -cp bigdata-learnning-1.0.jar;%SCALA_HOME%/lib/scala-library.jar org.zcb.common.baseline.ch0_HelloWorld
 ```
 
 ### HiveUDF
