@@ -1,8 +1,11 @@
-deb https://mirrors.huaweicloud.com/debian/ bullseye main non-free contrib
-deb-src https://mirrors.huaweicloud.com/debian/ bullseye main non-free contrib
-deb https://mirrors.huaweicloud.com/debian-security/ bullseye-security main
-deb-src https://mirrors.huaweicloud.com/debian-security/ bullseye-security main
-deb https://mirrors.huaweicloud.com/debian/ bullseye-updates main non-free contrib
-deb-src https://mirrors.huaweicloud.com/debian/ bullseye-updates main non-free contrib
-deb https://mirrors.huaweicloud.com/debian/ bullseye-backports main non-free contrib
-deb-src https://mirrors.huaweicloud.com/debian/ bullseye-backports main non-free contrib
+deb http://mirrors.aliyun.com/debian/ bullseye main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ bullseye main contrib non-free
+
+deb http://mirrors.aliyun.com/debian/ bullseye-updates main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ bullseye-updates main contrib non-free
+
+deb http://mirrors.aliyun.com/debian/ bullseye-backports main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ bullseye-backports main contrib non-free
+
+deb http://mirrors.aliyun.com/debian-security/ bullseye-security main contrib non-free
+deb-src http://mirrors.aliyun.com/debian-security/ bullseye-security main contrib non-free
