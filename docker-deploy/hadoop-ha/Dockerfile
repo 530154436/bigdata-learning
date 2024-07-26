@@ -1,5 +1,9 @@
 FROM 15521147129/bigdata:debian-base
 
+WORKDIR /home/hadoop
+# passwordless with sudo for hadoop user
+RUN echo "hadoop ALL=NOPASSWD: ALL" > "/etc/sudoers.d/hadoop-docker"
+
 ENV JAVA_HOME=/usr/local/jdk1.8.0_112
 ENV SCALA_HOME=/usr/local/scala-2.11.12
 ENV ZOOKEEPER_HOME=/usr/local/zookeeper-3.5.5

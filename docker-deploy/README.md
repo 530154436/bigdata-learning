@@ -3,7 +3,7 @@
 ```shell
 docker network create hadoop-docker-bridge
 docker network ls
-docker inspect <container_id>
+docker inspect a40626810634
 ```
 Docker有三种网络模式，bridge、host、none，在你创建容器的时候，不指定--network默认是bridge。
 bridge：为每一个容器分配IP，并将容器连接到一个docker0虚拟网桥，通过docker0网桥与宿主机通信。即此模式下，不能用宿主机的IP+容器映射端口来进行Docker容器之间的通信。

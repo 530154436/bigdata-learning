@@ -15,4 +15,4 @@ docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-ha -f hadoop-h
 
 docker network create hadoop-docker-bridge
 docker compose -f hadoop-ha/docker-compose.yml up
-docker exec -it 7e362b0cdaae /bin/bash
+docker exec -it 75da341723df /bin/bash

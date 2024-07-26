@@ -4,7 +4,7 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bkp
 COPY base/sources.list /etc/apt/sources.list
 
 RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
-    openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat python3 \
+    iputils-ping openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,5 +32,7 @@ RUN chmod a+x /dockerentry/install_scala.sh
 RUN bash /dockerentry/install_scala.sh
 RUN rm /usr/local/CDP7.1.4/scala-2.11.12.tgz
 
-# 提供一个默认的命令
-CMD ["/bin/bash"]
+COPY base/entrypoint.sh /dockerentry/entrypoint.sh
+RUN chmod a+x /dockerentry/entrypoint.sh
+
+ENTRYPOINT ["/dockerentry/entrypoint.sh"]

@@ -1,5 +1,6 @@
 networks:
-  hadoop-docker-bridge:
+  default:
+    name: hadoop-docker-bridge
     external: true
 
 services:
@@ -13,7 +14,6 @@ services:
     restart: always
     ports:
       - 9000:9000
-      - 50090:50090
       - 10020:10020
       - 19888:19888
       - 8032:8032
@@ -23,8 +23,6 @@ services:
       - 9870:9870
       - 2181:2181
     tty: true
-    networks:
-      - hadoop-docker-bridge
 
   hadoop102:
     platform: linux/amd64
@@ -37,9 +35,9 @@ services:
     ports:
       - 8888:8888
       - 2182:2181
+    environment:
+      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
     tty: true
-    networks:
-      - hadoop-docker-bridge
 
   hadoop103:
     platform: linux/amd64
@@ -51,6 +49,5 @@ services:
     restart: always
     ports:
       - 2183:2181
+      - 9868:9868
     tty: true
-    networks:
-      - hadoop-docker-bridge
