@@ -3,8 +3,8 @@ FROM debian:11
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bkp
 COPY base/sources.list /etc/apt/sources.list
 
-RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
-    iputils-ping openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat python3 \
+RUN apt-get -q update --fix-missing && apt-get -q install -y --no-install-recommends \
+    sshpass iputils-ping openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

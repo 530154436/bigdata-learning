@@ -7,7 +7,9 @@ ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa \
     && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 $ZOOKEEPER_HOME/bin/zkServer.sh start
-$HADOOP_HOME/sbin/start-dfs.sh
-$HADOOP_HOME/sbin/start-yarn.sh
+#$HADOOP_HOME/sbin/start-dfs.sh
+#$HADOOP_HOME/sbin/start-yarn.sh
+
+bash
 
 
