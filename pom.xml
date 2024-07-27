@@ -11,7 +11,8 @@
     <modules>
         <module>bigdata-common</module>
         <module>bigdata-spark</module>
-<!--        <module>bigdata-hadoop</module>-->
+        <module>bigdata-hadoop</module>
+        <!--        <module>bigdata-hadoop</module>-->
     </modules>
 
     <properties>

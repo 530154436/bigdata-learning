@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+  <!-- 指定 hdfs 元数据存储的路径 -->
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/home/hadoop_files/hadoop_data/hadoop/namenode</value>
+  </property>
+
+  <!-- 指定 hdfs 数据存储的路径 -->
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/home/hadoop_files/hadoop_data/hadoop/datanode</value>
+  </property>
+
+  <!-- hadoop2 dfs.secondary.http.address --> 
+  <property>
+    <name>dfs.namenode.secondary.http-address</name>
+    <value>localhost:9868</value>
+  </property>
+
+  <!-- 数据备份的个数 --> 
+  <property>
+    <name>dfs.replication</name>
+    <value>3</value> 
+  </property>
+
+  <!-- 关闭权限验证 -->
+  <property>
+    <name>dfs.permissions.enabled</name>
+    <value>false</value> 
+  </property>
+
+  <!-- 开启 WebHDFS 功能(基于 REST 的接口服务) -->
+  <property>
+    <name>dfs.webhdfs.rest-csrf.enabled</name>
+    <value>true</value> 
+  </property>
+
+  <property>
+    <name>dfs.client.use.datanode.hostname</name>
+    <value>true</value>
+    <description>only cofig in clients</description>
+  </property>
+
+</configuration>
+
+

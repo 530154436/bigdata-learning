@@ -8,7 +8,3 @@ $ZOOKEEPER_HOME/bin/zkServer.sh start
 #$HADOOP_HOME/sbin/start-yarn.sh
 
 echo "启动成功."
-
-bash
-
-
