@@ -1,18 +1,18 @@
 FROM debian:11
 
-RUN mv /etc/apt/sources.list /etc/apt/sources.list.bkp
-COPY base/sources.list /etc/apt/sources.list
+#RUN mv /etc/apt/sources.list /etc/apt/sources.list.bkp
+#COPY base/sources.list /etc/apt/sources.list
 
-RUN apt-get -q update --fix-missing && apt-get -q install -y --no-install-recommends \
+WORKDIR /root
+
+RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
     sshpass iputils-ping openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat python3 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 新建 hadoop组 和 hadoop用户
-RUN groupadd hadoop
-RUN useradd -s /bin/bash -g hadoop -d /home/hadoop -m hadoop
-RUN echo 'hadoop:hadoop' | chpasswd
-RUN echo 'root:root' | chpasswd
+# passwordless with ssh
+RUN ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa \
+    && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 # environment variables for all users
 ENV JAVA_HOME=/usr/local/jdk1.8.0_112
