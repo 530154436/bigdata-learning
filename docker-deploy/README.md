@@ -15,12 +15,24 @@ docker compose -f hadoop-ha/docker-compose.yml up
 ```
 
 
++ Webui:<br>
+Yarn http://localhost:8088/<br>
+Hdfs http://localhost:9870/
+
+### 遇到的问题
 #### 1、Bind for 0.0.0.0:2181 failed: port is already allocated
 <img src="images_qa/zookeeper_端口映射.png" width="50%" height="50%" alt=""><br>
 每个容器之间环境是隔离的，所以容器内所用的端口一样。
 因为在同一台宿主机，端口不能冲突，所以需要将端口映射成不同的端口号，比如2181/2182/2183。
 
 #### 2、hadoop101: ssh: connect to host hadoop101 port 22: Connection refused
-
-
+```shell
+# 创建 .ssh 目录并生成 SSH 密钥（以 root 用户运行）
+RUN mkdir -p /home/hadoop/.ssh \
+    && ssh-keygen -q -t rsa -N '' -f /home/hadoop/.ssh/id_rsa \
+    && cat /home/hadoop/.ssh/id_rsa.pub >> /home/hadoop/.ssh/authorized_keys \
+    && chown -R hadoop:hadoop /home/hadoop/.ssh \
+    && chmod 700 /home/hadoop/.ssh \
+    && chmod 600 /home/hadoop/.ssh/authorized_keys
+```
 [Docker下安装zookeeper（单机 & 集群）](https://www.cnblogs.com/LUA123/p/11428113.html)

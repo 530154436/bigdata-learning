@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+  <!-- 指定 MapReduce 计算框架使用 YARN -->
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value> 
+  </property>
+
+  <!-- 指定 jobhistory server 的 rpc 地址 -->
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>hadoop101:10020</value> 
+  </property>
+
+  <!-- 指定 jobhistory server 的 http 地址 -->
+  <property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>hadoop101:19888</value> 
+  </property>
+
+  <property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop-3.1.1</value>
+  </property>
+
+  <property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop-3.1.1</value>
+  </property>
+
+  <property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=/usr/local/hadoop-3.1.1</value>
+  </property>
+
+</configuration>
+
