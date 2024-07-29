@@ -11,8 +11,8 @@ docker exec -it 7470dc8edf34 /bin/bash
 
 
 # zk、hadoop
-docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-ha -f hadoop-ha/Dockerfile .
+docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1-ha -f hadoop-3.1.1-ha/Dockerfile .
 
 docker network create hadoop-docker-bridge
-docker compose -f hadoop-ha/docker-compose.yml up
+docker compose -f hadoop-3.1.1-ha/docker-compose.yml up
 docker exec -it c62a9fdf530f /bin/bash

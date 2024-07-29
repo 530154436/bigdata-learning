@@ -8,6 +8,7 @@ DATA_DIR=$BASE_DIR/hadoop_data
 HADOOP_NN_DIR=$DATA_DIR/hadoop/namenode
 
 $ZOOKEEPER_HOME/bin/zkServer.sh start
+#$ZOOKEEPER_HOME/bin/zkServer.sh status
 
 if [ "`ls -A $HADOOP_NN_DIR`" == "" ]; then
   echo "Formatting namenode, name directory: $HADOOP_NN_DIR"

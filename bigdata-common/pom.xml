@@ -39,6 +39,11 @@
             <artifactId>play-json_2.11</artifactId>
             <version>2.7.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-jackson_2.11</artifactId>
+            <version>3.6.6</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-codec</groupId>
@@ -49,11 +54,6 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json4s</groupId>
-            <artifactId>json4s-jackson_2.11</artifactId>
-            <version>3.6.6</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -77,6 +77,26 @@
             <artifactId>jedis</artifactId>
             <version>3.2.0</version>
         </dependency>
+
+        <!--  单元测试  -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.6.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -99,9 +119,13 @@
                                 <includes>
                                     <!-- 指定需要打包的依赖项-->
                                     <include>com.github.scopt:scopt_2.11</include>
+                                    <include>com.alibaba:fastjson.11</include>
+                                    <include>com.typesafe.play:play-json_2.11</include>
+                                    <include>commons-*:commons-*</include>
                                     <include>redis.clients:jedis</include>
                                     <include>org.apache.commons:commons-pool2</include>
                                     <include>org.json4s:json4s-jackson_2.11</include>
+                                    <include>org.junit:*</include>
                                 </includes>
                             </artifactSet>
                             <filters>

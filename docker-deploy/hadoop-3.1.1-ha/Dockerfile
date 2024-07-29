@@ -29,9 +29,9 @@ RUN bash /dockerentry/install_hadoop.sh
 RUN rm /usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz
 
 # start script
-COPY hadoop-ha/run-namenode.sh /dockerentry/run-namenode.sh
+COPY hadoop-3.1.1-ha/run-namenode.sh /dockerentry/run-namenode.sh
 RUN chown hadoop /dockerentry/run-namenode.sh
-COPY hadoop-ha/run-datanode.sh /dockerentry/run-datanode.sh
+COPY hadoop-3.1.1-ha/run-datanode.sh /dockerentry/run-datanode.sh
 RUN chown hadoop /dockerentry/run-datanode.sh
 
 # 创建 .ssh 目录并生成 SSH 密钥（以 root 用户运行）

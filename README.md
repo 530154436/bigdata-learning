@@ -1,4 +1,11 @@
 [TOC]
+### 基于Docker搭建大数据集群
+| 容器名称            | 对应镜像                                   | 进程                              |
+|:-------------------|:-----------------------------------------|:---------------------------------|
+| Hadoop101          | 15521147129/bigdata:hadoop-3.1.1         |NameNode、DataNode、ResourceManager、NodeManager |
+| Hadoop102          | 15521147129/bigdata:hadoop-3.1.1         |DataNode、NodeManager|
+| Hadoop103          | 15521147129/bigdata:hadoop-3.1.1         |SecondaryNameNode、DataNode |
+
 ### 编译与执行Scala
 + Windows
 ```python
