@@ -56,10 +56,10 @@ $JAVA_HOME/bin/jps
 + web管理界面
 
 `HDFS界面`：http://localhost:9870/<br>
-<img src="images/hadoop_hdfs.png" width="50%" height="50%" alt=""><br>
+<img src="images/hadoop_hdfs.png" width="80%" height="80%" alt=""><br>
 
 `Yarn界面`：http://localhost:8088/<br>
-<img src="images/hadoop_yarn.png" width="50%" height="50%" alt=""><br>
+<img src="images/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
 
 ### 遇到的问题
 #### 1、Bind for 0.0.0.0:2181 failed: port is already allocated
