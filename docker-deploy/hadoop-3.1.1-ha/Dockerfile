@@ -41,6 +41,7 @@ RUN mkdir -p /home/hadoop/.ssh \
     && chown -R hadoop:hadoop /home/hadoop/.ssh \
     && chmod 700 /home/hadoop/.ssh \
     && chmod 600 /home/hadoop/.ssh/authorized_keys
+RUN chown -R hadoop:hadoop /home/hadoop/
 
 # 切换到 hadoop 用户
 USER hadoop
