@@ -61,7 +61,7 @@ Hdfs http://localhost:9870/
 
 ### 遇到的问题
 #### 1、Bind for 0.0.0.0:2181 failed: port is already allocated
-<img src="images_qa/zookeeper_端口映射.png" width="50%" height="50%" alt=""><br>
+<img src="images/zookeeper_端口映射.png" width="50%" height="50%" alt=""><br>
 每个容器之间环境是隔离的，所以容器内所用的端口一样。
 因为在同一台宿主机，端口不能冲突，所以需要将端口映射成不同的端口号，比如2181/2182/2183。
 
