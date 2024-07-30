@@ -265,7 +265,7 @@ cat > $INSTALL_DIR/etc/hadoop/hdfs-site.xml << EOF
   <!-- 2nn web ui address -->
   <property>
     <name>dfs.namenode.secondary.http-address</name>
-    <value>hadoop103:50090</value>
+    <value>hadoop103:9868</value>
   </property>
 
   <!-- 数据备份的个数 --> 

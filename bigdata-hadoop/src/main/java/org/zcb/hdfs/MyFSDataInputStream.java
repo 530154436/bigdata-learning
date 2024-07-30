@@ -35,14 +35,15 @@ public class MyFSDataInputStream extends FSDataInputStream {
         try {
             int rowNum = Integer.parseInt(args[0]);
             String fileName = "/test/myfile.txt";
-            HdfsUtil.connect();
-            FSDataInputStream is = HdfsUtil.getFs().open(new Path(fileName));
+            HdfsUtil hdfs = new HdfsUtil();
+            hdfs.connect();
+            FSDataInputStream is = hdfs.getFs().open(new Path(fileName));
 
             MyFSDataInputStream fis = new MyFSDataInputStream(is);
             System.out.println("行号"+ rowNum + ": " + fis.readLine(rowNum));
             is.close();
             fis.close();
-            HdfsUtil.close();
+            hdfs.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

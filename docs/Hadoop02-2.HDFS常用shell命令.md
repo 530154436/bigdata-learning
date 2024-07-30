@@ -27,6 +27,8 @@ echo "hahahaha" > test.txt
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal test.txt /a
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal test.txt /a/b
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal -f test.txt /a/b  # 覆盖
+$HADOOP_HOME/bin/hdfs dfs -put test.txt /a
+$HADOOP_HOME/bin/hdfs dfs -put -f test.txt /a
 
 # 下载文件
 $HADOOP_HOME/bin/hdfs dfs -get /a/b/test.txt ~/newtest.txt
