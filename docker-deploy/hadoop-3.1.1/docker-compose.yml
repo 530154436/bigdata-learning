@@ -6,7 +6,7 @@ networks:
 services:
   hadoop101:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1-ha
+    image: 15521147129/bigdata:hadoop-3.1.1
     hostname: hadoop101
     container_name: hadoop101
     user: hadoop
@@ -21,13 +21,12 @@ services:
       - 8031:8031
       - 8088:8088
       - 9870:9870
-      - 2181:2181
       - 19:22
     tty: true
 
   hadoop102:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1-ha
+    image: 15521147129/bigdata:hadoop-3.1.1
     hostname: hadoop102
     container_name: hadoop102
     user: hadoop
@@ -35,7 +34,6 @@ services:
     restart: always
     ports:
       - 8888:8888
-      - 2182:2181
       - 20:22
 #    environment:
 #      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
@@ -43,14 +41,13 @@ services:
 
   hadoop103:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1-ha
+    image: 15521147129/bigdata:hadoop-3.1.1
     hostname: hadoop103
     container_name: hadoop103
     user: hadoop
     command: sh -c "/dockerentry/run-datanode.sh"
     restart: always
     ports:
-      - 2183:2181
       - 9868:9868
       - 21:22
     tty: true

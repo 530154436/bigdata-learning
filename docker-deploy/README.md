@@ -2,9 +2,9 @@
 ### 基于Docker搭建大数据集群
 | 容器名称            | 对应镜像                                      | 进程                              |
 |:-------------------|:--------------------------------------------|:---------------------------------|
-| Hadoop101          | 15521147129/bigdata:hadoop-3.1.1-ha         |NameNode、DataNode、ResourceManager、NodeManager |
-| Hadoop102          | 15521147129/bigdata:hadoop-3.1.1-ha         |DataNode、NodeManager|
-| Hadoop103          | 15521147129/bigdata:hadoop-3.1.1-ha         |SecondaryNameNode、DataNode |
+| Hadoop101          | 15521147129/bigdata:hadoop-3.1.1         |NameNode、DataNode、ResourceManager、NodeManager |
+| Hadoop102          | 15521147129/bigdata:hadoop-3.1.1         |DataNode、NodeManager|
+| Hadoop103          | 15521147129/bigdata:hadoop-3.1.1         |SecondaryNameNode、DataNode |
 
 
 #### 基础镜像构建
@@ -38,12 +38,12 @@ Hadoop各节点说明
 
 + 构建镜像
 ```shell
-docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1-ha -f hadoop-3.1.1-ha/Dockerfile .
+docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1 -f hadoop-3.1.1/Dockerfile .
 ```
 
 + 启动服务
 ```shell
-docker compose -f hadoop-3.1.1-ha/docker-compose.yml up
+docker compose -f hadoop-3.1.1/docker-compose.yml up
 ```
 
 + 查看进程

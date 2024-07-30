@@ -18,7 +18,7 @@ $HADOOP_HOME/bin/hdfs dfs -mkdir -p /a/b/c
 
 # 上传文件
 bash
-echo "hahahaha" | sudo tee test.txt
+echo "hahahaha" > test.txt
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal test.txt /a/b
 $HADOOP_HOME/bin/hdfs dfs -copyFromLocal -f test.txt /a/b  # 覆盖
 

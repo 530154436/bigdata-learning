@@ -74,8 +74,7 @@ TEMP_DIR=$BASE_DIR/hadoop_tmp
 
 JAVA_HOME=/usr/local/jdk1.8.0_112
 
-# 配置文件相关(待修改项)
-zookeeper_cluster=hadoop101:2181,hadoop102:2181,hadoop103:2181
+# 配置文件相关
 yarn_web=hadoop102:8888
 
 
@@ -217,11 +216,7 @@ cat > $INSTALL_DIR/etc/hadoop/core-site.xml << EOF
     <value>1440</value> 
   </property>
 
-  <!-- 指定 zookeeper 地址，配置 HA 时需要 --> 
-  <property>
-    <name>ha.zookeeper.quorum</name>
-    <value>$zookeeper_cluster</value> 
-  </property>
+  <!-- 指定 zookeeper 地址，配置 HA 时需要 -->
 
 </configuration>
 
