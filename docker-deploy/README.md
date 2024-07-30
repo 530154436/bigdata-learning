@@ -83,3 +83,4 @@ RUN mkdir -p /home/hadoop/.ssh \
     && chmod 600 /home/hadoop/.ssh/authorized_keys
 ```
 [Docker下安装zookeeper（单机 & 集群）](https://www.cnblogs.com/LUA123/p/11428113.html)
+[Hadoop集群安装配置教程_Hadoop3.1.3_Ubuntu](https://dblab.xmu.edu.cn/blog/2775/)

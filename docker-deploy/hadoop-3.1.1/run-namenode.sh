@@ -15,7 +15,7 @@ fi
 
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
-$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
+#$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
 
 echo "启动成功."
 # 防止容器启动后退出
