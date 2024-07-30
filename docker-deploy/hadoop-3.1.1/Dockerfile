@@ -29,18 +29,12 @@ RUN chown hadoop:hadoop /dockerentry/run-datanode.sh
 # 切换到 root 用户以创建 .ssh 目录并设置权限
 USER root
 RUN mkdir -p /home/hadoop/.ssh \
-    && chown -R hadoop:hadoop /home/hadoop/.ssh \
-    && chmod 700 /home/hadoop/.ssh
+    && chown -R hadoop:hadoop /home/hadoop
 
 # 切换到 hadoop 用户以生成 SSH 密钥
 USER hadoop
 RUN ssh-keygen -q -t rsa -N '' -f /home/hadoop/.ssh/id_rsa \
     && cat /home/hadoop/.ssh/id_rsa.pub >> /home/hadoop/.ssh/authorized_keys
-
-# 确保目录和文件权限正确
-RUN chmod 600 /home/hadoop/.ssh/id_rsa \
-    && chmod 644 /home/hadoop/.ssh/id_rsa.pub \
-    && chmod 600 /home/hadoop/.ssh/authorized_keys
 
 # 设置工作目录为 hadoop 用户的家目录
 WORKDIR /home/hadoop
