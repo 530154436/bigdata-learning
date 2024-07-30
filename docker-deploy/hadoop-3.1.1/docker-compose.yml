@@ -36,7 +36,7 @@ services:
       - 8888:8888
       - 20:22
 #    environment:
-#      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
+#      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-50090
     tty: true
 
   hadoop103:
@@ -48,6 +48,6 @@ services:
     command: sh -c "/dockerentry/run-datanode.sh"
     restart: always
     ports:
-      - 9868:9868
+      - 50090:50090
       - 21:22
     tty: true

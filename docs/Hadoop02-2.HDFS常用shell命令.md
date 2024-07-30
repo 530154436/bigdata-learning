@@ -2,12 +2,14 @@
 ```shell
 HADOOP_HOME=/usr/local/hadoop-3.1.1
 
-# 启动HDFS、YARN
+# 启动HDFS、YARN、JobHistory
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
-# 停止HDFS、YARN
+$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
+# 停止HDFS、YARN、JobHistory
 $HADOOP_HOME/sbin/stop-dfs.sh
 $HADOOP_HOME/sbin/stop-yarn.sh
+$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh stop historyserver
 
 # 查看目录
 $HADOOP_HOME/bin/hdfs dfs -ls /

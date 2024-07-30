@@ -50,7 +50,12 @@ docker compose -f hadoop-3.1.1/docker-compose.yml up
 ```shell
 docker ps
 docker exec -it <container_id> /bin/bash
+
+# 查看各个节点所启动的进程
 $JAVA_HOME/bin/jps
+
+# 查看数据节点是否正常启动
+$HADOOP_HOME/bin/hdfs dfsadmin -report
 ```
 
 + web管理界面
