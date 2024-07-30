@@ -45,8 +45,8 @@ public class HdfsUtilTest {
         // System.setProperty("HADOOP_USER_NAME", "hadoop");
         String userDir = System.getProperty("user.dir");
         String srcPath = Paths
-                .get(userDir, "src", "main", "resources", "hadoop-3.1.1", "core-site.xml")
+                .get(userDir, "src", "main", "resources", "hadoop-3.1.1", "hdfs-site.xml")
                 .toString();
-        hdfs.put(srcPath, "/core-site.xml", true);
+        hdfs.put(srcPath, "/hdfs-site.xml", true);
     }
 }
