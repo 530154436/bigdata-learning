@@ -76,31 +76,56 @@ public class HdfsUtil{
      * 创建目录
      * @param directory 目录路径
      */
-    public boolean mkdir(String directory) throws IOException {
+    public void mkdir(String directory) throws IOException {
         Path path = new Path(directory);
         if(!fs.exists(path)) {
             fs.mkdirs(path);
             System.out.println("目录创建成功：" + directory);
-            return true;
         } else {
             System.out.println("目录已存在：" + directory);
-            return false;
         }
     }
 
     /**
      * 上传文件
-     * @param srcFile 源文件路径
-     * @param dstFile 目标文件路径
+     * @param delSrc 是否删除本机的文件
+     * @param overwrite 是否覆盖集群上的文件
+     * @param src 要上传的文件在本机的路径
+     * @param dst 要上传到集群中的路径
      */
-    public void put(String srcFile, String dstFile) throws IOException {
-        put(srcFile, dstFile, true);
+    public void upload(boolean delSrc, boolean overwrite, String src, String dst) throws IOException {
+        fs.copyFromLocalFile(delSrc, overwrite, new Path(src), new Path(dst));
+        System.out.printf("文件上传成功: %s => %s.\n", src, dst);
     }
-    public void put(String srcFile, String dstFile, boolean overwrite) throws IOException {
-        Path srcPath = new Path(srcFile);
-        Path dstPath = new Path(dstFile);
-        fs.copyFromLocalFile(false, overwrite, srcPath, dstPath);
-        System.out.println("文件存入成功：源文件   " + srcFile);
-        System.out.println("文件存入成功：目的文件 " + dstFile);
+    public void upload(boolean overwrite, String src, String dst) throws IOException {
+        upload(false, overwrite, src, dst);
+    }
+    public void upload(String src, String dst) throws IOException {
+        upload(true, src, dst);
+    }
+
+    /**
+     * 下载文件
+     * @param delSrc 是否删除集群中的文件
+     * @param src 要下载的文件在集群中的路径
+     * @param dst 要下载到本机的路径
+     * @param useRaw 是否不要校验（false 为需要校验，会多一个 .crc 文件）
+     */
+    public void download(boolean delSrc, String src, String dst, boolean useRaw) throws IOException {
+        fs.copyToLocalFile(delSrc, new Path(src), new Path(dst), useRaw);
+        System.out.printf("文件下载成功: %s => %s.\n", src, dst);
+    }
+    public void download(String src, String dst) throws IOException {
+        download(false, src, dst, true);
+    }
+
+    /**
+     * 删除文件
+     * @param path 文件在集群中的路径
+     * @param recursive 是否递归删除（允许删除非空文件夹）
+     */
+    public void delete(String path, boolean recursive) throws IOException {
+        fs.delete(new Path(path), recursive);
+        System.out.printf("文件删除成功: %s.\n", path);
     }
 }

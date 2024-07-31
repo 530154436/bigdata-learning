@@ -11,11 +11,13 @@ import java.util.Map;
 public class HdfsUtilTest {
 
     public static HdfsUtil hdfs = null;
+    public static String userDir = null;
 
     @BeforeAll
     public static void init() {
         System.out.println("连接HDFS");
         hdfs = new HdfsUtil();
+        userDir = System.getProperty("user.dir");
         hdfs.connect();
     }
 
@@ -26,8 +28,7 @@ public class HdfsUtilTest {
     }
 
     @Test
-    @DisplayName("测试HDFS配置文件设置")
-    @Disabled
+    @DisplayName("HDFS配置文件")
     void testHdfsConfigure(){
         Map<String, String> conf = new HashMap<String, String>();
         // conf.put("dfs.replication", "1");
@@ -38,15 +39,26 @@ public class HdfsUtilTest {
     }
 
     @Test
-    @DisplayName("测试文件上传和下载")
-    // @Disabled
-    void testFileUploadAndDownload() throws IOException {
-        // 更改操作用户
-        // System.setProperty("HADOOP_USER_NAME", "hadoop");
-        String userDir = System.getProperty("user.dir");
+    @DisplayName("HDFS上传文件")
+    void testUpload() throws IOException {
         String srcPath = Paths
                 .get(userDir, "src", "main", "resources", "hadoop-3.1.1", "hdfs-site.xml")
                 .toString();
-        hdfs.put(srcPath, "/hdfs-site.xml", true);
+        hdfs.upload(srcPath, "/hdfs-site.xml");
+    }
+
+    @Test
+    @DisplayName("HDFS下载文件")
+    void testDownload() throws IOException {
+        String dst = Paths
+                .get(userDir, "src", "main", "resources", "download", "hdfs-site.xml")
+                .toString();
+        hdfs.download("/hdfs-site.xml", dst);
+    }
+
+    @Test
+    @DisplayName("HDFS删除文件")
+    void testDelete() throws IOException {
+        hdfs.delete("/hdfs-site.xml", true);
     }
 }
