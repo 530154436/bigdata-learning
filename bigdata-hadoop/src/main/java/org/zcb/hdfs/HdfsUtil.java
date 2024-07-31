@@ -3,6 +3,8 @@ package org.zcb.hdfs;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 
@@ -15,37 +17,47 @@ public class HdfsUtil{
      * 2、加载通过conf.addResources()加载的配置文件
      * 3、加载conf.set(name, value)
      */
-    private Configuration config = null;
+    private Configuration conf = null;
+    private URI uri = null;
     private FileSystem fs = null;
+
     public HdfsUtil(){
         this(null);
     }
     public HdfsUtil(Map<String, String> conf){
         this.setConfiguration(conf);
     }
-    public void setConfiguration(Map<String, String> conf) {
-        if(config == null){
-            config = new Configuration();
-            config.set("fs.defaultFS", "hdfs://hadoop101:9000");
-            // config.addResource("hadoop-3.1.1/core-site.xml");
-            // config.addResource("hadoop-3.1.1/hdfs-site.xml");
-        }
-        if(conf!= null && !conf.isEmpty()){
-            for (Map.Entry<String, String> e : conf.entrySet()) {
-                this.config.set(e.getKey(), e.getValue());
+    public void setConfiguration(Map<String, String> config){
+        if(this.conf == null){
+            this.conf = new Configuration();
+            try {
+                this.uri = new URI("hdfs://hadoop101:9000");
+                conf.addResource("hadoop-3.1.1/core-site.xml");
+                conf.addResource("hadoop-3.1.1/hdfs-site.xml");
+                conf.set("dfs.client.use.datanode.hostname", "true");
+                if(config!= null && !config.isEmpty()){
+                    for (Map.Entry<String, String> e : config.entrySet()) {
+                        this.conf.set(e.getKey(), e.getValue());
+                    }
+                }
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
             }
         }
     }
-    public Configuration getConfiguration() {return config;}
+    public Configuration getConfiguration() {return conf;}
 
     /**
      * HDFS连接和关闭
      */
     public void connect(){
         try {
-            fs = FileSystem.get(config);
+            String user = "hadoop";
+            fs = FileSystem.get(uri, conf, user);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
     public FileSystem getFs() {

@@ -21,6 +21,9 @@ services:
       - 8031:8031
       - 8088:8088
       - 9870:9870
+      - 9864:9864
+      - 9866:9866
+      - 9867:9867
       - 19:22
     tty: true
 
@@ -34,8 +37,7 @@ services:
     restart: always
     ports:
       - 8888:8888
-      - 9864:9864
-      - 9866:9866
+      - 19866:9866
       - 20:22
 #    environment:
 #      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
@@ -51,5 +53,6 @@ services:
     restart: always
     ports:
       - 9868:9868
+      - 29866:9866
       - 21:22
     tty: true

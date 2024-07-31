@@ -289,15 +289,15 @@ cat > $INSTALL_DIR/etc/hadoop/hdfs-site.xml << EOF
   <!-- 数据节点配置 -->
   <property>
     <name>dfs.datanode.address</name>
-    <value>hadoop102:9866</value>
+    <value>0000:9866</value>
   </property>
   <property>
     <name>dfs.datanode.http.address</name>
-    <value>hadoop102:9864</value>
+    <value>0000:9864</value>
   </property>
   <property>
     <name>dfs.datanode.ipc.address</name>
-    <value>hadoop102:9867</value>
+    <value>0000:9867</value>
   </property>
   <property>
     <name>dfs.client.use.datanode.hostname</name>
