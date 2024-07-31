@@ -26,8 +26,9 @@ public class HdfsUtil{
     public void setConfiguration(Map<String, String> conf) {
         if(config == null){
             config = new Configuration();
-            config.addResource("hadoop-3.1.1/core-site.xml");
-            config.addResource("hadoop-3.1.1/hdfs-site.xml");
+            config.set("fs.defaultFS", "hdfs://hadoop101:9000");
+            // config.addResource("hadoop-3.1.1/core-site.xml");
+            // config.addResource("hadoop-3.1.1/hdfs-site.xml");
         }
         if(conf!= null && !conf.isEmpty()){
             for (Map.Entry<String, String> e : conf.entrySet()) {
