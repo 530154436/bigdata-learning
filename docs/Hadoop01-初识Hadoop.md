@@ -17,6 +17,8 @@ Hadoop最早起源于Nutch。Nutch的设计目标是构建一个大型的全网�
 
 Nutch的开发人员完成了相应的开源实现HDFS和MAPREDUCE，并从Nutch中剥离成为独立项目HADOOP。<br>
 
+<img src="images/hadoop/hadoop_名称由来.png" width="80%" height="80%" alt="">
+
 2006年2月，Hadoop项目正式成为Lucene项目的一个子项目。<br>
 2008年1月，Hadoop项目已经成为Apache的顶级项目。<br>
 2008年4月，打破世界纪录，成为最快的TB级数据排序系统。
