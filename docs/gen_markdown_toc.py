@@ -23,7 +23,7 @@ def generate_toc(md_content):
 
     for mark, heading in zip(heading_marks, headings):
         title = heading[1]
-        indent = '&nbsp;' * 2 * mark2level.get(mark, 1)
+        indent = '&nbsp;' * 4 * (mark2level.get(mark, 1) - 1)
         toc.append(f'{indent}<a href="#{title}">{title}</a><br/>\n')
     return '<nav>\n' + ''.join(toc) + '</nav>'
 

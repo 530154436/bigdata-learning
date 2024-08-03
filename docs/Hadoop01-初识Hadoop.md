@@ -1,7 +1,7 @@
 <nav>
-&nbsp;&nbsp;<a href="#一、Hadoop发展历程">一、Hadoop发展历程</a><br/>
-&nbsp;&nbsp;<a href="#二、Hadoop核心组件">二、Hadoop核心组件</a><br/>
-&nbsp;&nbsp;<a href="#参考引用">参考引用</a><br/>
+<a href="#一、Hadoop发展历程">一、Hadoop发展历程</a><br/>
+<a href="#二、Hadoop核心组件">二、Hadoop核心组件</a><br/>
+<a href="#参考引用">参考引用</a><br/>
 </nav>
 
 ### 一、Hadoop发展历程
