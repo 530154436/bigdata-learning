@@ -1,4 +1,10 @@
-### Hadoop发展历程
+<nav>
+  <a href="#一、Hadoop发展历程">一、Hadoop发展历程</a><br/>
+  <a href="#二、Hadoop核心组件">二、Hadoop核心组件</a><br/>
+  <a href="#参考资料">参考资料</a><br/>
+</nav>
+
+### 一、Hadoop发展历程
 Hadoop最早起源于Nutch。Nutch的设计目标是构建一个大型的全网搜索引擎，包括网页抓取、索引、查询等功能，但随着抓取网页数量的增加，遇到了严重的可扩展性问题——如何解决数十亿网页的存储和索引问题。
 2003年开始谷歌陆续发表的三篇论文为该问题提供了可行的解决方案。
 
@@ -9,10 +15,10 @@ Hadoop最早起源于Nutch。Nutch的设计目标是构建一个大型的全网�
   OLAP 联机分析处理 Online Analysis Processing 查询<br>
   真正的作用：提供了一种可以在超大数据集中进行实时CRUD操作的功能
 
-Nutch的开发人员完成了相应的开源实现HDFS和MAPREDUCE，并从Nutch中剥离成为独立项目HADOOP，到2008年1月，HADOOP成为Apache顶级项目，迎来了它的快速发展期。
+Nutch的开发人员完成了相应的开源实现HDFS和MAPREDUCE，并从Nutch中剥离成为独立项目HADOOP。<br>
 
-2006年2月，Hadoop项目正式成为Lucene项目的一个子项目。
-2008年1月，Hadoop项目已经成为Apache的顶级项目。
+2006年2月，Hadoop项目正式成为Lucene项目的一个子项目。<br>
+2008年1月，Hadoop项目已经成为Apache的顶级项目。<br>
 2008年4月，打破世界纪录，成为最快的TB级数据排序系统。
 
 **Hadoop**提供了一个可靠的共享存储和分析系统，`HDFS`实现存储，`MapReduce`实现分析处理。并行访问数据需解决以下几个问题：
@@ -23,7 +29,7 @@ hadoop的概念：
 狭义上： 就是apache的一个顶级项目：Apache Hadoop
 广义上: 就是指以Hadoop为核心的整个大数据处理体系
 
-### Hadoop核心组件
+### 二、Hadoop核心组件
 Hadoop的官网：http://hadoop.apache.org/
 Hadoop的核心组件：
 
@@ -53,3 +59,6 @@ Apache的其他Hadoop相关项目包括：
 | **Tez™**            | 基于Hadoop YARN构建的通用数据流编程框架，它提供了一个功能强大且灵活的引擎，可以执行任意DAG任务来处理批量和交互式用例的数据。 Tez正被Hadoop生态系统中的Hive™，Pig™和其他框架以及其他商业软件（例如ETL工具）采用，以取代Hadoop™MapReduce作为底层执行引擎。 |
 | **ZooKeeper™**      | 用于分布式应用程序的高可用的协调服务，提供用于构建分布式应用的原语集。                                                      |
 
+
+### 参考引用
+1. Tom White . hadoop 权威指南 [M] . 清华大学出版社 . 2017.

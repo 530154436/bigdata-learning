@@ -1,23 +1,24 @@
-- [HDFS常用shell命令](#hdfs--shell--)
-- [HDFS JAVA API](#hdfs-java-api)
-    * [判断目录或文件是否存在](#-----------)
-    * [创建目录](#----)
-    * [列出指定目录下的文件以及块的信息](#----------------)
-    * [重命名目录或文件](#--------)
-    * [删除文件或目录](#-------)
-    * [上传文件](#----)
-    * [写文件](#---)
-    * [追加文件内容](#------)
-    * [下载文件](#----)
-    * [读文件](#---)
-- [遇到的问题](#-----)
-    * [一、xxx could only be written to 0 of the 1 minReplication nodes,There are 3](#--xxx-could-only-be-written-to-0-of-the-1-minreplication-nodes-there-are-3)
-    * [二、Failed to replace a bad datanode on the existing pipeline due to no more good datanodes](#--failed-to-replace-a-bad-datanode-on-the-existing-pipeline-due-to-no-more-good-datanodes)
-- [参考](#--)
+<nav>
+  <a href="#一、HDFS常用shell命令">一、HDFS常用shell命令</a><br/>
+  <a href="#二、HDFS JAVA API">二、HDFS JAVA API</a><br/>
+    <a href="#2.1 判断目录或文件是否存在">2.1 判断目录或文件是否存在</a><br/>
+    <a href="#2.2 创建目录">2.2 创建目录</a><br/>
+    <a href="#2.3 列出指定目录下的文件以及块的信息">2.3 列出指定目录下的文件以及块的信息</a><br/>
+    <a href="#2.4 重命名目录或文件">2.4 重命名目录或文件</a><br/>
+    <a href="#2.5 删除文件或目录">2.5 删除文件或目录</a><br/>
+    <a href="#2.6 上传文件">2.6 上传文件</a><br/>
+    <a href="#2.7 写文件">2.7 写文件</a><br/>
+    <a href="#2.8 追加文件内容">2.8 追加文件内容</a><br/>
+    <a href="#2.9 下载文件">2.9 下载文件</a><br/>
+    <a href="#2.10 读文件">2.10 读文件</a><br/>
+  <a href="#三、遇到的问题">三、遇到的问题</a><br/>
+    <a href="#3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3">3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3</a><br/>
+    <a href="#3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes">3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes</a><br/>
+  <a href="#参考引用">参考引用</a><br/>
+</nav>
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-### HDFS常用shell命令
+### 一、HDFS常用shell命令
 ```shell
 HADOOP_HOME=/usr/local/hadoop-3.1.1
 
@@ -69,15 +70,15 @@ $HADOOP_HOME/bin/hdfs dfs -appendToFile ~/test.txt /a/test.txt
 # 查看文件
 $HADOOP_HOME/bin/hdfs dfs -cat /a/test.txt
 ```
-### HDFS JAVA API
+### 二、HDFS JAVA API
 详见 bigdata-hadoop/src/main/java/org/zcb/hdfs/HdfsUtil.java
-#### 判断目录或文件是否存在
+#### 2.1 判断目录或文件是否存在
 ```
 public boolean exists(String path) throws IOException {
     return fs.exists(new Path(path));
 }
 ```
-#### 创建目录
+#### 2.2 创建目录
 ```
 public boolean mkdirs(String path) throws IOException {
     boolean flag = false;
@@ -90,7 +91,7 @@ public boolean mkdirs(String path) throws IOException {
     return flag;
 }
 ```
-#### 列出指定目录下的文件以及块的信息
+#### 2.3 列出指定目录下的文件以及块的信息
 ```
 public void listFiles(String path, boolean recursive){
     RemoteIterator<LocatedFileStatus> iterator = null;
@@ -108,7 +109,7 @@ public void listFiles(String path, boolean recursive){
 }
 ```
 
-#### 重命名目录或文件
+#### 2.4 重命名目录或文件
 ```
 public boolean rename(String src, String dst) throws IOException {
     if(!exists(src) || exists(dst)){
@@ -121,7 +122,7 @@ public boolean rename(String src, String dst) throws IOException {
 }
 ```
 
-#### 删除文件或目录
+#### 2.5 删除文件或目录
 ```
 public boolean delete(String path, boolean recursive) throws IOException {
     if(!exists(path)){
@@ -134,7 +135,7 @@ public boolean delete(String path, boolean recursive) throws IOException {
 }
 ```
 
-#### 上传文件
+#### 2.6 上传文件
 ```
 public boolean upload(boolean delSrc, boolean overwrite, String src, String dst) throws IOException {
     fs.copyFromLocalFile(delSrc, overwrite, new Path(src), new Path(dst));
@@ -149,7 +150,7 @@ public boolean upload(String src, String dst) throws IOException {
 }
 ```
 
-#### 写文件
+#### 2.7 写文件
 通过调用FileSystem实例的create方法获取写文件的输出流。通常获得输出流之后，可以直接对这个输出流进行写入操作，将内容写入HDFS的指定文件中。写完文件后，需要调用close方法关闭输出流。
 ```
 public boolean create(String dst, String content) throws IOException{
@@ -167,7 +168,7 @@ public boolean create(String dst, String content) throws IOException{
 }
 ```
 
-#### 追加文件内容
+#### 2.8 追加文件内容
 对于已经在HDFS中存在的文件，可以追加指定的内容，以增量的形式在该文件现有内容的后面追加。通过调用FileSystem实例的append方法获取追加写入的输出流。然后使用该输出流将待追加内容添加到HDFS的指定文件后面。追加完指定的内容后，需要调用close方法关闭输出流。
 ```
 public boolean append(String dst, String content) throws IOException{
@@ -185,7 +186,7 @@ public boolean append(String dst, String content) throws IOException{
 }
 ```
 
-#### 下载文件
+#### 2.9 下载文件
 ```
 public boolean download(boolean delSrc, String src, String dst, boolean useRaw) throws IOException {
     Path srcPath = new Path(src);
@@ -203,7 +204,7 @@ public boolean download(String src, String dst) throws IOException {
 ```
 
 
-#### 读文件
+#### 2.10 读文件
 获取HDFS上某个指定文件的内容。通过调用FileSystem实例的open方法获取读取文件的输入流。然后使用该输入流读取HDFS的指定文件的内容。读完文件后，需要调用close方法关闭输入流。
 ```
 public String read(String path) throws IOException {
@@ -230,8 +231,8 @@ public String read(String path) throws IOException {
 }
 ```
 
-### 遇到的问题
-#### 一、xxx could only be written to 0 of the 1 minReplication nodes,There are 3
+### 三、遇到的问题
+#### 3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3
 在使用 Docker 搭建 Hadoop 集群时，遇到以下问题：
 ```
 File /idea/warn.log could only be written to 0 of the 1 minReplication nodes. 
@@ -273,8 +274,17 @@ services:
       - 29866:9866
 ```
 
-#### 二、Failed to replace a bad datanode on the existing pipeline due to no more good datanodes
-在使用Java api操作HDFS的`追加文件内容(append)`时，由于DataNode写入策略的问题，数据写入失败。<br>
+#### 3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes
+在使用Java api操作HDFS的`追加文件内容(append)`时，遇到以下错误：
+```
+java.io.IOException: Failed to replace a bad datanode on the existing pipeline due to no more good datanodes being available to try. (Nodes: current=[DatanodeInfoWithStorage[34.2.31.31:50010,DS-8234bb39-0fd4-49be-98ba-32080bc24fa9,DISK], DatanodeInfoWithStorage[34.2.31.33:50010,DS-b4758979-52a2-4238-99f0-1b5ec45a7e25,DISK]], original=[DatanodeInfoWithStorage[34.2.31.31:50010,DS-8234bb39-0fd4-49be-98ba-32080bc24fa9,DISK], DatanodeInfoWithStorage[34.2.31.33:50010,DS-b4758979-52a2-4238-99f0-1b5ec45a7e25,DISK]]). The current failed datanode replacement policy is DEFAULT, and a client may configure this via 'dfs.client.block.write.replace-datanode-on-failure.policy' in its configuration.
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.findNewDatanode(DFSOutputStream.java:1036)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.addDatanode2ExistingPipeline(DFSOutputStream.java:1110)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.setupPipelineForAppendOrRecovery(DFSOutputStream.java:1268)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.processDatanodeError(DFSOutputStream.java:993)
+        at org.apache.hadoop.hdfs.DFSOutputStream$DataStreamer.run(DFSOutputStream.java:500)
+```
+由于DataNode写入策略的问题，数据写入失败。<br>
 `解决方案`：
 ```
 # 在写入pipeline中如果有DataNode或网络故障，DFSClient会尝试从pipeline中移除失败的DataNode，并继续尝试使用剩下的DataNodes进行写入。
@@ -288,7 +298,7 @@ conf.set("dfs.client.block.write.replace-datanode-on-failure.policy", "NEVER");
 
 通过以上配置，确保在DataNode写入失败时不会自动添加新的DataNode，从而避免在小规模集群中可能出现的异常高的pipeline错误。
 
-### 参考
+### 参考引用
 [Hadoop学习之路（七）Hadoop集群shell常用命令](https://www.cnblogs.com/qingyunzong/p/8527595.html)
 [【Docker x Hadoop x Java API】](https://juejin.cn/post/7102339801805750285)
 [开源大数据平台 E-MapReduce-HDFS-开发指南](https://help.aliyun.com/zh/emr/emr-on-ecs/user-guide/developer-guide-2?spm=a2c4g.11186623.0.0.52691274lB3YoN)
