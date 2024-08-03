@@ -1,10 +1,40 @@
 <nav>
-<a href="#一hadoop发展历程">一、Hadoop发展历程</a><br/>
+<a href="#一Hadoop基本概念">一、Hadoop基本概念</a><br/>
+<a href="#二Hadoop发展历程">二、Hadoop发展历程</a><br/>
 <a href="#二hadoop核心组件">二、Hadoop核心组件</a><br/>
 <a href="#参考引用">参考引用</a><br/>
 </nav>
 
-### 一、Hadoop发展历程
+### 一、Hadoop基本概念
+
+狭义上： 就是apache的一个顶级项目：Apache Hadoop。<br>
+广义上: 就是指以Hadoop为核心的整个大数据处理体系。<br>
+
+**Hadoop**提供了一个可靠的共享存储和分析系统，`HDFS`实现存储，`MapReduce`实现分析处理。
+
+#### 1.1 与关系型数据库管理系统对比
+
+MapReduce适合一次写入，多次读取数据的应用，关系型数据库则更适合持续更新的数据集。
+
+<img src="images/hadoop/hadoop01_与数据库对比.png" width="60%" height="60%" alt="">
+
+
+#### 1.2 与网格计算对比
+高性能计算（High Performance Computing）的方法是将作业分配给一个机器集群，这些机器访问共享文件系统，由一个存储区域网络（Storage Area Network，SAN）进行管理；这非常适用于CPU密集型的作业，但当节点需要访问大数据量时，网络带宽将成为“瓶颈”。<br>
+MapReduce尝试在计算节点本地存储数据，这项“数据本地化”功能成为MapReduce的核心功能。<br>
+MapReduce检测失败的map或者reduce任务，在健康的机器上重新安排任务，而不需要程序员考虑失败任务的处理机制。<br>
+
+#### 1.3 与志愿计算对比
+
+志愿计算项目通过将他们试图解决的问题分成多个块，每个块称为一个工作单元，并将它们发到世界各地的电脑上进行分析。<br>
+SETI@home问题是CPU高度密集型的，并在接入互联网的不可信的计算机上运行，这些计算机的网速不同，而且数据也不在本地。<br>
+MapReduce有三大涉及目标：<br>
+1. 为只需要短短几分钟或数小时就能完成的任务设计。
+2. 运行于同一个内部有高速网络连接的数据中心。
+3. 数据中心内的计算机都是可靠的、专门的硬件。
+
+### 二、Hadoop发展历程
+
 Hadoop最早起源于Nutch。Nutch的设计目标是构建一个大型的全网搜索引擎，包括网页抓取、索引、查询等功能，但随着抓取网页数量的增加，遇到了严重的可扩展性问题——如何解决数十亿网页的存储和索引问题。
 2003年开始谷歌陆续发表的三篇论文为该问题提供了可行的解决方案。
 
@@ -17,19 +47,11 @@ Hadoop最早起源于Nutch。Nutch的设计目标是构建一个大型的全网�
 
 Nutch的开发人员完成了相应的开源实现HDFS和MAPREDUCE，并从Nutch中剥离成为独立项目HADOOP。<br>
 
-<img src="images/hadoop/hadoop_名称由来.png" width="80%" height="80%" alt="">
+<img src="images/hadoop/hadoop01_名字由来.png" width="60%" height="60%" alt="">
 
 2006年2月，Hadoop项目正式成为Lucene项目的一个子项目。<br>
 2008年1月，Hadoop项目已经成为Apache的顶级项目。<br>
 2008年4月，打破世界纪录，成为最快的TB级数据排序系统。
-
-**Hadoop**提供了一个可靠的共享存储和分析系统，`HDFS`实现存储，`MapReduce`实现分析处理。并行访问数据需解决以下几个问题：
-+ 硬件故障问题。
-+ 大多数分析任务需要以某种方式结合大部分数据来共同完成分析。
-
-hadoop的概念：
-狭义上： 就是apache的一个顶级项目：Apache Hadoop
-广义上: 就是指以Hadoop为核心的整个大数据处理体系
 
 ### 二、Hadoop核心组件
 Hadoop的官网：http://hadoop.apache.org/
