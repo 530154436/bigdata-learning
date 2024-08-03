@@ -23,8 +23,10 @@ def generate_toc(md_content):
 
     for mark, heading in zip(heading_marks, headings):
         title = heading[1]
+        anchor = re.sub(r'[^\w\s-]', '', title).strip().lower()
+        anchor = re.sub(r'[-\s]+', '-', anchor)
         indent = '&nbsp;' * 4 * (mark2level.get(mark, 1) - 1)
-        toc.append(f'{indent}<a href="#{title}">{title}</a><br/>\n')
+        toc.append(f'{indent}<a href="#{anchor}">{title}</a><br/>\n')
     return '<nav>\n' + ''.join(toc) + '</nav>'
 
 def process_markdown_file(file_path):
