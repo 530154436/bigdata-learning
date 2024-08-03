@@ -23,7 +23,7 @@ def generate_toc(md_content):
 
     for mark, heading in zip(heading_marks, headings):
         title = heading[1]
-        indent = ' ' * 2 * mark2level.get(mark, 1)
+        indent = '&nbsp;' * 2 * mark2level.get(mark, 1)
         toc.append(f'{indent}<a href="#{title}">{title}</a><br/>\n')
     return '<nav>\n' + ''.join(toc) + '</nav>'
 
@@ -54,5 +54,5 @@ if __name__ == "__main__":
     #directory_path = './'  # 替换为你的Markdown文件目录路径
     #traverse_directory(directory_path)
 
-    #process_markdown_file("./Hadoop01-初识Hadoop.md")
+    process_markdown_file("./Hadoop01-初识Hadoop.md")
     process_markdown_file("./Hadoop02-2.HDFS常用操作.md")

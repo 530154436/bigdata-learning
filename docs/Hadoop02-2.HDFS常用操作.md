@@ -1,22 +1,21 @@
 <nav>
-  <a href="#一、HDFS常用shell命令">一、HDFS常用shell命令</a><br/>
-  <a href="#二、HDFS JAVA API">二、HDFS JAVA API</a><br/>
-    <a href="#2.1 判断目录或文件是否存在">2.1 判断目录或文件是否存在</a><br/>
-    <a href="#2.2 创建目录">2.2 创建目录</a><br/>
-    <a href="#2.3 列出指定目录下的文件以及块的信息">2.3 列出指定目录下的文件以及块的信息</a><br/>
-    <a href="#2.4 重命名目录或文件">2.4 重命名目录或文件</a><br/>
-    <a href="#2.5 删除文件或目录">2.5 删除文件或目录</a><br/>
-    <a href="#2.6 上传文件">2.6 上传文件</a><br/>
-    <a href="#2.7 写文件">2.7 写文件</a><br/>
-    <a href="#2.8 追加文件内容">2.8 追加文件内容</a><br/>
-    <a href="#2.9 下载文件">2.9 下载文件</a><br/>
-    <a href="#2.10 读文件">2.10 读文件</a><br/>
-  <a href="#三、遇到的问题">三、遇到的问题</a><br/>
-    <a href="#3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3">3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3</a><br/>
-    <a href="#3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes">3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes</a><br/>
-  <a href="#参考引用">参考引用</a><br/>
+&nbsp;&nbsp;<a href="#一、HDFS常用shell命令">一、HDFS常用shell命令</a><br/>
+&nbsp;&nbsp;<a href="#二、HDFS JAVA API">二、HDFS JAVA API</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1 判断目录或文件是否存在">2.1 判断目录或文件是否存在</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.2 创建目录">2.2 创建目录</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.3 列出指定目录下的文件以及块的信息">2.3 列出指定目录下的文件以及块的信息</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.4 重命名目录或文件">2.4 重命名目录或文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.5 删除文件或目录">2.5 删除文件或目录</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.6 上传文件">2.6 上传文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.7 写文件">2.7 写文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.8 追加文件内容">2.8 追加文件内容</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.9 下载文件">2.9 下载文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.10 读文件">2.10 读文件</a><br/>
+&nbsp;&nbsp;<a href="#三、遇到的问题">三、遇到的问题</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3">3.1 xxx could only be written to 0 of the 1 minReplication nodes,There are 3</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes">3.2 Failed to replace a bad datanode on the existing pipeline due to no more good datanodes</a><br/>
+&nbsp;&nbsp;<a href="#参考引用">参考引用</a><br/>
 </nav>
-
 
 ### 一、HDFS常用shell命令
 ```shell
