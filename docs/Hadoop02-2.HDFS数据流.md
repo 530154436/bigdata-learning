@@ -132,69 +132,33 @@ $HADOOP_HOME/bin/hdfs oev -i edits_0000000000000000001-0000000000000000002 -o ed
 cat edits.xml
 ```
 
-### 2.3 Secondary NameNode
+### Secondary NameNode
 NameNode存在的问题：<br>
 (1) edit logs 文件会变的很大，怎么去管理这个文件是一个挑战。<br>
 (2) NameNode 重启会花费很长时间，因为有很多改动要合并到 fsimage 文件上。<br>
 (2) 如果 NameNode 挂掉了，那就丢失了一些改动。因为此时的 fsimage 文件非常旧。<br>
 
-#### 2.3.1 工作机制
-Secondary NameNode 作用是辅助NameNode进行元数据的checkpoint操作, 即合并fsimage文件。<br>
-Secondary NameNode是一个`守护进程`，定时触发checkpoint操作操作。
-事实上，只有在普通的伪分布式集群和分布式集群中才有会 SecondaryNameNode 这个角色，在 HA 或 者联邦集群中不再出现该角色，由 Standby NameNode 承担。
+SecondaryNamenode 的作用就是分担 namenode 的合并元数据的压力。所以在配置 SecondaryNamenode 的工作节点时，一定切记，不要和 namenode 处于同一节点。但事实上， 只有在普通的伪分布式集群和分布式集群中才有会 SecondaryNamenode 这个角色，在 HA 或 者联邦集群中都不再出现该角色。在 HA 和联邦集群中，都是有 standby namenode 承担。
 
-`主要职责`：帮助 NameNode 合并 edits 日志到 fsimage 文件中，减少 NameNode 启动时间。
++ **职责**
 
+SecondaryNameNode 不是 NameNode 的备份（但可以做备份），它的主要工作是`帮助 NameNode 合并 edits 日志到 fsimage 文件中，减少 NameNode 启动时间`。
++ **CheckPoint**
 
-#### 2.3.2 元数据的CheckPoint
-每当达到触发条件，会由 SecondaryNameNode 将 NameNode 上积累的所有 edits 和一个最新的 fsimage 下载到本地，并加载到内存进行 merge（这个过程称为 `checkpoint`），如下 图所示：
-<img src="images/hadoop/hadoop02_snn_checkpoint.png" width="60%" height="60%" alt="">
+每达到触发条件，会由 SecondaryNameNode 将 NameNode 上积累的所有 edits 和一个最新的 fsimage 下载到本地，并加载到内存进行 merge（这个过程称为 `checkpoint`），如下 图所示：
 
-`Checkpoint 相关配置`(hdfs-site.xml)：
-```
-dfs.namenode.checkpoint.check.period=60  # 检查触发条件是否满足的频率，60 秒
-dfs.namenode.checkpoint.dir=file://${hadoop.tmp.dir}/dfs/namesecondary
+<center></center>
++ **Checkpoint 触发条件** (core-site.xml)
+(1) 根据配置文件设置的时间间隔 `fs.checkpoint.period`  默认3600秒
+(2) 根据配置文件设置edits log大小 `fs.checkpoint.size` 规定edits文件的最大值默认是64MB 
 
-dfs.namenode.checkpoint.edits.dir=${dfs.namenode.checkpoint.dir}
-dfs.namenode.checkpoint.max-retries=3  #最大重试次数
-dfs.namenode.checkpoint.period=3600  # 两次 checkpoint 之间的时间间隔 3600 秒
-dfs.namenode.checkpoint.txns=1000000 # 两次 checkpoint 之间最大的操作记录
-```
-`缺点`：保存的状态总是`滞后于主节点`，难免会丢失部分数据，不能作为 NameNode 的热备。
++ **缺点**
+  保存的状态总是`滞后于主节点`，难免会丢失部分数据。不能作为 NameNode 的热备。
 
-### 2.4 DataNode
-DataNode 是文件系统的`工作节点`，主要职责如下：
-1. 定期向 NameNode `发送所存储的块的列表信息` （Block Report）
-2. `、存储`和`存储`用户的文件数据块（受客户端或 NameNode 调度）
-3. 定期向 NameNode 汇报自身所持有的 block 信息（通过心跳信息上报）
-4. DataNode 之间`通信`，复制数据块，保证数据冗余
-
-#### 2.4. DataNode相关配置
-DataNode 进程死亡或者网络故障造成 DataNode 无法与 NameNode 通信，NameNode 不会立即 把该节点判定为死亡，要经过一段时间，这段时间暂称作超时时长。则超时时长`timeout`的计算公式为： 
-```
-timeout = 2 * heartbeat.recheck.interval + 10 * dfs.heartbeat.interval
-```
-HDFS默认的 heartbeat.recheck-interval 大小为 5 分钟，dfs.heartbeat.interval 默认为 3 秒，则总超时时长 为 10 分钟+30 秒。
-
-```
-<!—数据节点向名称节点汇报它所存储的所有数据块的时间间隔，单位为ms，默认一个小时 -->
-<property>
-    <name>dfs.blockreport.intervalMsec</name>
-    <value>3600000</value>
-</property>
-<!— NameNode 检查数据节点心跳信号的时间间隔，以毫秒为单位 -->
-<property>
-    <name>dfs.namenode.heartbeat.recheck-interval</name>
-    <value>300000</value>
-</property>
-<!— 数据节点向名称节点发送心跳信号的时间间隔，以秒为单位 -->
-<property>
-    <name>dfs.heartbeat.interval</name>
-    <value>3</value>
-<property>
-```
+### DataNode
 
 ### 容错机制
+
 #### 1. 安全模式（Safe Mode）
 NameNode启动并加载 fsimage和edits时，处于`安全模式`：
 1. 此时 NameNode 的文件系统对于客户端来说是`只读`的。<br>
