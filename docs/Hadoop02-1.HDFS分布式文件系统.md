@@ -46,13 +46,15 @@ HDFS的块比磁盘的块大，其目的是为了`最小化寻址开销`。如�
 # 显示数据块块信息的`fsck`指令
 $HADOOP_HOME/bin/hdfs fsck / -files -blocks
 ```
+
+#### 2.1.2 数据块副本
 为了容错，文件的所有数据块都会有副本。每个文件的`数据块大小`和`副本系数`都是可配置的。应用程序可以指定某个文件的副本数目。副本系数可以在文件创建的时候指定，也可以在之后改变。HDFS中的文件都是`一次性写入`的，并且严格要求在任何时候只能有一个写入者。（默认为3个）
-```xml
+```
 <!--hdfs.xml-->
 <!--  数据块大小,以字节为单位  -->
 <property>
     <name>dfs.blocksize</name> 
-    <value>	134217728</value>
+    <value>134217728</value>
 </property>
 <!--  副本系数  -->
 <property>
@@ -60,6 +62,10 @@ $HADOOP_HOME/bin/hdfs fsck / -files -blocks
      <value>3</value>
 </property>
 ```
+#### 2.1.3 块缓存机制
+通常datanode从磁盘上读取块，但是对于`频繁访问`的数据块，datanode会将其缓存到dataNode节点的内存中，以`堆外块缓存`的形式（off-heap block cache ）存在。
+默认情况下，`一个块只缓存到一个datanode内存中`。这样的话，计算框架，比如MR或者Spark就可以在缓存块的节点上运行计算任务，可以大大提高读操作的性能，进而提高任务的效率。
+用户也可以通过在`缓存池`（cache pool） 中增加一个cache directive 来告诉namenode需要缓存哪些文件，以及文件缓存多久，缓存池是一个用于管理`缓存权限`和`资源使用`的管理分组。
 
 ### 2.2 NameNode
 NameNode(`管理节点`)是一个中心服务器，负责管理文件系统的元数据和维护文件系统的命名空间。它的主要职责包括：
@@ -147,8 +153,8 @@ Secondary NameNode是一个`守护进程`，定时触发checkpoint操作操作�
 
 
 #### 2.3.2 元数据的CheckPoint
-每当达到触发条件，会由 SecondaryNameNode 将 NameNode 上积累的所有 edits 和一个最新的 fsimage 下载到本地，并加载到内存进行 merge（这个过程称为 `checkpoint`），如下 图所示：
-<img src="images/hadoop/hadoop02_snn_checkpoint.png" width="60%" height="60%" alt="">
+每当达到触发条件，会由 SecondaryNameNode 将 NameNode 上积累的所有 edits 和一个最新的 fsimage 下载到本地，并加载到内存进行 merge（这个过程称为 `checkpoint`），如下 图所示：<br>
+<img src="images/hadoop/hadoop02_snn_checkpoint.png" width="40%" height="40%" alt="">
 
 `Checkpoint 相关配置`(hdfs-site.xml)：
 ```
@@ -169,7 +175,7 @@ DataNode 是文件系统的`工作节点`，主要职责如下：
 3. 定期向 NameNode 汇报自身所持有的 block 信息（通过心跳信息上报）
 4. DataNode 之间`通信`，复制数据块，保证数据冗余
 
-#### 2.4. DataNode相关配置
+#### 2.4.1 DataNode相关配置
 DataNode 进程死亡或者网络故障造成 DataNode 无法与 NameNode 通信，NameNode 不会立即 把该节点判定为死亡，要经过一段时间，这段时间暂称作超时时长。则超时时长`timeout`的计算公式为： 
 ```
 timeout = 2 * heartbeat.recheck.interval + 10 * dfs.heartbeat.interval
@@ -194,8 +200,36 @@ HDFS默认的 heartbeat.recheck-interval 大小为 5 分钟，dfs.heartbeat.inte
 <property>
 ```
 
-### 容错机制
-#### 1. 安全模式（Safe Mode）
+## 三、容错机制
+HDFS通过以下机制保证高度的数据可靠性和容错能力，即使在面临硬件故障和其他系统问题时也能保证数据的安全和可访问性。
+
+### 3.1 冗余备份/数据复制（Replication）
+
+由于 Hadoop 被设计运行在廉价的机器上，这意味着硬件是不可靠的，为了保证容错性，HDFS 提供了数据复制机制。
+HDFS 将每一个文件存储为一系列数据块，每个块由多个副本来保证容错，块的大小和复制因子可以自行配置。
+
+### 3.1.2 实现原理
+
+大型的 HDFS 实例在通常分布在多个机架的多台服务器上，不同机架上的两台服务器之间通过交换机进行通讯。
+在大多数情况下，同一机架中的服务器间的网络带宽大于不同机架中的服务器之间的带宽。
+
+因此，HDFS采用一种称为`机架感知(rack-aware)`的副本放置来改进数据的可靠性、可用性和网络带宽的利用率。<br>
+<img src="images/hadoop/hadoop02_数据复制.png" width="50%" height="50%" alt="">
+
+对于常见情况，当复制因子为 3 时：
+1. HDFS 的`放置策略`：
+(1) `第1个副本`存放在本地机架的节点上<br>
+(2) `第2个副本`放在与第1个不同器且随机另外选择的机架节点上<br>
+(3) `第3个副本`与第2个副本放在同一个机架上且随机选择另一个节点。<br>
+(4) 其他副本放在集群中随机选择的节点上，尽量避免同一机架存放大量副本。<br>
+
+2. `选择策略`
+（1）为了最大限度地减少带宽消耗和读取延迟，HDFS 在执行读取请求时，优先读取距离读取器最近的副本。<br>
+（2）如果在与读取器节点相同的机架上存在副本，则优先选择该副本。 <br>
+（3）如果 HDFS 群集跨越多个数据中心，则优先选择本地数据中心上的副本。<br>
+   注意：不允许同一个 `dataNode` 上具有同一个块的多个副本
+   
+### 3.2 安全模式（Safe Mode）
 NameNode启动并加载 fsimage和edits时，处于`安全模式`：
 1. 此时 NameNode 的文件系统对于客户端来说是`只读`的。<br>
    显示目录、显示文件内容等、写、删除、重命名都会失败。
@@ -203,33 +237,46 @@ NameNode启动并加载 fsimage和edits时，处于`安全模式`：
    当数据块达到最小副本数以上时，会被认为是“安全”的， 在一定比例（可设置）的数据块被确定为“安全”后，再过若干时间，安全模式结束。<br>
    当检测到副本数不足的数据块时，该块会被复制直到达到最小副本数，系统中数据块的位置并不是由NameNode维护的，而是以`块列表形式存储在DataNode中`。
 
-#### 2. 心跳机制和健康检查（Heartbeat and Health Check）
-两者通过`心跳`来传递管理信息和数据信息 (3秒/次)，通过这种方式的信息传递NameNode 可以获知每个 DataNode 保存的 Block 信息、DataNode 的健康状况、命令 DataNode 启动停止（如果`10分钟`内没有收到DataNode的心跳，则认为该节点已经丢失，并将其负责的 block 在其他 DataNode 上进行备份）。
+### 3.3 心跳机制和健康检查（Heartbeat and Health Check）
+NameNode和DataNode通过`心跳`来传递管理信息和数据信息 (3秒/次)。
+通过这种方式的信息传递，NameNode 可以获知每个 DataNode 保存的 Block 信息、DataNode 的健康状况、命令 DataNode 启动停止（如果`10分钟`内没有收到DataNode的心跳，则认为该节点已经丢失，并将其负责的 block 在其他 DataNode 上进行备份）。
 
-如果运行NameNode服务的机器毁坏，文件系统上的所有文件将会丢失，所以`容错机制`来重建文件。
-1. 备份那些组成文件系统元数据持久状态的文件。(fsimage、edits)
-2. 运行一个辅助 NameNode，但它不能被用作NameNode。(SNN)
+### 3.4 数据块检查和恢复（Block Scanning and Recovery）
+由于存储设备故障等原因，存储在 DataNode 上的数据块也会发生损坏。为了避免读取到已经损坏的数据而导致错误，HDFS 提供了数据完整性校验机制来保证数据的完整性，具体操作如下：<br>
+（1）当客户端创建 HDFS 文件时，它会计算文件的每个块的`校验和`，并将 `校验和` 存储在同一 HDFS 命名空间下的单独的隐藏文件中。<br>
+（2）当客户端检索文件内容时，它会验证从每个 DataNode 接收的数据是否与存储在关联校验和文件中的 `校验和`匹配。<br>
+（3）如果匹配失败，则证明数据已经损坏，此时客户端会选择从其他 DataNode 获取该块的其他可用副本。<br>
 
-#### 3. 数据副本（Replication）
-HDFS采用一种称为`机架感知(rack-aware)`的副本放置/选择策略来改进数据的可靠性、可用性和网络带宽的利用率。
+#### 3.5 元数据的磁盘故障
+`FsImage` 和 `EditLog` 是 HDFS 的核心数据，这些数据的意外丢失可能会导致整个 HDFS 服务不可用。为了避免这个问题，可以配置 NameNode 使其支持 `FsImage` 和 `EditLog` 多副本同步，这样 `FsImage` 或 `EditLog` 的任何改变都会引起每个副本 `FsImage` 和 `EditLog` 的同步更新。
 
-+ **存放策略**
+#### 3.6 支持快照
+快照支持在特定时刻存储数据副本，在数据意外损坏时，可以通过回滚操作恢复到健康的数据状态。
 
-(1) `第1个副本`存放在本地机架的节点上
+## 四、数据流
 
-(2) `第2个副本`放在与第1个不同器且随机另外选择的机架节点上
+### 4.1 HDFS 读流程
 
-(3) `第3个副本`与第2个副本放在同一个机架上且随机选择另一个节点。
+<img src="images/hadoop/hadoop02_读流程.png" width="50%" height="50%" alt="">
 
-(4) 其他副本放在集群中随机选择的节点上，尽量避免同一机架存放大量副本。
+HDFS的读流程具体过程如下：<br>
 
-<center></center>
+1. 打开分布式文件<br>
+客户端调用 FileSyste 对象 (DistributedFileSystem) 的 `open()` 方法，获得这个文件对应的输入流InputStream。
+2. 寻址请求<br>
+通过RPC 远程调用NameNode ，获得NameNode中此文件对应的数据块保存位置，包括这个文件的副本的保存位置（主要是各DataNode的地址），并根据与客户端的距离排序，返回一个输入流对象 FSDataInputStream；
+3. 连接到 DataNode<br>
+   获得输入流之后，客户端选择最近的DataNode建立连接并调用输入流的 `read()` 方法读取数据。<br>
+   如果客户端和其中一个DataNode位于同一机器，那么就会直接从本地读取数据。
+4. 读取另外的 DataNode 直到完成<br>
+   达数据块末端，关闭与这个DataNode 的连接，然后重新查找下一个数据块的最佳 DataNode。
+5. 不断执行第2 - 5 步直到数据全部读取完毕。
+6. 客户端调用close ，关闭输入流DFSInputStream。
 
-+ **选择策略**
+即调用输入流 FSDataInputStream 的 `close()` 方法；
+### 4.2 HDFS 写流程
 
-为了`降低整体的带宽消耗和读取延时`，HDFS会`尽量让读取程序读取离它最近的副本`。如果在读取程序的同一个机架上有一个副本，那么就读取该副本。如果一个HDFS集群跨越多个数据中心，那么客户端也将首先读本地数据中心的副本。
-
-###### 4. 数据块检查和恢复（Block Scanning and Recovery）
+<img src="images/hadoop/hadoop02_写流程.png" width="50%" height="50%" alt="">
 
 ## 参考引用
 [1] [Tom White . hadoop 权威指南 [M] . 清华大学出版社 . 2017.](https://book.douban.com/subject/23066032/) <br>
