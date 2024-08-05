@@ -117,19 +117,19 @@ HDFS元数据，按类型分，主要包括以下几个部分：
 
 HDFS磁盘上元数据文件分为两类，用于持久化存储：
 1. `fsimage 镜像文件`<br>
-   元数据的一个持久化的检查点，包含 Hadoop 文件系统中的所有目录和文件元数据信息，但不包含文件块位置的信息。<br>
+   元数据的一个持久化的检查点，包含 Hadoop 文件系统中的所有目录和文件元数据信息，但不包含文件块位置的信息。
    `文件块位置信息只存储在内存中`，是在 datanode 加入集群的时候，namenode 询问 datanode 得到的，并且间断的更新。
 2. `edits 编辑日志`<br>
    存放的是 Hadoop 文件系统的所有`更改操作`（文件创建，删除或修改）的日志，文件系统客户端执行的更改操作首先会被记录到 edits 文件中。
 
 元数据持久化：<br>
-（1） `NameNode格式化（format）时`<br>
+1. `NameNode格式化（format）时`<br>
   在元数据镜像文件备份路径的current目录下，产生元数据文件：fsimage、fstime、VERSION等；<br>
   在日志文件备份路径的current目录下，产生日志文件：edits、fstime、VERSION等。<br>
-（2） `Hadoop启动时`<br>
+2. `Hadoop启动时`<br>
 NameNode启动的时候，首先将映像文件(fsimage)载入内存，并执行编辑日志(edits)中的各项操作。<br>
-  一旦在内存中成功建立文件系统元数据的映射，则创建一个新的fsimage文件(这个操作不需要SecondaryNameNode)和一个空的编辑日志。<br>
-（3） `新增或者修改操作时`<br>
+一旦在内存中成功建立文件系统元数据的映射，则创建一个新的fsimage文件(这个操作不需要SecondaryNameNode)和一个空的编辑日志。<br>
+3. `新增或者修改操作时`<br>
 当客户端对 HDFS 中的文件进行新增或者修改操作，新的操作日志不会立即与 fsimage 进行合并，也不会更新到 NameNode 的内存中，而是会先写到 edits 中，操作成功之后更新至内存。如果所有的更新操作都往 fsimage 文件中添加，这会导致系统运行的十分缓慢。
   
 HDFS 这种设计的目的：<br>
