@@ -1,4 +1,4 @@
-### 一、HDFS介绍
+## 一、HDFS介绍
 Hadoop分布式文件系统（Hadoop Distributed File System ，HDFS）是一个`高容错`、`低成本`、`高吞吐量`的分布式文件系统，适用于`大数据集`的批处理应用，可以部署在低成本的硬件上。其设计目标包括：
 
 1. `硬件故障容忍`：硬件故障是常态，HDFS必须具备故障检测和快速自动恢复的能力。
@@ -17,7 +17,7 @@ HDFS适用场景：
 HDFS的限制：
 1）不适合低延迟访问；2）不适合存储小文件；3）不支持并发写入；4）不支持随机修改。
 
-### 二、HDFS架构设计
+## 二、HDFS架构设计
 HDFS 采用的是 `Master/Slave` (主从)架构，一个 HDFS 集群包含一个单独的 NameNode 和多个 DataNode 节点，如下图所示（ HDFS1.0架构图）：
 
 <img src="images/hadoop/hadoop02_hdfs架构.png" width="60%" height="60%" alt="">
@@ -30,7 +30,7 @@ HDFS 采用的是 `Master/Slave` (主从)架构，一个 HDFS 集群包含一个
 | **Secondary NameNode**| HDFS Secondary NameNode                     | 辅助 NameNode 合并元数据            |
 | **DataNode**          | HDFS DataNode                               | 存储数据块并执行数据处理任务           |
 
-#### 2.1 数据块 (Block、存储模型)
+### 2.1 数据块 (Block、存储模型)
 HDFS 将每个文件划分成一系列的数据块，除了最后一个，所有的数据块都是同样大小的。（Hadoop 1.x默认`64MB`，Hadoop 2.x默认`128MB`）HDFS中小于一个块大小的文件不会占据整个块的空间。
 > 例如：当一个1MB的文件存储在一个128MB的块中时，文件只使用1MB的磁盘空间，而不是128MB
 > HDFS中的块为什么这么大？
@@ -61,7 +61,7 @@ $HADOOP_HOME/bin/hdfs fsck / -files -blocks
 </property>
 ```
 
-#### 2.2 NameNode
+### 2.2 NameNode
 NameNode(`管理节点`)是一个中心服务器，负责管理文件系统的元数据和维护文件系统的命名空间。它的主要职责包括：
 
 1. `管理文件系统命名空间`：维护文件系统树（FileSystem）及整棵树内所有的文件和目录以及文件与数据块的映射关系。
@@ -71,7 +71,7 @@ NameNode(`管理节点`)是一个中心服务器，负责管理文件系统的�
 5. 监控集群健康：监控DataNode的状态和健康情况，检测故障并进行自动恢复，确保数据的完整性和可用性。
 6. 灾难恢复和故障转移： 提供元数据的备份和恢复机制，通过Secondary NameNode或高可用配置进行元数据的同步和故障转移。
 
-##### 2.2.1 元数据管理
+#### 2.2.1 元数据管理
 元数据（Metadata），又称中介数据、中继数据，为描述数据的数据（data about data），主要是描述数据属性的信息。<br>
 HDFS元数据，按类型分，主要包括以下几个部分：
 1. 文件和目录自身的`属性信息`，例如文件名、目录名、父目录信息、文件大小、创建时间、修改时间等。
@@ -101,7 +101,7 @@ HDFS 这种设计的目的：<br>
 （1）内存中数据更新、查询快，极大`缩短了操作响应时间`；<br>
 （2）内存中元数据丢失风险颇高（断电等），因此辅佐元数据镜像文件（fsimage）和编辑日志文件（edits）的备份机制进行`确保元数据的安全`。
 
-##### 2.2.2 元数据目录相关文件
+#### 2.2.2 元数据目录相关文件
 NameNode元数据相关的文件目录`$dfs.namenode.name.dir/current`
 <img src="images/hadoop/hadoop02_元数据文件.png" width="60%" height="60%" alt="">
 
@@ -132,7 +132,7 @@ $HADOOP_HOME/bin/hdfs oev -i edits_0000000000000000001-0000000000000000002 -o ed
 cat edits.xml
 ```
 
-#### Secondary NameNode
+### Secondary NameNode
 NameNode存在的问题：<br>
 (1) edit logs 文件会变的很大，怎么去管理这个文件是一个挑战。<br>
 (2) NameNode 重启会花费很长时间，因为有很多改动要合并到 fsimage 文件上。<br>
@@ -155,11 +155,11 @@ SecondaryNameNode 不是 NameNode 的备份（但可以做备份），它的主�
 + **缺点**
   保存的状态总是`滞后于主节点`，难免会丢失部分数据。不能作为 NameNode 的热备。
 
-#### DataNode
+### DataNode
 
-#### 容错机制
+### 容错机制
 
-##### 1. 安全模式（Safe Mode）
+#### 1. 安全模式（Safe Mode）
 NameNode启动并加载 fsimage和edits时，处于`安全模式`：
 1. 此时 NameNode 的文件系统对于客户端来说是`只读`的。<br>
    显示目录、显示文件内容等、写、删除、重命名都会失败。
@@ -167,14 +167,14 @@ NameNode启动并加载 fsimage和edits时，处于`安全模式`：
    当数据块达到最小副本数以上时，会被认为是“安全”的， 在一定比例（可设置）的数据块被确定为“安全”后，再过若干时间，安全模式结束。<br>
    当检测到副本数不足的数据块时，该块会被复制直到达到最小副本数，系统中数据块的位置并不是由NameNode维护的，而是以`块列表形式存储在DataNode中`。
 
-##### 2. 心跳机制和健康检查（Heartbeat and Health Check）
+#### 2. 心跳机制和健康检查（Heartbeat and Health Check）
 两者通过`心跳`来传递管理信息和数据信息 (3秒/次)，通过这种方式的信息传递NameNode 可以获知每个 DataNode 保存的 Block 信息、DataNode 的健康状况、命令 DataNode 启动停止（如果`10分钟`内没有收到DataNode的心跳，则认为该节点已经丢失，并将其负责的 block 在其他 DataNode 上进行备份）。
 
 如果运行NameNode服务的机器毁坏，文件系统上的所有文件将会丢失，所以`容错机制`来重建文件。
 1. 备份那些组成文件系统元数据持久状态的文件。(fsimage、edits)
 2. 运行一个辅助 NameNode，但它不能被用作NameNode。(SNN)
 
-##### 3. 数据副本（Replication）
+#### 3. 数据副本（Replication）
 HDFS采用一种称为`机架感知(rack-aware)`的副本放置/选择策略来改进数据的可靠性、可用性和网络带宽的利用率。
 
 + **存放策略**
@@ -195,7 +195,7 @@ HDFS采用一种称为`机架感知(rack-aware)`的副本放置/选择策略来�
 
 ###### 4. 数据块检查和恢复（Block Scanning and Recovery）
 
-### 参考引用
+## 参考引用
 [1] [Tom White . hadoop 权威指南 [M] . 清华大学出版社 . 2017.](https://book.douban.com/subject/23066032/) <br>
 [2] [Hadoop学习之路（六）HDFS基础](https://www.cnblogs.com/qingyunzong/p/8524594.html#_label1) <br>
 [3] [Hadoop学习之路（十二）分布式集群中HDFS系统的各种角色](https://www.cnblogs.com/qingyunzong/p/8554869.html) <br>
