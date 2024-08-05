@@ -5,6 +5,7 @@
 import os
 import re
 
+
 def generate_toc(md_content):
     code_block_pattern = re.compile(r'```[\s\S]*?```')
     # Remove code blocks temporarily
@@ -29,6 +30,7 @@ def generate_toc(md_content):
         toc.append(f'{indent}<a href="#{anchor}">{title}</a><br/>\n')
     return '<nav>\n' + ''.join(toc) + '</nav>'
 
+
 def process_markdown_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         md_content = file.read()
@@ -45,6 +47,7 @@ def process_markdown_file(file_path):
         file.write(new_md_content)
     print(f'Processed {file_path}')
 
+
 def traverse_directory(directory_path):
     for root, dirs, files in os.walk(directory_path):
         for file in files:
@@ -52,9 +55,11 @@ def traverse_directory(directory_path):
                 file_path = os.path.join(root, file)
                 process_markdown_file(file_path)
 
-if __name__ == "__main__":
-    #directory_path = './'  # 替换为你的Markdown文件目录路径
-    #traverse_directory(directory_path)
 
-    process_markdown_file("./Hadoop01-初识Hadoop.md")
-    process_markdown_file("./Hadoop02-2.HDFS常用操作.md")
+if __name__ == "__main__":
+    # directory_path = './'  # 替换为你的Markdown文件目录路径
+    # traverse_directory(directory_path)
+
+    # process_markdown_file("./Hadoop01-初识Hadoop.md")
+    # process_markdown_file("./Hadoop02-2.HDFS常用操作.md")
+    process_markdown_file("./Hadoop02-1.HDFS分布式文件系统.md")

@@ -1,15 +1,44 @@
+<nav>
+<a href="#一hdfs介绍">一、HDFS介绍</a><br/>
+<a href="#二hdfs架构设计">二、HDFS架构设计</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-数据块-block存储模型">2.1 数据块 (Block、存储模型)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#212-数据块副本">2.1.2 数据块副本</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#213-块缓存机制">2.1.3 块缓存机制</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-namenode">2.2 NameNode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-元数据管理">2.2.1 元数据管理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-元数据目录相关文件">2.2.2 元数据目录相关文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-secondary-namenode">2.3 Secondary NameNode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-工作机制">2.3.1 工作机制</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-元数据的checkpoint">2.3.2 元数据的CheckPoint</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-datanode">2.4 DataNode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-datanode相关配置">2.4.1 DataNode相关配置</a><br/>
+<a href="#三容错机制">三、容错机制</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-冗余备份数据复制replication">3.1 冗余备份/数据复制（Replication）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#312-实现原理">3.1.2 实现原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-安全模式safe-mode">3.2 安全模式（Safe Mode）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-心跳机制和健康检查heartbeat-and-health-check">3.3 心跳机制和健康检查（Heartbeat and Health Check）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-数据块检查和恢复block-scanning-and-recovery">3.4 数据块检查和恢复（Block Scanning and Recovery）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#35-元数据的磁盘故障">3.5 元数据的磁盘故障</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#36-支持快照">3.6 支持快照</a><br/>
+<a href="#四数据流">四、数据流</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#41-hdfs-读流程">4.1 HDFS 读流程</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#42-hdfs-写流程">4.2 HDFS 写流程</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、HDFS介绍
 Hadoop分布式文件系统（Hadoop Distributed File System ，HDFS）是一个`高容错`、`低成本`、`高吞吐量`的分布式文件系统，适用于`大数据集`的批处理应用，可以部署在低成本的硬件上。其设计目标包括：
 
 1. `硬件故障容忍`：硬件故障是常态，HDFS必须具备故障检测和快速自动恢复的能力。
 2. `流式数据访问`：HDFS侧重高吞吐量而非低延迟的数据访问，适合批处理而非交互式使用。<br>
-   流式数据访问只需要寻址一次，就可以连续读取大量数据，适用于大数据处理和分析任务。<br>
-   随机数据访问适用于需要频繁、小规模数据读写操作的场景，如关系型数据库。
 3. 大数据集支持：HDFS支持几GB到几TB的大文件和高聚合数据带宽，能够在单个实例中管理数千万个文件。
 4. `简单一致性模型`：文件采用`一次写入多次读取`的模式，**只支持追加和截断操作、不能在任意点更新*，简化数据一致性管理。
 5. `就近计算`：优化计算任务靠近数据的位置执行，减少网络拥塞，提高系统吞吐量。
 6. 跨平台可移植性：设计上便于从一个平台移植到另一个平台，支持广泛采用。
 
+>这里的流式数据访问，和 Spark Stream、Apache Flink 中的流式数据不一样，前者是一种访问磁盘文件的方式（流式数据访问 vs 随机数据访问），后者是一种大数据的计算引擎（批处理 vs 流处理）。<br>
+1）流式数据访问：一次写入、多次读取的数据访问模式。最小化磁盘的寻址开销，只需要寻址一次，，关注读取整个数据集的整体时间。<br>
+2）随机数据访问：要求定位、查询或修改数据的延迟较小，传统关系型数据库符合这一点。
 
 HDFS适用场景：
 1）构建在廉价的机器上；2）适合批量数据处理；3）适合大数据处理；4）适合流式数据访问。
@@ -279,27 +308,27 @@ HDFS的读流程具体过程如下：<br>
 
 HDFS的写流程具体过程如下：<br>
 1. 发送RPC请求<br>
-   使用 HDFS 提供的客户端 Client，向远程的 namenode 发起 RPC 请求
+   HDFS客户端向远程的 NameNode 发起 RPC 请求
 2. NameNode响应客户端请求<br>
-   NameNode 会检查要创建的文件是否已经存在，创建者是否有权限进行操作，成功则会为文件创建一条记录、返回输出流 DFSOutputStream，否则会让客户端抛出异常；
-3. 客户端写入数据<br>
-   输出流 DFSOutputStream 将数据分成一个个的`数据包`，并写入内部队列 (`数据队列`)。<br>
-   DataStreamer处理数据队列，并挑选出适合存储数据副本的一组 DataNode，据此来要求 NameNode 分配新的数据块。<br>
-   这一组 DataNode 构成`管道`(管道的 DataNode 之间使用 Socket 流式通信)；<br>
-4. 使用管道传输数据<br>
-   DataStreamer 将数据包`流式传输`到管道第一个DataNode，该DataNode把该数据包存储之后，再将其传递给在此管道中的下一个DataNode，直到最后一个，这种写数据的方式呈流水线的形式。
+   NameNode 会检查要创建的文件是否已经存在，创建者是否有权限进行操作，成功则会为文件创建一条记录，否则会让客户端抛出异常；
+   同时根据数据块的副本因子（replication factor）返回一个包含 Datanode 列表的响应，表示哪些 Datanode 将存储数据块的副本。
+3. 数据写入管道（Pipeline）<br>
+   客户端将数据块分成若干个数据包（packet），并写入内部队列 (`数据队列`)。 这些数据包会依次发送到第一个 Datanode，第一个 Datanode 接收到数据包后，会将其转发到第二个 Datanode，第二个 Datanode 再转发到第三个，依此类推，形成一个写入管道（pipeline），管道的 DataNode 之间使用 Socket 流式通信。
+4. 故障处理<br>
+   若过程中发生故障，当前的写入管道将会被关闭。出现故障的 Datanode 从当前的管道中移除，并把余下的数据块写入余下正常的 DataNode。客户端会通知 NameNode 发生故障，并请求 NameNode 分配一个新的 DataNode 以确保数据块的副本数量符合设定的副本因子。
+   ```
+   Client --> Datanode1 --> Datanode2 --> Datanode3
+                  |              |               |
+               （故障）         (继续)          (继续)
+   Client --> Datanode2 --> Datanode3 --> New Datanode
+   ```
 5. 确认队列<br>
-   DataNode 成功存储后发送确认，管道的 DataNode 所有的确认组成一个`确认队列`，并通过管道传递至客户端。<br>
+   DataNode 成功存储后发送确认，所有DataNode发送的确认组成一个`确认队列`，并通过管道传递至客户端。
    客户端成功收到 DataNode 返回的确认队列后会从数据队列中移除相应的数据包。
-6. 故障处理<br>
-   若过程中发生故障，则先`关闭管道`，把队列中所有数据包添加回去队列，确保数据包不漏。为另一个正常 DataNode 的当前数据块指定一个新的标识，并将该标识传送给 NameNode，一遍故障 DataNode 在恢复后删除上面的不完整数据块。从管道中删除故障 DataNode 并把余下的数据块写入余下正常的 DataNode。NameNode 发现复本不足时，会在另一个节点创建一个新的复本。
-
-
-6. **关闭**
-   客户端对数据量调用 `close()`方法。将剩余所有数据写入DataNode管道，联系NameNode并且发送文件写入完成信息之前等待确认；
-7. **NameNode确认**
-
-
+6. 完成写入<br>
+   客户端完成数据的写入后，会对数据流调用 close()方法，关闭数据流；
+7. NameNode确认<br>
+   只要写入了 `dfs.replication.min`（最小写入成功的副本数）的复本数（默认为 1），写操作就算成功，并且这个块可以在集群中异步复制，直到达到其目标复本数（dfs.replication 的默认值为 3），因为 NameNode 已经知道文件由哪些块组成，所以它在返回成功前只需要等待数据块进行最小量的复制。
 
 ## 参考引用
 [1] [Tom White . hadoop 权威指南 [M] . 清华大学出版社 . 2017.](https://book.douban.com/subject/23066032/) <br>
