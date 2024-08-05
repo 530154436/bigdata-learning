@@ -71,7 +71,7 @@ NameNode(`管理节点`)是一个中心服务器，负责管理文件系统的�
 5. 监控集群健康：监控DataNode的状态和健康情况，检测故障并进行自动恢复，确保数据的完整性和可用性。
 6. 灾难恢复和故障转移： 提供元数据的备份和恢复机制，通过Secondary NameNode或高可用配置进行元数据的同步和故障转移。
 
-##### 2.1.1 元数据管理
+##### 2.2.1 元数据管理
 元数据（Metadata），又称中介数据、中继数据，为描述数据的数据（data about data），主要是描述数据属性的信息。<br>
 HDFS元数据，按类型分，主要包括以下几个部分：
 1. 文件和目录自身的`属性信息`，例如文件名、目录名、父目录信息、文件大小、创建时间、修改时间等。
@@ -84,27 +84,29 @@ HDFS磁盘上元数据文件分为两类，用于持久化存储：
 1. **fsimage 镜像文件**<br>
    元数据的一个持久化的检查点，包含 Hadoop 文件系统中的所有目录和文件元数据信息，但不包含文件块位置的信息。<br>
    `文件块位置信息只存储在内存中`，是在 datanode 加入集群的时候，namenode 询问 datanode 得到的，并且间断的更新。
-2. **Edits 编辑日志**<br>
+2. **edits 编辑日志**<br>
    存放的是 Hadoop 文件系统的所有`更改操作`（文件创建，删除或修改）的日志，文件系统客户端执行的更改操作首先会被记录到 edits 文件中。
 
-元数据持久化：
-1. **NameNode格式化（format）时**<br>
+元数据持久化：<br>
+（1） **NameNode格式化（format）时**<br>
   在元数据镜像文件备份路径的current目录下，产生元数据文件：fsimage、fstime、VERSION等；<br>
   在日志文件备份路径的current目录下，产生日志文件：edits、fstime、VERSION等。<br>
-2. **Hadoop启动时**<br>
+（2） **Hadoop启动时**<br>
 NameNode启动的时候，首先将映像文件(fsimage)载入内存，并执行编辑日志(edits)中的各项操作。<br>
   一旦在内存中成功建立文件系统元数据的映射，则创建一个新的fsimage文件(这个操作不需要SecondaryNameNode)和一个空的编辑日志。<br>
-3. **新增或者修改操作时**
+（3） **新增或者修改操作时**<br>
 当客户端对 HDFS 中的文件进行新增或者修改操作，新的操作日志不会立即与 fsimage 进行合并，也不会更新到 NameNode 的内存中，而是会先写到 edits 中，操作成功之后更新至内存。如果所有的更新操作都往 fsimage 文件中添加，这会导致系统运行的十分缓慢。
   
-HDFS 这种设计实现着手于：<br>
-1. 内存中数据更新、查询快，极大`缩短了操作响应时间`；
-2. 内存中元数据丢失风险颇高（断电等），因此辅佐元数据镜像文件（fsimage）和编辑日志文件（edits）的备份机制进行`确保元数据的安全`。
+HDFS 这种设计的目的：<br>
+（1）内存中数据更新、查询快，极大`缩短了操作响应时间`；<br>
+（2）内存中元数据丢失风险颇高（断电等），因此辅佐元数据镜像文件（fsimage）和编辑日志文件（edits）的备份机制进行`确保元数据的安全`。
 
+##### 2.2.2 元数据目录相关文件
 NameNode元数据相关的文件目录`$dfs.namenode.name.dir/current`
 <img src="images/hadoop/hadoop02_元数据文件.png" width="60%" height="60%" alt="">
+
+VERSION：存放 hdfs 集群的版本信息。
 ```
-VERSION
 # HDFS集群的唯一标识符
 namespaceID=2051317214
 clusterID=CID-a1a44192-f6d8-4b27-9795-f7055a116d72
@@ -119,24 +121,61 @@ storageType=NAME_NODE
 # HDFS永久性数据结构的版本信息，是一个负整数。
 layoutVersion=-64
 ```
-
-##### 2.1.2 容错机制
+fsimage 镜像文件：元数据的一个持久化的检查点，包含 Hadoop 文件系统中的所有目录和文件元数据信息。
+```
+$HADOOP_HOME/bin/hdfs oiv -i fsimage_0000000000000000104 -p XML -o fsimage.xml
+cat fsimage.xml
+```
+edits 文件：存放Hadoop文件系统的所有更新操作的路径。
+```
+$HADOOP_HOME/bin/hdfs oev -i edits_0000000000000000001-0000000000000000002 -o edits.xml 
+cat edits.xml
+```
 
 #### Secondary NameNode
+NameNode存在的问题：<br>
+(1) edit logs 文件会变的很大，怎么去管理这个文件是一个挑战。<br>
+(2) NameNode 重启会花费很长时间，因为有很多改动要合并到 fsimage 文件上。<br>
+(2) 如果 NameNode 挂掉了，那就丢失了一些改动。因为此时的 fsimage 文件非常旧。<br>
+
+SecondaryNamenode 的作用就是分担 namenode 的合并元数据的压力。所以在配置 SecondaryNamenode 的工作节点时，一定切记，不要和 namenode 处于同一节点。但事实上， 只有在普通的伪分布式集群和分布式集群中才有会 SecondaryNamenode 这个角色，在 HA 或 者联邦集群中都不再出现该角色。在 HA 和联邦集群中，都是有 standby namenode 承担。
+
++ **职责**
+
+SecondaryNameNode 不是 NameNode 的备份（但可以做备份），它的主要工作是`帮助 NameNode 合并 edits 日志到 fsimage 文件中，减少 NameNode 启动时间`。
++ **CheckPoint**
+
+每达到触发条件，会由 SecondaryNameNode 将 NameNode 上积累的所有 edits 和一个最新的 fsimage 下载到本地，并加载到内存进行 merge（这个过程称为 `checkpoint`），如下 图所示：
+
+<center></center>
++ **Checkpoint 触发条件** (core-site.xml)
+(1) 根据配置文件设置的时间间隔 `fs.checkpoint.period`  默认3600秒
+(2) 根据配置文件设置edits log大小 `fs.checkpoint.size` 规定edits文件的最大值默认是64MB 
+
++ **缺点**
+  保存的状态总是`滞后于主节点`，难免会丢失部分数据。不能作为 NameNode 的热备。
+
 #### DataNode
 
-### HDFS的辅助功能
-#### 心跳机制
+#### 容错机制
+
+##### 1. 安全模式（Safe Mode）
+NameNode启动并加载 fsimage和edits时，处于`安全模式`：
+1. 此时 NameNode 的文件系统对于客户端来说是`只读`的。<br>
+   显示目录、显示文件内容等、写、删除、重命名都会失败。
+2. 在此阶段NameNode会收集各个DataNode的报告。<br>
+   当数据块达到最小副本数以上时，会被认为是“安全”的， 在一定比例（可设置）的数据块被确定为“安全”后，再过若干时间，安全模式结束。<br>
+   当检测到副本数不足的数据块时，该块会被复制直到达到最小副本数，系统中数据块的位置并不是由NameNode维护的，而是以`块列表形式存储在DataNode中`。
+
+##### 2. 心跳机制和健康检查（Heartbeat and Health Check）
 两者通过`心跳`来传递管理信息和数据信息 (3秒/次)，通过这种方式的信息传递NameNode 可以获知每个 DataNode 保存的 Block 信息、DataNode 的健康状况、命令 DataNode 启动停止（如果`10分钟`内没有收到DataNode的心跳，则认为该节点已经丢失，并将其负责的 block 在其他 DataNode 上进行备份）。
 
 如果运行NameNode服务的机器毁坏，文件系统上的所有文件将会丢失，所以`容错机制`来重建文件。
 1. 备份那些组成文件系统元数据持久状态的文件。(fsimage、edits)
 2. 运行一个辅助 NameNode，但它不能被用作NameNode。(SNN)
-#### 安全模式
-#### 副本存放策略
-##### 2.1.2 副本放置/选择策略(机架感知)
 
-HDFS采用一种称为`机架感知(rack-aware)`的策略来改进数据的可靠性、可用性和网络带宽的利用率。
+##### 3. 数据副本（Replication）
+HDFS采用一种称为`机架感知(rack-aware)`的副本放置/选择策略来改进数据的可靠性、可用性和网络带宽的利用率。
 
 + **存放策略**
 
@@ -153,10 +192,8 @@ HDFS采用一种称为`机架感知(rack-aware)`的策略来改进数据的可�
 + **选择策略**
 
 为了`降低整体的带宽消耗和读取延时`，HDFS会`尽量让读取程序读取离它最近的副本`。如果在读取程序的同一个机架上有一个副本，那么就读取该副本。如果一个HDFS集群跨越多个数据中心，那么客户端也将首先读本地数据中心的副本。
-#### 负载均衡
 
-### HDFS 数据流
-### HDFS 优缺点
+###### 4. 数据块检查和恢复（Block Scanning and Recovery）
 
 ### 参考引用
 [1] [Tom White . hadoop 权威指南 [M] . 清华大学出版社 . 2017.](https://book.douban.com/subject/23066032/) <br>
