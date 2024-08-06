@@ -23,10 +23,17 @@ public class HdfsUtil{
     private URI uri = null;
     private FileSystem fs = null;
 
+    static final String defaultUser = "hadoop";
+    private String user = null;
+
     public HdfsUtil(){
         this(null);
     }
     public HdfsUtil(Map<String, String> conf){
+        this(conf, defaultUser);
+    }
+    public HdfsUtil(Map<String, String> conf, String user){
+        this.user = user;
         this.setConfiguration(conf);
     }
     public void setConfiguration(Map<String, String> config){
@@ -54,7 +61,6 @@ public class HdfsUtil{
      */
     public void connect(){
         try {
-            String user = "hadoop";
             fs = FileSystem.get(uri, conf, user);
         } catch (IOException e) {
             e.printStackTrace();
@@ -167,7 +173,7 @@ public class HdfsUtil{
     }
 
     /**
-     * 写文件(类似上传)
+     * 写文件(覆盖源文件、类似上传)
      * 通过调用FileSystem实例的create方法获取写文件的输出流。通常获得输出流之后，可以直接对这个输出流进行写入操作，
      * 将内容写入HDFS的指定文件中。写完文件后，需要调用close方法关闭输出流。
      * @param dst 目标文件路径
@@ -179,7 +185,7 @@ public class HdfsUtil{
             out = fs.create(new Path(dst));
             out.write(content.getBytes());
             out.hsync();
-            System.out.printf("文件内容写入成功: %s => %s.\n", dst, content);
+            System.out.printf("文件内容写入成功: %s.\n", dst);
             return true;
         } finally {
             assert out != null;
