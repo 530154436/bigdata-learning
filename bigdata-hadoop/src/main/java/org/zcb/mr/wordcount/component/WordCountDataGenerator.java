@@ -1,4 +1,4 @@
-package org.zcb.mr.wordcount;
+package org.zcb.mr.wordcount.component;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.zcb.hdfs.HdfsUtil;
