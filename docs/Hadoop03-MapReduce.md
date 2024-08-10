@@ -129,13 +129,13 @@ ReduceTask的工作过程主要经历了5个阶段，分别是Copy阶段、Merge
 #### 2.2.3 Shuffle工作原理（混洗、洗牌）
 Shuffle是MapReduce的核心，它用来确保每个reducer的输入都是按键排序的。它的性能高低直接决定了整个MapReduce程序的性能高低。接下来，通过一个图来描述shuffle过程，如下图所示。<br>
 
-<img src="images/hadoop/hadoop03_shuffle工作原理.png" width="40%" height="40%" alt="">
+<img src="images/hadoop/hadoop03_shuffle工作原理.png" width="60%" height="60%" alt="">
 
 在图中，map和reduce阶段都涉及到了shuffle机制，接下来，我们分别进行分析，具体如下。
 
 ##### 1. Map阶段的Shuffle
 
-<img src="images/hadoop/hadoop03_map阶段的shuffle.png" width="40%" height="40%" alt="">
+<img src="images/hadoop/hadoop03_map阶段的shuffle.png" width="30%" height="30%" alt="">
 
 + ①`输入数据和执行Map任务`
 + ②`写入缓存`<br>
