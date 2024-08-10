@@ -1,3 +1,40 @@
+<nav>
+<a href="#一mapreduce概述">一、MapReduce概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-mapreduce核心思想">1.1 MapReduce核心思想</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-mapreduce编程模型">1.2 MapReduce编程模型</a><br/>
+<a href="#二mapreduce工作原理">二、MapReduce工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-mapreduce体系架构mr-1x">2.1 MapReduce体系架构（MR 1.x）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#211-jobclient">2.1.1 JobClient</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#212-jobtracker">2.1.2 JobTracker</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#213-tasktracker">2.1.3 TaskTracker</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#214-执行过程">2.1.4 执行过程</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-mapreduce工作过程">2.2 MapReduce工作过程</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-maptask工作原理">2.2.1 MapTask工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-reducetask工作原理">2.2.2 ReduceTask工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#223-shuffle工作原理">2.2.3 Shuffle工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-mapreduce主要组件">2.3 MapReduce主要组件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-inputformat">2.3.1 InputFormat</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-inputsplit">2.3.2 InputSplit</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#233-recordreader">2.3.3 RecordReader</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#234-mapper">2.3.4 Mapper</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#235-combiner">2.3.5 Combiner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#236-partitioner-sort">2.3.6 Partitioner & Sort</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#237-reducer">2.3.7 Reducer</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#238-outputformat">2.3.8 OutputFormat</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-mapreduce词频统计案例">2.4 MapReduce词频统计案例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-项目简介">2.4.1 项目简介</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-代码实现">2.4.2 代码实现</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-执行结果">2.4.3 执行结果</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-词频统计案例进阶之combiner">2.5 词频统计案例进阶之Combiner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-代码实现">2.4.1 代码实现</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-执行结果">2.4.2 执行结果</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-词频统计案例进阶之partitioner">2.6 词频统计案例进阶之Partitioner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#261-默认的partitioner">2.6.1 默认的Partitioner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#262-自定义partitioner">2.6.2 自定义Partitioner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#263-执行结果">2.6.3 执行结果</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、MapReduce概述
 ### 1.1 MapReduce核心思想
 
@@ -11,10 +48,13 @@ MapReduce作为一种分布式计算模型，它主要用于解决海量数据�
 
 ### 1.2 MapReduce编程模型
 
-MapReduce编程模型借鉴了函数式程序设计语言的设计思想，其程序实现过程是通过map()和reduce()函数来完成的。从数据格式上来看，map()函数接收的数据格式是键值对，产生的输出结果也是键值对形式，reduce()函数会将map()函数输出的键值对作为输入，把相同key值的value进行汇总，输出新的键值对。 简易数据流模型的相关说明，具体如下：
+MapReduce编程模型借鉴了函数式程序设计语言的设计思想，其程序实现过程是通过map()和reduce()函数来完成的。从数据格式上来看，map()函数接收的数据格式是键值对，产生的输出结果也是键值对形式，reduce()函数会将map()函数输出的键值对作为输入，把相同key值的value进行汇总，输出新的键值对。 简易数据流模型的相关说明，具体如下：<br>
+
 ```
 (input) <k1, v1> -> map -> <k2, v2> -> group -> <K2，{V2，…}> -> reduce -> <k3, v3> (output)
 ```
+<img src="images/hadoop/hadoop03_mr的抽象描述.png" width="50%" height="50%" alt="">
+
 1. 将原始数据处理成键值对<K1，V1>形式。
 2. 将解析后的键值对<K1，V1>传给map()函数，map()函数会根据映射规则，将键值对<K1，V1>映射为一系列中间结果形式的键值对<K2，V2>。
 3. 将中间形式的键值对<K2，V2>形成<K2，{V2，…}>形式传给reduce()函数
@@ -22,13 +62,12 @@ MapReduce编程模型借鉴了函数式程序设计语言的设计思想，其�
 
 输入和输出的 `key` 和 `value` 都必须实现[Writable](http://hadoop.apache.org/docs/stable/api/org/apache/hadoop/io/Writable.html) 接口。<br>
 
-<img src="images/hadoop/hadoop03_mr的抽象描述.png" width="60%" height="60%" alt="">
 
 ## 二、MapReduce工作原理
 ### 2.1 MapReduce体系架构（MR 1.x）
 Hadoop MapReduce 的体系架构如下图所示：
 
-<img src="images/hadoop/hadoop03_mr的体系架构.png" width="60%" height="60%" alt="">
+<img src="images/hadoop/hadoop03_mr的体系架构.png" width="80%" height="80%" alt="">
 
 #### 2.1.1 JobClient
 + **作业** (Job)<br>
@@ -41,25 +80,25 @@ Hadoop将job分成若干个任务，其中包括两类任务：Map任务和Reduc
 用户编写的MapReduce程序通过Client提交到JobTracker端，并可以通过Client提供的一些接口查看作业运行状态
 
 #### 2.1.2 JobTracker
-JobTracker是一个后台服务进程，启动之后，会一直监听并接收来自各个TaskTracker发送的`心跳`信息，包括`资源`使用情况和`任务`运行情况等信息。主要`功能`：
-1. **任务调度**<br>
-在hadoop中每个应用程序被表示成一个`作业`，每个作业又被分成多个任务(Map、Reduce)，JobTracker负责所有作业的`调度`。
+JobTracker是一个后台服务进程，启动之后，会一直监听并接收来自各个TaskTracker发送的`心跳`信息，包括`资源`使用情况和`任务`运行情况等信息。主要功能：
+1. `任务调度`<br>
+在hadoop中每个应用程序被表示成一个`作业`，每个作业又被分成多个任务(Map、Reduce)，JobTracker负责所有`作业的调度`。
 
-2. **状态监控**<br>
+2. `状态监控`<br>
 主要包括：TaskTracker状态监控、`作业`状态监控和`任务`状态监控。<br>
 主要作用：容错和为任务调度提供决策依据。
 
-2. **资源管理**
+3. `资源管理`
 
 #### 2.1.3 TaskTracker
 
-TaskTracker是JobTracker和Task之间的桥梁，采用了`RPC`协议进行通信。`功能`如下：
-1. **汇报心跳**<br>
+TaskTracker是JobTracker和Task之间的桥梁，采用了`RPC`协议进行通信。功能如下：
+1. `汇报心跳`<br>
 Tracker周期性将所有节点上各种信息通过`心跳`机制汇报给JobTracker。这些信息包括两部分：<br>
 `机器级别信息`：节点健康情况、资源使用情况等。<br>
 `任务级别信息`： 任务执行进度、任务运行状态等。
 
-2. **执行命令**<br>
+2. `执行命令`<br>
 主要包括：`启动`任务(LaunchTaskAction)、`提交`任务(CommitTaskAction)、`杀死任务`(KillTaskAction)、`杀死作业`(KillJobAction)和`重新初始化`(TaskTrackerReinitAction)。
 
 #### 2.1.4 执行过程
@@ -73,7 +112,7 @@ Tracker周期性将所有节点上各种信息通过`心跳`机制汇报给JobTr
 ### 2.2 MapReduce工作过程
 MapReduce编程模型开发简单且功能强大，专门为并行处理大规模数据量而设计，MapReduce的工作过程，如图所示：<br>
 
-<img src="images/hadoop/hadoop03_mr工作过程.png" width="60%" height="60%" alt="">
+<img src="images/hadoop/hadoop03_mr工作过程.png" width="50%" height="50%" alt="">
 
 整个工作流程大致可以分为5步，具体如下：<br>
 
@@ -95,8 +134,24 @@ MapReduce工作过程中，map阶段处理的数据如何传递给Reduce阶段�
 MapReduce框架会自动把ReduceTask生成的<key,value>传入OutputFormat的write方法，实现文件的写入操作。
 
 
-### 2.2 MapReduce工作过程
+#### 2.2.1 MapTask工作原理
+#### 2.2.2 ReduceTask工作原理
+#### 2.2.3 Shuffle工作原理
 
+### 2.3 MapReduce主要组件
+#### 2.3.1 InputFormat
+#### 2.3.2 InputSplit
+#### 2.3.3 RecordReader
+#### 2.3.4 Mapper
+#### 2.3.5 Combiner
+#### 2.3.6 Partitioner & Sort
+#### 2.3.7 Reducer
+#### 2.3.8 OutputFormat
+
+### 2.4 MapReduce词频统计案例
+#### 2.4.1 项目简介
+#### 2.4.2 代码实现
+#### 2.4.3 执行结果
 ```
 $HADOOP_HOME/bin/hdfs dfs -cat /wordcount/output/WordCountApp/*
 Flink   6
@@ -106,6 +161,13 @@ Hive    3
 Kafka   5
 Spark   5
 ```
+### 2.5 词频统计案例进阶之Combiner
+#### 2.4.1 代码实现
+#### 2.4.2 执行结果
+### 2.6 词频统计案例进阶之Partitioner
+#### 2.6.1 默认的Partitioner
+#### 2.6.2 自定义Partitioner
+#### 2.6.3 执行结果
 
 
 
