@@ -133,7 +133,7 @@ Shuffle是MapReduce的核心，它用来确保每个reducer的输入都是按键
 
 在图中，map和reduce阶段都涉及到了shuffle机制，接下来，我们分别进行分析，具体如下。
 
-##### 1. Map阶段的Shuffle
+##### （1）Map阶段的Shuffle
 
 <img src="images/hadoop/hadoop03_map阶段的shuffle.png" width="30%" height="30%" alt="">
 
@@ -156,7 +156,7 @@ Shuffle是MapReduce的核心，它用来确保每个reducer的输入都是按键
 > 合并（Combine）和归并（Merge）的区别：<br>
 两个键值对<“a”,1>和<“a”,1>，如果合并，会得到<“a”,2>，如果归并，会得到<“a”,<1,1>>
 
-##### 2. Reduce阶段的Shuffle
+##### （2）Reduce阶段的Shuffle
 
 <img src="images/hadoop/hadoop03_reduce阶段的shuffle.png" width="60%" height="60%" alt="">
 
@@ -169,15 +169,177 @@ Shuffle是MapReduce的核心，它用来确保每个reducer的输入都是按键
 + ③把数据输入给Reduce任务<br>
 
 ### 2.3 MapReduce主要组件
-#### 2.3.1 InputFormat、InputSplit、RecordReader
+#### 2.3.1 InputFormat
+InputFormat主要用于描述输入数据的格式，它提供以下两个功能：
++ `数据切分`：按照某个策略将输入数据切分成若干个分片（split），以便确定MapTask个数以及对应的分片（split）。
++ `为Mapper提供输入数据`：给定某个分片（split），将其解析成一个一个的key/value键值对。
+
+Hadoop自带了一个 InputFormat接口，该接口的定义代码如下所示：
+```
+public abstract class InputFormat<K, V> {
+    public InputFormat() {}
+    public abstract List<InputSplit> getSplits(JobContext var1) throws IOException, InterruptedException;
+    public abstract RecordReader<K, V> createRecordReader(InputSplit var1, TaskAttemptContext var2) throws IOException, InterruptedException;
+}
+```
+从上述代码可以看出，InputFormat接口定义了getSplits()和createRecordReader()两个方法，其中：
++ `getSplits()`方法负责将文件切分为多个分片(split)
++ `createRecordReader()`方法负责创建RecordReader对象，用来从分片中读取数据。
+
+##### （1）输入分片(InputSplit)
+HDFS 以固定大小的block 为基本单位存储数据，而对于MapReduce 而言，其处理单位是split。
+split 是一个逻辑概念，它只包含一些元数据信息，比如数据起始位置、数据长度、数据所在节点等。它的划分方法完全由用户自己决定。
+<br>
+InputSplit定义了输入到单个Map任务的输入数据。其中，切片的大小splitSize由3个值确定，即minSize、maxSize和blockSize。
++ minSize：splitSize的最小值，由参数mapred.min.split.size确定，可在mapred-site.xml中进行配置，默认为1MB。
++ maxSize：splitSize的最大值，由参数mapreduce.jobtracker.split.metainfo.maxsize确定，可在mapred-site.xml中进行设置，默认值为10MB。
++ blockSize：HDFS中文件存储块的大小，由参数dfs.block,size确定，可在hdf-site.xml中进行修改，默认为128MB。
+
+##### （2）RecordReader
+InputSplit定义了一项工作的大小， 但是没有定义如何读取数据。<br>
+RecordReader实际上定义了如何从数据上转化为一个(key,value)对的详细方法，并将数据输出到Mapper类中。<br>
+TextInputFormat提供了LineRecordReader。
+
 #### 2.3.2 Mapper
-#### 2.3.3 Combiner
-#### 2.3.4 Partitioner & Sort
-#### 2.3.5 Reducer
-#### 2.3.6 OutputFormat
+MapReduce程序会根据输入的文件产生多个Map任务。Hadoop提供的Mapper类是实现Map任务的一个抽象基类。 
+每一个Mapper类的实例生成了 一个Java进程(在某一个InputSplit上执行)。
+有两个额外的参数OutputCollector 以及Reporter，前者用来收集中间结果，后者用来获得环境参数以及设置当前执行的状态。
+如果想自定义Map任务，只需要继承Mapper类并重写map()方法即可。 以词频统计为例：
+```
+/**
+ * WordCountMapper.java
+ * 将每行数据按照指定分隔符进行拆分
+ *
+ * Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+ * Mapper<LongWritable, Text, Text, IntWritable>
+ * LongWritable，表示输入数据的键是一个长整型（通常表示文件中的字节偏移量）。
+ * Text，表示输入数据的值是文本类型（即每一行的内容）。
+ * Text，表示输出的数据键是文本类型（即每个单词）。
+ * IntWritable，表示输出的数据值是整型（即每个单词的计数，1）。
+ */
+public class WordCountMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        String[] words = value.toString().split("\t");
+        for(String word: words){
+            context.write(new Text(word), new IntWritable(1));
+        }
+    }
+}
+```
+> Map任务的数量<br>
+Hadoop为每个split创建一个Map任务，split 的多少决定了Map任务的数目。<br>
+大多数情况下，理想的分片大小是一个HDFS块即block数 = split数 = map task数（一般情况）<br>
+
+#### 2.3.3 Reducer
+Map过程输出的键值对，将由Reducer组件进行合并处理。
+如果想自定义Reduce任务，只需要继承Reducer类并重写reduce()方法。 以词频统计为例：
+```
+/**
+ * WordCountReducer.java
+ * 进行词频统计
+ */
+public class WordCountReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+        int count = 0;
+        for (IntWritable value : values) {
+            count += value.get();
+        }
+        context.write(key, new IntWritable(count));
+    }
+}
+```
+> Reduce任务的数量<br>
+最优的Reduce任务个数取决于集群中可用的reduce任务槽(slot)的数目<br>
+通常设置比reduce任务槽数目稍微小一些的Reduce任务个数（这样可以预留一些系统资源处理可能发生的错误）
+
+#### 2.3.4 OutputFormat
+OutputFormat是一个用于描述MapReduce程序输出格式和规范的抽象类，该类定义了三个方法，具体代码如下：
+```
+public abstract class OutputFormat<K, V> {
+    public OutputFormat() {}
+    public abstract RecordWriter<K, V> getRecordWriter(TaskAttemptContext var1) throws IOException, InterruptedException;
+    public abstract void checkOutputSpecs(JobContext var1) throws IOException, InterruptedException;
+    public abstract OutputCommitter getOutputCommitter(TaskAttemptContext var1) throws IOException, InterruptedException;
+}
+```
+每一个Reducer都写一个文件到一个共同的输出目录，文件名是part-nnnnn，其中nnnnn是与每一个reducer相关的一个号（partition id）。
+
+#### 2.3.5 Combiner
+在Map阶段输出可能会产生大量相同的数据，例如<hello，1>、<hello，1>……，势必会降低Reduce聚合阶段的执行效率。
+Combiner组件的作用就是对Map阶段的输出的重复数据先做一次合并计算，然后把新的（key，value）作为Reduce阶段的输入。
+下图描述的就是Combiner组件对Map的合并操作。<br>
+
+<img src="images/hadoop/hadoop03_Combiner.png" width="50%" height="50%" alt="">
+
+Combiner组件是MapReduce程序中的一种重要的组件，如果想自定义Combiner，我们需要继承Reducer类，并且重写reduce()方法。以词频统计为例，直接使用“WordCountReducer.java”即可。
+
+#### 2.3.6 Partitioner & Sort
+
+在Map工作完成之后，每一个 Map函数会将结果传到对应的Reducer所在的节点，此时，用户可以提供一个Partitioner类，用来决定一个给定的(key,value)对传输的具体位置。
+传输到每一个节点上的所有的Reduce函数接收到得Key,value对会被Hadoop自动排序（即Map生成的结果传送到某一个节点的时候，会被自动排序）。
+Partitioner组件可以让Map对Key进行分区，其目的就是将key均匀分布在ReduceTask上。
+```
+public abstract class Partitioner<KEY, VALUE> {
+    public Partitioner() {}
+    public abstract int getPartition(KEY var1, VALUE var2, int var3);
+}
+
+```
+Hadoop默认的分区类是HashPartitioner，它继承了Partitioner类，并提供了一个getPartition方法。
+如果我们想自定义一个Partitioner组件，需要继承Partitioner类并重写getPartition()方法。
 
 ## 三、 MapReduce词频统计案例
 ### 3.1 词频统计案例
++ 输入文件
+  生成示例文件：`org.zcb.mr.wordcount.component.WordCountDataGenerator`
++ 代码实现
+```
+/**
+ * 组装作业(词频统计) 并提交到集群运行
+ * 输入文件: /wordcount/input.txt
+ */
+public class WordCountApp {
+    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+        HdfsUtil hdfs = new HdfsUtil();
+        hdfs.connect();
+        String[] inputPaths = new String[] {"/wordcount/input.txt"};
+        String outputPath = "/wordcount/output/WordCountApp";
+
+        // 创建一个 Job
+        Job job = Job.getInstance(hdfs.getConfiguration());
+
+        // 设置运行的主类、Mapper 和 Reducer
+        job.setJarByClass(WordCountApp.class);
+        job.setMapperClass(WordCountMapper.class);
+        job.setReducerClass(WordCountReducer.class);
+
+        // 设置 Mapper、Reducer 输出的 key 和 value 的类型
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        // 如果输出目录已经存在，则必须先删除，否则重复运行程序时会抛出异常
+        hdfs.delete(outputPath, true);
+
+        // 设置作业输入文件和输出文件的路径
+        FileInputFormat.addInputPath(job, new Path(inputPaths[0]));
+        FileOutputFormat.setOutputPath(job, new Path(outputPath));
+
+        // 将作业提交到群集并等待它完成，参数设置为 true 代表打印显示对应的进度
+        boolean result = job.waitForCompletion(true);
+
+        // 关闭之前创建的 fileSystem
+        hdfs.close();
+
+        // 根据作业结果,终止当前运行的 Java 虚拟机,退出程序
+        System.exit(result ? 0 : -1);
+    }
+}
+```
++ 执行结果
 ```
 $HADOOP_HOME/bin/hdfs dfs -cat /wordcount/output/WordCountApp/*
 Flink   6

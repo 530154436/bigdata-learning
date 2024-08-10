@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * 组装作业(词频统计) 并提交到集群运行
- * 文本文件: /wordcount/input.txt
+ * 输入文件: /wordcount/input.txt
  */
 public class WordCountApp {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
