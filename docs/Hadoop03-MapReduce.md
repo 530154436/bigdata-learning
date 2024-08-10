@@ -1,3 +1,35 @@
+<nav>
+<a href="#一mapreduce概述">一、MapReduce概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-mapreduce核心思想">1.1 MapReduce核心思想</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-mapreduce编程模型">1.2 MapReduce编程模型</a><br/>
+<a href="#二mapreduce工作原理">二、MapReduce工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-mapreduce体系架构mr-1x">2.1 MapReduce体系架构（MR 1.x）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#211-jobclient">2.1.1 JobClient</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#212-jobtracker">2.1.2 JobTracker</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#213-tasktracker">2.1.3 TaskTracker</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#214-执行过程">2.1.4 执行过程</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-mapreduce工作过程">2.2 MapReduce工作过程</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-maptask工作原理">2.2.1 MapTask工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-reducetask工作原理">2.2.2 ReduceTask工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#223-shuffle工作原理混洗洗牌">2.2.3 Shuffle工作原理（混洗、洗牌）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1map阶段的shuffle">（1）Map阶段的Shuffle</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2reduce阶段的shuffle">（2）Reduce阶段的Shuffle</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-mapreduce主要组件">2.3 MapReduce主要组件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-inputformat">2.3.1 InputFormat</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1输入分片inputsplit">（1）输入分片(InputSplit)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2recordreader">（2）RecordReader</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-mapper">2.3.2 Mapper</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#233-reducer">2.3.3 Reducer</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#234-outputformat">2.3.4 OutputFormat</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#235-combiner">2.3.5 Combiner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#236-partitioner-sort">2.3.6 Partitioner & Sort</a><br/>
+<a href="#三-mapreduce词频统计案例">三、 MapReduce词频统计案例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-词频统计案例">3.1 词频统计案例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-词频统计案例进阶之combiner">3.2 词频统计案例进阶之Combiner</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-词频统计案例进阶之partitioner">3.3 词频统计案例进阶之Partitioner</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、MapReduce概述
 ### 1.1 MapReduce核心思想
 
@@ -293,7 +325,7 @@ Hadoop默认的分区类是HashPartitioner，它继承了Partitioner类，并提
 ## 三、 MapReduce词频统计案例
 ### 3.1 词频统计案例
 + 输入文件
-  生成示例文件：`org.zcb.mr.wordcount.component.WordCountDataGenerator`
+  生成示例文件：[org.zcb.mr.wordcount.component.WordCountDataGenerator](https://github.com/530154436/bigdata-learning/blob/dev_refactor/bigdata-hadoop/src/main/java/org/zcb/mr/wordcount/component/WordCountDataGenerator.java)
 + 代码实现
 ```
 /**
