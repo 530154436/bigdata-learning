@@ -100,7 +100,7 @@ MapReduce框架会自动把ReduceTask生成的<key,value>传入OutputFormat的wr
 #### 2.2.1 MapTask工作原理
 MapTask作为MapReduce工作流程的前半部分，它主要经历了5个阶段，分别是Read阶段、Map阶段、Collect阶段、Spill阶段和Combiner阶段，如下图所示。<br>
 
-<img src="images/hadoop/hadoop03_map工作原理.png" width="80%" height="80%" alt="">
+<img src="images/hadoop/hadoop03_map工作原理.png" width="50%" height="50%" alt="">
 
 关于MapTask这5个阶段的相关介绍如下：<br>
 
@@ -116,7 +116,7 @@ MapTask作为MapReduce工作流程的前半部分，它主要经历了5个阶段
 #### 2.2.2 ReduceTask工作原理
 ReduceTask的工作过程主要经历了5个阶段，分别是Copy阶段、Merge阶段、Sort阶段、Reduce阶段和Write阶段，如下图所示。<br>
 
-<img src="images/hadoop/hadoop03_reduce工作原理.png" width="40%" height="40%" alt="">
+<img src="images/hadoop/hadoop03_reduce工作原理.png" width="50%" height="50%" alt="">
 
 下面针对ReduceTask工作过程的5个阶段进行介绍：<br>
 
@@ -129,13 +129,13 @@ ReduceTask的工作过程主要经历了5个阶段，分别是Copy阶段、Merge
 #### 2.2.3 Shuffle工作原理（混洗、洗牌）
 Shuffle是MapReduce的核心，它用来确保每个reducer的输入都是按键排序的。它的性能高低直接决定了整个MapReduce程序的性能高低。接下来，通过一个图来描述shuffle过程，如下图所示。<br>
 
-<img src="images/hadoop/hadoop03_shuffle工作原理.png" width="20%" height="20%" alt="">
+<img src="images/hadoop/hadoop03_shuffle工作原理.png" width="40%" height="40%" alt="">
 
 在图中，map和reduce阶段都涉及到了shuffle机制，接下来，我们分别进行分析，具体如下。
 
 ##### 1. Map阶段的Shuffle
 
-<img src="images/hadoop/hadoop03_map阶段的shuffle.png" width="60%" height="60%" alt="">
+<img src="images/hadoop/hadoop03_map阶段的shuffle.png" width="40%" height="40%" alt="">
 
 + ①`输入数据和执行Map任务`
 + ②`写入缓存`<br>
