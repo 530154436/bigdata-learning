@@ -63,4 +63,5 @@ if __name__ == "__main__":
     # process_markdown_file("./Hadoop01-初识Hadoop.md")
     # process_markdown_file("./Hadoop02-2.HDFS常用操作.md")
     # process_markdown_file("./Hadoop02-1.HDFS分布式文件系统.md")
-    process_markdown_file("./Hadoop03-MapReduce.md")
+    # process_markdown_file("./Hadoop03-MapReduce.md")
+    process_markdown_file("./Hive01-数据仓库.md")

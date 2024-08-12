@@ -1,3 +1,20 @@
+<nav>
+<a href="#一数据仓库概念">一、数据仓库概念</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-数据仓库主要特征">1.1 数据仓库主要特征</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-数据仓库构建流程">1.2 数据仓库构建流程</a><br/>
+<a href="#二数据仓库数据库数据集市">二、数据仓库、数据库、数据集市</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-olap与oltp">2.1 OLAP与OLTP</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-数据仓库数据库">2.2 数据仓库、数据库</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-数据仓库数据集市">2.3 数据仓库、数据集市</a><br/>
+<a href="#三数据仓库分层架构">三、数据仓库分层架构</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-数仓分层思想和标准">3.1 数仓分层思想和标准</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-阿里巴巴数仓3层架构">3.2 阿里巴巴数仓3层架构</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-美团点评酒旅数据仓库建设实践">3.3 美团点评酒旅数据仓库建设实践</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#331-美团数仓技术架构架构变迁">3.3.1 美团数仓技术架构：架构变迁</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-美团数仓业务架构主题建设">3.3.2 美团数仓业务架构：主题建设</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、数据仓库概念
 数据仓库（DW，Data Warehouse），简称数仓，是一个用于存储、分析、报告的数据管理系统。数据仓库的目的是构建面向分析的集成化数据环境，为企业提供决策支持（Decision Support）。
 数据仓库本身并不“生产”任何数据，其数据来源于不同外部系统；同时数据仓库自身也不需要“消费”任何的数据，其结果开放给各个外部应用使用，这也是为什么叫“仓库”，而不叫“工厂”的原因。
