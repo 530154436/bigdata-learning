@@ -115,6 +115,8 @@ Hive发展至今，总共历经了两代客户端工具。
 - 功能：<br>
   ①提供交互式或批处理模式的Hive查询运行环境。<br>
   ②用于启动Hive相关服务（如Metastore服务）。
+- 访问路径：直接通过MetaServer访问元数据<br>
+  bin/hive =访问=> MetaStore Server =访问=>MySQL
 
 **第二代客户端**：
 - 工具：`$HIVE_HOME/bin/beeline`
@@ -124,18 +126,27 @@ Hive发展至今，总共历经了两代客户端工具。
   ②在嵌入式模式和远程模式下均可工作。<br>
   嵌入式模式：运行嵌入式Hive，类似于第一代Hive Client。
   远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
-
+- 访问路径：通过HiveServer2访问元数据<br>
+  bin/beeline =访问=> hiveServer2 =访问=> MetaStore Server =访问=> MySQL
+  
 那么问题来了，HiveServer2是什么？HiveServer1哪里去了？
 
 #### 2.4.2 HiveServer、HiveServer2服务
-HiveServer、`HiveServer2`都是Hive自带的两种服务，`允许客户端在不启动CLI的情况下对Hive中的数据进行操作`，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
-但是，HiveServer不能处理多于一个客户端的并发请求。因此在Hive-0.11.0版本中重写了HiveServer代码得到了HiveServer2，进而解决了该问题。HiveServer已经被废弃。
-HiveServer2支持多客户端的并发和身份认证，旨在为开放API客户端如JDBC、ODBC提供更好的支持。
+HiveServer、`HiveServer2`(HS2)是Hive自带的一项服务，允许客户端在不启动CLI的情况下对Hive中的数据进行操作，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
 
++ HiveServer不能处理多于一个客户端的并发请求。
++ 因此在Hive-0.11.0版本中重写了HiveServer代码得到了HiveServer2，进而解决了该问题，HiveServer已经被废弃。
+
+HiveServer2支持多客户端的并发和身份认证，旨在为开放API客户端如JDBC、ODBC提供更好的支持。<br>
+HS2 是作为复合服务运行的单个进程，其中包括`基于Thrift的Hive服务`(TCP 或 HTTP)和`用于Web UI的Jetty Web服务器`。<br>
+
+> 基于Thrift的Hive服务是HS2的核心，并负责为Hive查询提供服务(例如，来自 Beeline)。 <br>
+Thrift是用于构建跨平台服务的RPC框架，它的堆栈由 4 层组成： 服务器，传输，协议和处理器。<br>
+HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服务器用于 HTTP 模式。
 
 ## 三、Hive数据模型
 
-## 五、Hive与传统数据库对比
+## 四、Hive与传统数据库对比
 Hive虽然与RDBMS数据库在数据模型、SQL语法等方面都十分相似，但应用场景却完全不同。Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。具体的对比如下图所示：
 
 | 对比项           | Hive    | MySQL                      |
@@ -149,3 +160,8 @@ Hive虽然与RDBMS数据库在数据模型、SQL语法等方面都十分相似�
 | 可扩展性         | 高      | 低                          |
 | 数据规模         | 大      | 小                          |
 | 多表插入         | 支持    | 不支持                      |
+
+## 参考引用
+[1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
+[2] [docs4dev-HiveServer2_Overview.html](https://www.docs4dev.com/docs/zh/apache-hive/3.1.1/reference/HiveServer2_Overview.html) <br>
+[3] [Apache-HiveServer2_Overview.html](https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Overview) <br>
