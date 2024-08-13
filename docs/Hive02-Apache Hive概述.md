@@ -91,23 +91,47 @@ Metastore服务配置有3种模式：内嵌模式、本地模式、远程模式�
 默认部署模式，元数据存储在内置的Derby数据库中。<br>
 Derby数据库和Metastore服务嵌入在HiveServer进程中，无需单独配置和启动Metastore服务。<br>
 仅支持一个活动用户，适合测试使用，不适合生产环境。<br>
-<img src="images/hive/hive02_metastore内嵌模式.png" width="50%" height="50%" alt="">
+<img src="images/hive/hive02_metastore内嵌模式.png" width="40%" height="40%" alt="">
    
 2、`本地模式`（Local Metastore）：<br>
 Metastore服务与HiveServer进程在同一进程中运行，但元数据存储在单独的外部数据库（推荐使用MySQL）中。<br>
 Metastore服务通过JDBC与数据库通信。判断是否为本地模式的依据是hive.metastore.uris参数是否为空。<br>
 缺点是每次启动Hive服务都会内置启动一个Metastore服务实例。<br>
-<img src="images/hive/hive02_metastore本地模式.png" width="50%" height="50%" alt="">
-
+<img src="images/hive/hive02_metastore本地模式.png" width="40%" height="40%" alt="">
    
 3、`远程模式`（Remote Metastore）：<br>
 Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数据存储在单独的外部数据库。<br>
-通过Thrift Network API与其他进程通信，适合生产环境。<br>
+其他进程可以通过Thrift Network API与Metastore服务通信，适合生产环境。<br>
 提供更好的可管理性和安全性，需配置hive.metastore.uris参数并手动启动Metastore服务。<br>
-<img src="images/hive/hive02_metastore远程模式.png" width="50%" height="50%" alt="">
-
+<img src="images/hive/hive02_metastore远程模式.png" width="40%" height="40%" alt="">
 
 ### 2.4 客户端
+#### 2.4.1 Hive Client、Hive Beeline Client
+Hive发展至今，总共历经了两代客户端工具。
+
+**第一代客户端**：
+- 工具：`$HIVE_HOME/bin/hive`
+- 状态：已废弃（deprecated，不推荐使用）
+- 功能：<br>
+  ①提供交互式或批处理模式的Hive查询运行环境。<br>
+  ②用于启动Hive相关服务（如Metastore服务）。
+
+**第二代客户端**：
+- 工具：`$HIVE_HOME/bin/beeline`
+- 状态：官方强烈推荐使用
+- 功能：<br>
+  ①是一个JDBC客户端，性能和安全性较第一代客户端有显著提升。<br>
+  ②在嵌入式模式和远程模式下均可工作。<br>
+  嵌入式模式：运行嵌入式Hive，类似于第一代Hive Client。
+  远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
+
+那么问题来了，HiveServer2是什么？HiveServer1哪里去了？
+
+#### 2.4.2 HiveServer、HiveServer2服务
+HiveServer、`HiveServer2`都是Hive自带的两种服务，`允许客户端在不启动CLI的情况下对Hive中的数据进行操作`，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
+但是，HiveServer不能处理多于一个客户端的并发请求。因此在Hive-0.11.0版本中重写了HiveServer代码得到了HiveServer2，进而解决了该问题。HiveServer已经被废弃。
+HiveServer2支持多客户端的并发和身份认证，旨在为开放API客户端如JDBC、ODBC提供更好的支持。
+
 
 ## 三、Hive数据模型
 
