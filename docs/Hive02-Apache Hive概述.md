@@ -39,13 +39,13 @@ Apache Hive是一款建立在Hadoop之上的开源数据仓库系统，可以将
 + 最终效果<br>
 基于上述分析，最终要想模拟实现的Hive的功能，需要下图所示组件参与其中：
 
-<img src="images/hive/hive02_如何模拟实现Hive的功能.png" width="80%" height="80%" alt="">
+<img src="images/hive/hive02_如何模拟实现Hive的功能.png" width="60%" height="60%" alt="">
 
 ## 二、Hive系统架构和工作原理
 ### 2.1 Hive系统架构
 Hive是底层封装了Hadoop的数据仓库处理工具，它运行在Hadoop基础上，其系统架构组成主要包含4个部分，具体如下图所示。
 
-<img src="images/hive/hive02_hive架构图.png" width="80%" height="80%" alt="">
+<img src="images/hive/hive02_hive架构图.png" width="60%" height="60%" alt="">
 
 1. `用户接口`：包括 CLI、JDBC/ODBC、WebGUI<br>
 CLI(command line interface)为shell命令行；
@@ -91,23 +91,20 @@ Metastore服务配置有3种模式：内嵌模式、本地模式、远程模式�
 默认部署模式，元数据存储在内置的Derby数据库中。<br>
 Derby数据库和Metastore服务嵌入在HiveServer进程中，无需单独配置和启动Metastore服务。<br>
 仅支持一个活动用户，适合测试使用，不适合生产环境。<br>
-
-<img src="images/hive/hive02_metastore内嵌模式.png" width="60%" height="60%" alt="">
+<img src="images/hive/hive02_metastore内嵌模式.png" width="50%" height="50%" alt="">
    
 2. `本地模式`（Local Metastore）：<br>
 Metastore服务与HiveServer进程在同一进程中运行，但元数据存储在单独的外部数据库（推荐使用MySQL）中。<br>
 Metastore服务通过JDBC与数据库通信。判断是否为本地模式的依据是hive.metastore.uris参数是否为空。<br>
 缺点是每次启动Hive服务都会内置启动一个Metastore服务实例。<br>
-
-<img src="images/hive/hive02_metastore本地模式.png" width="60%" height="60%" alt="">
+<img src="images/hive/hive02_metastore本地模式.png" width="50%" height="50%" alt="">
 
    
 3. `远程模式`（Remote Metastore）：<br>
 Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数据存储在单独的外部数据库。<br>
 通过Thrift Network API与其他进程通信，适合生产环境。<br>
 提供更好的可管理性和安全性，需配置hive.metastore.uris参数并手动启动Metastore服务。<br>
-
-<img src="images/hive/hive02_metastore远程模式.png" width="60%" height="60%" alt="">
+<img src="images/hive/hive02_metastore远程模式.png" width="50%" height="50%" alt="">
 
 
 ### 2.4 客户端
