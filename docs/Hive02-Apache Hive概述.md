@@ -145,6 +145,52 @@ Thrift是用于构建跨平台服务的RPC框架，它的堆栈由 4 层组成�
 HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服务器用于 HTTP 模式。
 
 ## 三、Hive数据模型
+数据模型：用来描述数据、组织数据和对数据进行操作，是对现实世界数据特征的描述。Hive的数据模型类似于RDBMS库表结构，包含数据库（Database）、表（Table）、分区表（Partition）和桶表（Bucket）四种数据类型，其模型如下图所示。<br>
+<img src="images/hive/hive02_数据模型.png" width="40%" height="40%" alt="">
+
+### 3.1 Databases
+Hive作为一个数据仓库，在结构上与传统数据库类似，也分数据库（Schema），每个数据库下面有各自的表组成。
+相当于关系型数据库中的命名空间（namespace），它的作用是将用户和数据库的应用隔离到不同的数据库或者模式中。
+
++ 默认数据库`default`。 
++ Hive的数据均存储在HDFS上，默认有一个根目录<br>
+  在`hive-site.xml`中，由参数hive.metastore.warehouse.dir指定（默认值为`/user/hive/warehouse`）。
+  
+因此，Hive中的数据库在HDFS上的存储路径为：
+```
+${hive.metastore.warehouse.dir}/databasename.db
+```
+比如，名为itcast的数据库存储路径为： /user/hive/warehouse/itcast.db
+
+### 3.2 Tables
+Hive表所对应的数据存储在Hadoop的文件系统中，而表相关的元数据是存储在元数据库（RDBMS）中。<br>
+在Hadoop中，数据通常驻留在HDFS中，尽管它可以驻留在任何Hadoop文件系统中，包括本地文件系统或S3。Hive有两种类型的表：
++ Managed Table 内部表、托管表
++ External Table 外部表
+
+创建表时，默是内部表。Hive中的表的数据在HDFS上的存储路径为：
+```
+${hive.metastore.warehouse.dir}/databasename.db/tablename
+```
+比如,itcast的数据库下t_user表存储路径为： /user/hive/warehouse/itcast.db/t_user
+
+### 3.3 Partitions
+Partition分区是hive的一种优化手段表。`分区是指根据分区列（例如“日期day”）的值将表划分为不同分区`。这样可以更快地对指定分区数据进行查询。
+
++ 分区在存储层面上的表现是：table表目录下以子文件夹形式存在。
++ 一个文件夹表示一个分区，子文件命名标准：分区列=分区值。
+
+Hive还支持分区下继续创建分区，即多重分区。<br>
+<img src="images/hive/hive02_数据模型分区表.png" width="50%" height="50%" alt="">
+
+### 3.4 Buckets
+Bucket分桶表是hive的一种优化手段表。`分桶是指根据表中字段（例如“编号ID”）的值,经过hash计算规则将数据文件划分成指定的若干个小文件`。
++ 分桶规则：hashfunc(ID) % 桶个数，余数相同的分到同一个文件。
++ 分桶的好处是可以优化join查询和方便抽样查询。
+  
+Bucket分桶表在hdfs中表现为同一个表目录下数据根据hash散列之后变成多个文件。<br>
+<img src="images/hive/hive02_数据模型分桶表.png" width="50%" height="50%" alt="">
+
 
 ## 四、Hive与传统数据库对比
 Hive虽然与RDBMS数据库在数据模型、SQL语法等方面都十分相似，但应用场景却完全不同。Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。具体的对比如下图所示：
