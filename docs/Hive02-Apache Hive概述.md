@@ -1,3 +1,23 @@
+<nav>
+<a href="#一apache-hive概述">一、Apache Hive概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-hive介绍">1.1 Hive介绍</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-场景设计如何模拟实现hive的功能">1.2 场景设计：如何模拟实现Hive的功能</a><br/>
+<a href="#二hive系统架构和工作原理">二、Hive系统架构和工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hive系统架构">2.1 Hive系统架构</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-相关名词">2.2 相关名词</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-元数据配置方式">2.3 元数据配置方式</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-客户端">2.4 客户端</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-hive-clienthive-beeline-client">2.4.1 Hive Client、Hive Beeline Client</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-hiveserverhiveserver2服务">2.4.2 HiveServer、HiveServer2服务</a><br/>
+<a href="#三hive数据模型">三、Hive数据模型</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-databases">3.1 Databases</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-tables">3.2 Tables</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-partitions">3.3 Partitions</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-buckets">3.4 Buckets</a><br/>
+<a href="#四hive与传统数据库对比">四、Hive与传统数据库对比</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、Apache Hive概述
 
 ### 1.1 Hive介绍
