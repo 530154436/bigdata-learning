@@ -13,7 +13,7 @@ RUN echo "hadoop ALL=(ALL)  NOPASSWD:ALL" > /etc/sudoers
 
 # 安装Hadoop
 COPY CDP7.1.4/hadoop-3.1.1.tar.gz /usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz
-COPY CDP7.1.4/install_hadoop.sh /dockerentry/install_hadoop.sh
+COPY hadoop-3.1.1/install_hadoop.sh /dockerentry/install_hadoop.sh
 RUN chmod a+x /dockerentry/install_hadoop.sh
 RUN bash /dockerentry/install_hadoop.sh
 RUN rm /usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz
