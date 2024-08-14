@@ -2,7 +2,7 @@
 # source install_mysql.sh
 
 GZ_FILE="/usr/local/CDP7.1.4/mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz"
-INSTALL_DIR="/usr/local/mysql"  # 默认路径,若修改会影响后续操作(server)
+INSTALL_DIR="/usr/local/mysql-5.6.37"  # 默认路径,若修改会影响后续操作(server)
 
 USER_GROUP=mysql
 USER_NAME=mysql
@@ -69,7 +69,7 @@ create_mysql_user(){
 
 	# 判断用户组是否创建
 	groupstr=`sed -n "/$USER_GROUP/p" /etc/group`
-	if [ -z "$groupstr" ]; then 
+	if [ -z "$groupstr" ]; then
 		groupadd $USER_GROUP
 	    echo "用户组($USER_GROUP)创建成功."
 	else
@@ -78,7 +78,7 @@ create_mysql_user(){
 
 	# 判断用户是否创建
 	userstr=`sed -n "/$USER_NAME/p" /etc/passwd`
-	if [ -z "$userstr" ]; then 
+	if [ -z "$userstr" ]; then
 		# -r：创建一个系统用户
 		# -s：手工指定用户的登录 Shell，默认是 /bin/bash
 		useradd -r -g mysql -s /bin/false mysql
@@ -138,11 +138,7 @@ if ! command -v mysql; then
 	# 设定MySQL配置文件
 	configue_my_cnf
 
-	# 启动 MySQL
-	${INSTALL_DIR}/bin/mysqld_safe --user=mysql &
-
 else
 	echo "MySQL已安装!"
-	mysql --version
 fi
 
