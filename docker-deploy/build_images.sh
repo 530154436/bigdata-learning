@@ -9,6 +9,7 @@ docker push 15521147129/bigdata:debian-base
 docker ps
 docker exec -it 7470dc8edf34 /bin/bash
 
+
 # hadoop
 docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1 -f hadoop-3.1.1/Dockerfile .
 docker compose -f hadoop-3.1.1/docker-compose.yml up -d
@@ -20,3 +21,4 @@ docker push 15521147129/bigdata:hadoop-3.1.1
 # mysql
 docker build --platform=linux/amd64 -t 15521147129/bigdata:mysql-5.6.37 -f mysql-5.6.37/Dockerfile .
 docker compose -f mysql-5.6.37/docker-compose.yml up -d
+docker push 15521147129/bigdata:mysql-5.6.37

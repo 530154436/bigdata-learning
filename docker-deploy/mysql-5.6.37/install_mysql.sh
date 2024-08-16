@@ -95,8 +95,12 @@ configue_my_cnf(){
 
 	# 追加（<<）环境变量
 	cat >> /etc/my.cnf << EOF
+[mysqld]
+user=mysql
 basedir=$INSTALL_DIR
 datadir=$INSTALL_DIR/data
+bind-address = 0.0.0.0
+
 EOF
 
 	# 使环境变量生效

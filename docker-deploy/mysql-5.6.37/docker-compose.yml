@@ -6,23 +6,15 @@ networks:
 services:
   hadoop101:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1
-    hostname: hadoop101
-    container_name: hadoop101
-    user: hadoop
-    command: sh -c "/dockerentry/run-namenode.sh"
+    image: 15521147129/bigdata:mysql-5.6.37
+    hostname: mysql
+    container_name: mysql-5.6.37
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456 #指定用户密码
+      TZ: Asia/Shanghai
+    user: mysql
+    command: sh -c "/dockerentry/setup-mysql-for-hive.sh"
     restart: always
     ports:
-      - 9000:9000
-      - 10020:10020
-      - 19888:19888
-      - 8032:8032
-      - 8030:8030
-      - 8031:8031
-      - 8088:8088
-      - 9870:9870
-      - 9864:9864
-      - 9866:9866
-      - 9867:9867
-      - 19:22
+      - 3306:3306
     tty: true
