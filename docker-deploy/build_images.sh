@@ -19,6 +19,6 @@ docker push 15521147129/bigdata:hadoop-3.1.1
 
 
 # mysql
-docker build --platform=linux/amd64 -t 15521147129/bigdata:mysql-5.6.37 -f mysql-5.6.37/Dockerfile .
+docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:mysql-5.6.37 -f mysql-5.6.37/Dockerfile .
 docker compose -f mysql-5.6.37/docker-compose.yml up -d
 docker push 15521147129/bigdata:mysql-5.6.37

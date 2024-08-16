@@ -3,10 +3,11 @@ ENV MYSQL_HOME=/usr/local/mysql-5.6.37
 
 RUN echo 'Asia/Shanghai' >/etc/timezone
 RUN echo 'root:root' | chpasswd
+#COPY base/sources.list /etc/apt/sources.list
 
 # MySQL依赖
 RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
-    libaio1 libncurses5 libnuma1 zlib1g libssl-dev libgcc1 libstdc++6 libtinfo5 perl \
+    libaio1 libncurses5 libnuma1 zlib1g libssl-dev libgcc1 libstdc++6 libtinfo5 perl expect \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

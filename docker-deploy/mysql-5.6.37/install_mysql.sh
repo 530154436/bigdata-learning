@@ -109,12 +109,51 @@ EOF
 
 # ---------------------------------------------------------------------------
 # 配置mysql_secure_installation
+# 安装完mysql-server 会提示可以运行mysql_secure_installation。运行mysql_secure_installation会执行几个设置：
+#  1)Enter current password for root (enter for none):
+#  2)Change the root password? [Y/n]
+#    New password:
+#    Re-enter new password:
+#  3)Remove anonymous users?（删除匿名账号） [Y/n]
+#  4)Disallow root login remotely? （取消root用户远程登录）[Y/n]；
+#  5)Remove test database and access to it?（删除test库和对test库的访问权限） [Y/n]
+#  6)eload privilege tables now?（刷新授权表使修改生效） [Y/n] 。
 # ---------------------------------------------------------------------------
 configure_mysql_secure_installation(){
 
   ${MYSQL_HOME}/support-files/mysql.server start -user=mysql
 
-  echo -e "\nY\n${MYSQL_ROOT_PASSWORD}\n${MYSQL_ROOT_PASSWORD}\nY\nn\nY\nY\n" | ${MYSQL_HOME}/bin/mysql_secure_installation
+  # 运行 expect 脚本来处理 mysql_secure_installation 的交互
+  expect << EOF
+set timeout 10
+spawn ${MYSQL_HOME}/bin/mysql_secure_installation
+
+expect "Enter current password for root (enter for none):"
+send "\r"
+
+expect "Set root password?"
+send "Y\r"
+
+expect "New password:"
+send "${MYSQL_ROOT_PASSWORD}\r"
+
+expect "Re-enter new password:"
+send "${MYSQL_ROOT_PASSWORD}\r"
+
+expect "Remove anonymous users?"
+send "Y\r"
+
+expect "Disallow root login remotely?"
+send "n\r"
+
+expect "Remove test database and access to it?"
+send "Y\r"
+
+expect "Reload privilege tables now?"
+send "Y\r"
+
+expect eof
+EOF
 
   ${MYSQL_HOME}/support-files/mysql.server stop
 	echo "mysql_secure_installation 配置完成."

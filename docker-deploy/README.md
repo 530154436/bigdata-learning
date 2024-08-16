@@ -88,6 +88,28 @@ RUN mkdir -p /home/hadoop/.ssh \
     && chmod 700 /home/hadoop/.ssh \
     && chmod 600 /home/hadoop/.ssh/authorized_keys
 ```
+#### 3、宿主主机访问MySQL：docker Access denied for user 'root'@'xxx'
+在容器内部可以正常访问，但在宿主主机却不行。原因是生成配置时取消了root用户远程登录，重新配置后重启服务即可；或者使用其他用户也可以进行远程登录。
+```
+${MYSQL_HOME}/bin/mysql_secure_installation
+```
+`注意`：mysql_secure_installation 需要一个交互式终端，而不是通过标准输入传递的流，以下几种方式都失败了：
+```
+echo -e "123456\nY\n123456\n123456\nY\nn\nY\nY\n" | ${MYSQL_HOME}/bin/mysql_secure_installation
+或
+${MYSQL_HOME}/bin/mysql_secure_installation << EOF
+123456
+Y
+123456
+123456
+Y
+n
+Y
+Y
+EOF
+```
+
+
 [Docker下安装zookeeper（单机 & 集群）](https://www.cnblogs.com/LUA123/p/11428113.html)
 [林子雨-Hadoop集群安装配置教程_Hadoop3.1.3_Ubuntu](https://dblab.xmu.edu.cn/blog/2775/)
 [hadoop.apache.org](https://hadoop.apache.org/docs/r3.1.1/hadoop-project-dist/hadoop-common/core-default.xml)
