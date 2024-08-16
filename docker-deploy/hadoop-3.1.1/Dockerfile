@@ -10,6 +10,13 @@ RUN groupadd hadoop \
 # passwordless with sudo for hadoop user
 RUN echo "hadoop ALL=(ALL)  NOPASSWD:ALL" > /etc/sudoers
 
+# 安装Java
+COPY CDP7.1.4/jdk-8u112-linux-x64.tar.gz /usr/local/CDP7.1.4/jdk-8u112-linux-x64.tar.gz
+COPY base/install_jdk.sh /dockerentry/install_jdk.sh
+RUN chmod a+x /dockerentry/install_jdk.sh
+RUN bash /dockerentry/install_jdk.sh
+RUN rm /usr/local/CDP7.1.4/jdk-8u112-linux-x64.tar.gz
+
 # 安装Hadoop
 COPY CDP7.1.4/hadoop-3.1.1.tar.gz /usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz
 COPY hadoop-3.1.1/install_hadoop.sh /dockerentry/install_hadoop.sh

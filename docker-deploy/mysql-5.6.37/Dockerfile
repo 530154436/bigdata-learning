@@ -1,4 +1,4 @@
-FROM debian:11
+FROM 15521147129/bigdata:debian-base
 ENV HADOOP_HOME=/usr/local/mysql-5.6.37
 
 # 新建 mysql组 和 mysql用户

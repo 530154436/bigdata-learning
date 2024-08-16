@@ -41,6 +41,12 @@ Hadoop各节点说明
 docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1 -f hadoop-3.1.1/Dockerfile .
 ```
 
++ 推送镜像
+```shell
+#docker login -u "15521147129" -p "你的密码" docker.io
+docker push 15521147129/bigdata:debian-base
+```
+
 + 启动服务
 ```shell
 docker compose -f hadoop-3.1.1/docker-compose.yml up

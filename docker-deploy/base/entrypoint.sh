@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # all container start the sshd
 sudo service ssh start
 
