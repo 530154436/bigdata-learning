@@ -6,6 +6,7 @@ INSTALL_DIR="/usr/local/mysql-5.6.37"  # 默认路径,若修改会影响后续�
 
 USER_GROUP=mysql
 USER_NAME=mysql
+MYSQL_ROOT_PASSWORD="123456"
 
 
 # ---------------------------------------------------------------------------
@@ -36,7 +37,7 @@ function decompress(){
 # ---------------------------------------------------------------------------
 # 配置环境变量
 # ---------------------------------------------------------------------------
-configue_env(){
+configure_env(){
 
 	# 判断环境变量是否存在
 	envstr=`sed -n "/MYSQL_HOME=/p" /etc/profile`
@@ -90,7 +91,7 @@ create_mysql_user(){
 # ---------------------------------------------------------------------------
 # 配置MySQL配置文件
 # ---------------------------------------------------------------------------
-configue_my_cnf(){
+configure_my_cnf(){
 	sudo cp ${INSTALL_DIR}/support-files/my-default.cnf /etc/my.cnf
 
 	# 追加（<<）环境变量
@@ -99,13 +100,26 @@ configue_my_cnf(){
 user=mysql
 basedir=$INSTALL_DIR
 datadir=$INSTALL_DIR/data
-bind-address = 0.0.0.0
-
+bind-address=0.0.0.0
 EOF
 
 	# 使环境变量生效
 	echo "/etc/my.cnf 配置完成."
 }
+
+# ---------------------------------------------------------------------------
+# 配置mysql_secure_installation
+# ---------------------------------------------------------------------------
+configure_mysql_secure_installation(){
+
+  ${MYSQL_HOME}/support-files/mysql.server start -user=mysql
+
+  echo -e "\nY\n${MYSQL_ROOT_PASSWORD}\n${MYSQL_ROOT_PASSWORD}\nY\nn\nY\nY\n" | ${MYSQL_HOME}/bin/mysql_secure_installation
+
+  ${MYSQL_HOME}/support-files/mysql.server stop
+	echo "mysql_secure_installation 配置完成."
+}
+
 
 # ---------------------------------------------------------------------------
 # 主流程
@@ -123,23 +137,24 @@ if ! command -v mysql; then
 	decompress
 
 	# 配置MySQL环境变量
-	configue_env
+	configure_env
 
 	# 新建MySQL用户
 	create_mysql_user
 
 	chown -R ${USER_GROUP}:${USER_NAME} ${INSTALL_DIR}
-
-	# mysql_install_db 初始化mysql的data目录、并创建系统表
-	${INSTALL_DIR}/scripts/mysql_install_db --user=${USER_NAME} --basedir=${INSTALL_DIR} --datadir=${INSTALL_DIR}/data
-	
 	chown -R root ${INSTALL_DIR}
-
 	# 修改当前 data 目录拥有者为 mysql 用户
 	chown -R ${USER_NAME} ${INSTALL_DIR}/data
 
 	# 设定MySQL配置文件
-	configue_my_cnf
+	configure_my_cnf
+
+	# mysql_install_db 初始化mysql的data目录、并创建系统表
+	${INSTALL_DIR}/scripts/mysql_install_db --user=${USER_NAME} --basedir=${INSTALL_DIR} --datadir=${INSTALL_DIR}/data
+
+	# 配置MySQL: 这里是交互式的
+  configure_mysql_secure_installation
 
 else
 	echo "MySQL已安装!"

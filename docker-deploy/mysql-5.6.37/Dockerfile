@@ -23,9 +23,8 @@ COPY mysql-5.6.37/install_mysql.sh /dockerentry/install_mysql.sh
 RUN chmod a+x /dockerentry/install_mysql.sh
 RUN bash /dockerentry/install_mysql.sh
 RUN rm /usr/local/CDP7.1.4/mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz
-RUN cp ${MYSQL_HOME}/support-files/mysql.server /etc/init.d/mysql.server
 
-# 配置MySQL-hive
+# 添加MySQL-hive配置脚本
 COPY mysql-5.6.37/setup-mysql-for-hive.sh /dockerentry/setup-mysql-for-hive.sh
 RUN chmod a+x /dockerentry/setup-mysql-for-hive.sh
 #RUN bash /dockerentry/setup-mysql-for-hive.sh

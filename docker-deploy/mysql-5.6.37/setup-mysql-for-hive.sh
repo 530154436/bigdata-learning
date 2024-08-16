@@ -3,13 +3,10 @@
 MYSQL_HOME=/usr/local/mysql-5.6.37
 
 # 启动 mysql
-/etc/init.d/mysql.server start -user=mysql
+${MYSQL_HOME}/support-files/mysql.server start -user=mysql
 
-# 配置: 这里是交互式的
-${MYSQL_HOME}/bin/mysql_secure_installation
-
-# 使用mysqladmin工具进行密码修改
-${MYSQL_HOME}/bin/mysqladmin -uroot password "123456"
+## 使用mysqladmin工具进行密码修改
+#${MYSQL_HOME}/bin/mysqladmin -uroot -p123456 password "123456"
 ${MYSQL_HOME}/bin/mysql -uroot -p123456 << EOF
 	/*创建数据库*/
 	CREATE database hive;
@@ -39,7 +36,7 @@ EOF
 # SELECT user, host FROM mysql.user
 
 # 关闭服务
-#/etc/init.d/mysql.server stop
+#${MYSQL_HOME}/support-files/mysql.server stop
 
 echo "启动成功."
 
