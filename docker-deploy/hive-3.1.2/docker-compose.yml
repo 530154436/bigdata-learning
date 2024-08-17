@@ -2,7 +2,7 @@ version: "3"
 
 services:
   hive:
-    image: wechar/hive
+    image: 15521147129/bigdata:hive-3.1.2
     hostname: hive
     container_name: hive
     user: hive

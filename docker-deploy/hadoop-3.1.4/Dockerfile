@@ -9,8 +9,11 @@ ENV HADOOP_HOME=/usr/local/hadoop-3.1.4
 RUN groupadd hadoop \
     && useradd -s /bin/bash -g hadoop -d /home/hadoop -m hadoop \
     && echo 'hadoop:hadoop' | chpasswd
+
+# 添加 #includedir /etc/sudoers.d 确保所有在该目录中的配置文件都被自动加载。
 # passwordless with sudo for hadoop user
-RUN echo "hadoop ALL=(ALL)  NOPASSWD:ALL" > /etc/sudoers
+RUN sed -i '1i #includedir /etc/sudoers.d' /etc/sudoers
+RUN echo "hadoop ALL=NOPASSWD: ALL" > "/etc/sudoers.d/hadoop-docker"
 
 # 安装Java
 COPY CDP7.1.4/jdk-8u112-linux-x64.tar.gz /usr/local/CDP7.1.4/jdk-8u112-linux-x64.tar.gz
