@@ -30,7 +30,7 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 |--------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
 | Java   | 1.8u112 | [jdk-8u112-linux-x64.tar.gz](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)                                                                     | /usr/local/jdk1.8.0_112 |
 | MySQL  | 5.6.37  | [mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz](https://dev.mysql.com/downloads/mysql/5.6.html)<br>[mysql-connector-java-5.1.43-bin.jar](https://downloads.mysql.com/archives/c-j/) | /usr/local/mysql-5.6.37 |
-| Hadoop | 3.1.1   | [hadoop-3.1.4.tar.gz](https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz)                                                                            | /usr/local/hadoop-3.1.4 |
+| Hadoop | 3.1.4   | [hadoop-3.1.4.tar.gz](https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz)                                                                            | /usr/local/hadoop-3.1.4 |
 | Hive   | 3.1.2   | [apache-hive-3.1.2-bin.tar.gz](https://archive.apache.org/dist/hive/)                                                                                                            | /usr/local/hive-3.1.2   |
 
 + `运行的服务列表`
@@ -104,10 +104,10 @@ $HADOOP_HOME/bin/hdfs dfsadmin -report
 + web管理界面
 
 `HDFS界面`：http://localhost:9870/<br>
-<img src="00images/hadoop_hdfs.png" width="80%" height="80%" alt=""><br>
+<img src="images/docker/hadoop_hdfs.png" width="80%" height="80%" alt=""><br>
 
 `Yarn界面`：http://localhost:8088/<br>
-<img src="00images/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
+<img src="images/docker/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
 
 #### 1.3 MySQL构建与部署
 MySQL服务器启动后，会在内存中常驻`mysqld_safe`和`mysqld` 2个进程：
