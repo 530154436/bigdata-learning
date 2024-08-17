@@ -61,8 +61,8 @@
 ################################### 不同点（hadoop2）###################################
 
 
-GZ_FILE="/usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz"
-INSTALL_DIR="/usr/local/hadoop-3.1.1"
+GZ_FILE="/usr/local/CDP7.1.4/hadoop-3.1.4.tar.gz"
+INSTALL_DIR="/usr/local/hadoop-3.1.4"
 
 USER_GROUP=hadoop
 USER_NAME=hadoop

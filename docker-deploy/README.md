@@ -2,9 +2,9 @@
 ### 基于Docker搭建大数据集群
 | 容器名称            | 对应镜像                                      | 进程                              |
 |:-------------------|:--------------------------------------------|:---------------------------------|
-| Hadoop101          | 15521147129/bigdata:hadoop-3.1.1         |NameNode、DataNode、ResourceManager、NodeManager |
-| Hadoop102          | 15521147129/bigdata:hadoop-3.1.1         |DataNode、NodeManager|
-| Hadoop103          | 15521147129/bigdata:hadoop-3.1.1         |SecondaryNameNode、DataNode |
+| Hadoop101          | 15521147129/bigdata:hadoop-3.1.4         |NameNode、DataNode、ResourceManager、NodeManager |
+| Hadoop102          | 15521147129/bigdata:hadoop-3.1.4         |DataNode、NodeManager|
+| Hadoop103          | 15521147129/bigdata:hadoop-3.1.4         |SecondaryNameNode、DataNode |
 
 
 #### 基础镜像构建
@@ -38,7 +38,7 @@ Hadoop各节点说明
 
 + 构建镜像
 ```shell
-docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1 -f hadoop-3.1.1/Dockerfile .
+docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.4 -f hadoop-3.1.4/Dockerfile .
 ```
 
 + 推送镜像
@@ -49,7 +49,7 @@ docker push 15521147129/bigdata:debian-base
 
 + 启动服务
 ```shell
-docker compose -f hadoop-3.1.1/docker-compose.yml up
+docker compose -f hadoop-3.1.4/docker-compose.yml up
 ```
 
 + 查看进程
@@ -71,6 +71,11 @@ $HADOOP_HOME/bin/hdfs dfsadmin -report
 
 `Yarn界面`：http://localhost:8088/<br>
 <img src="00images/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
+
+### MySQL构建与部署
+### Hive构建与部署
+https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz
+https://apache.root.lu/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
 
 ### 遇到的问题
 #### 1、Bind for 0.0.0.0:2181 failed: port is already allocated

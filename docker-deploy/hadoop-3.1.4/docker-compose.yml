@@ -6,7 +6,7 @@ networks:
 services:
   hadoop101:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1
+    image: 15521147129/bigdata:hadoop-3.1.4
     hostname: hadoop101
     container_name: hadoop101
     user: hadoop
@@ -29,7 +29,7 @@ services:
 
   hadoop102:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1
+    image: 15521147129/bigdata:hadoop-3.1.4
     hostname: hadoop102
     container_name: hadoop102
     user: hadoop
@@ -45,7 +45,7 @@ services:
 
   hadoop103:
     platform: linux/amd64
-    image: 15521147129/bigdata:hadoop-3.1.1
+    image: 15521147129/bigdata:hadoop-3.1.4
     hostname: hadoop103
     container_name: hadoop103
     user: hadoop

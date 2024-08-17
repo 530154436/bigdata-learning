@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HADOOP_HOME=/usr/local/hadoop-3.1.1
+HADOOP_HOME=/usr/local/hadoop-3.1.4
 
 BASE_DIR=/home/hadoop_files
 DATA_DIR=$BASE_DIR/hadoop_data

@@ -96,6 +96,7 @@ public class HdfsUtilTest {
 
         hdfs.setConfiguration(conf);
         hdfs.connect();
+        System.out.println(hdfs.create("/test.txt", "哈哈哈哈哈"));
         System.out.println(hdfs.append("/test.txt", "哒哒哒哒哒"));
     }
 

@@ -1,7 +1,7 @@
 FROM 15521147129/bigdata:debian-base
 
 ENV JAVA_HOME=/usr/local/jdk1.8.0_112
-ENV HADOOP_HOME=/usr/local/hadoop-3.1.1
+ENV HADOOP_HOME=/usr/local/hadoop-3.1.4
 
 # 新建 hadoop组 和 hadoop用户
 RUN groupadd hadoop \
@@ -18,17 +18,17 @@ RUN bash /dockerentry/install_jdk.sh
 RUN rm /usr/local/CDP7.1.4/jdk-8u112-linux-x64.tar.gz
 
 # 安装Hadoop
-COPY CDP7.1.4/hadoop-3.1.1.tar.gz /usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz
-COPY hadoop-3.1.1/install_hadoop.sh /dockerentry/install_hadoop.sh
+COPY CDP7.1.4/hadoop-3.1.4.tar.gz /usr/local/CDP7.1.4/hadoop-3.1.4.tar.gz
+COPY hadoop-3.1.4/install_hadoop.sh /dockerentry/install_hadoop.sh
 RUN chmod a+x /dockerentry/install_hadoop.sh
 RUN bash /dockerentry/install_hadoop.sh
-RUN rm /usr/local/CDP7.1.4/hadoop-3.1.1.tar.gz
+RUN rm /usr/local/CDP7.1.4/hadoop-3.1.4.tar.gz
 
 # start script
-COPY hadoop-3.1.1/run-namenode.sh /dockerentry/run-namenode.sh
+COPY hadoop-3.1.4/run-namenode.sh /dockerentry/run-namenode.sh
 RUN chmod a+x /dockerentry/run-namenode.sh
 RUN chown hadoop:hadoop /dockerentry/run-namenode.sh
-COPY hadoop-3.1.1/run-datanode.sh /dockerentry/run-datanode.sh
+COPY hadoop-3.1.4/run-datanode.sh /dockerentry/run-datanode.sh
 RUN chmod a+x /dockerentry/run-datanode.sh
 RUN chown hadoop:hadoop /dockerentry/run-datanode.sh
 

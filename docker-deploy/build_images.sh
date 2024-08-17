@@ -11,11 +11,11 @@ docker exec -it 7470dc8edf34 /bin/bash
 
 
 # hadoop
-docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.1 -f hadoop-3.1.1/Dockerfile .
-docker compose -f hadoop-3.1.1/docker-compose.yml up -d
+docker build --platform=linux/amd64 -t 15521147129/bigdata:hadoop-3.1.4 -f hadoop-3.1.4/Dockerfile .
+docker compose -f hadoop-3.1.4/docker-compose.yml up -d
 docker exec -it c62a9fdf530f /bin/bash
 #docker login -u "15521147129" -p "" docker.io
-docker push 15521147129/bigdata:hadoop-3.1.1
+docker push 15521147129/bigdata:hadoop-3.1.4
 
 
 # mysql
