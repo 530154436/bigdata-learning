@@ -1,4 +1,7 @@
-version: "3"
+networks:
+  default:
+    name: hadoop-docker-bridge
+    external: true
 
 services:
   hive:

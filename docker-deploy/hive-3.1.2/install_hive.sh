@@ -206,10 +206,10 @@ if ! command -v hive --version ; then
 	cp $MS_CONNECTOR $INSTALL_DIR/lib/
 
 	# 修改文件夹的权限
-	chown -R $USER_GROUP:$USER_NAME $INSTALL_DIR
+	chown -R $USER_NAME:$USER_GROUP $INSTALL_DIR
 
 	# 解决日志库冲突
-	sudo rm /usr/local/apache-hive-3.1.2-bin/lib/log4j-slf4j-impl-2.10.0.jar
+	sudo rm $INSTALL_DIR/lib/log4j-slf4j-impl-2.10.0.jar
 
 	echo "Hive安装完成!"
 else
