@@ -101,12 +101,12 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
 
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
-        <value>$MS_CONNECTION_PASSWORD</value>
+        <value>$MS_CONNECTION_USER_NAME</value>
     </property>
 
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
-        <value>$MS_CONNECTION_USER_NAME</value>
+        <value>$MS_CONNECTION_PASSWORD</value>
     </property>
 
     <!-- H2S运行绑定host -->

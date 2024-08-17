@@ -65,4 +65,5 @@ if __name__ == "__main__":
     # process_markdown_file("./Hadoop02-1.HDFS分布式文件系统.md")
     # process_markdown_file("./Hadoop03-MapReduce.md")
     # process_markdown_file("./Hive01-数据仓库.md")
-    process_markdown_file("./Hive02-Apache Hive概述.md")
+    # process_markdown_file("./Hive02-Apache Hive概述.md")
+    process_markdown_file("../docker-deploy/README.md")

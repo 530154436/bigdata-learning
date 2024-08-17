@@ -1,13 +1,50 @@
-[TOC]
-### 基于Docker搭建大数据集群
-| 容器名称            | 对应镜像                                      | 进程                              |
-|:-------------------|:--------------------------------------------|:---------------------------------|
-| Hadoop101          | 15521147129/bigdata:hadoop-3.1.4         |NameNode、DataNode、ResourceManager、NodeManager |
-| Hadoop102          | 15521147129/bigdata:hadoop-3.1.4         |DataNode、NodeManager|
-| Hadoop103          | 15521147129/bigdata:hadoop-3.1.4         |SecondaryNameNode、DataNode |
+<nav>
+<a href="#一基于docker搭建大数据集群">一、基于Docker搭建大数据集群</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-基础镜像构建">1.1 基础镜像构建</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-hadoop构建和部署">1.2 Hadoop构建和部署</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-mysql构建与部署">1.3 MySQL构建与部署</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-hive构建与部署远程模式">1.4 Hive构建与部署(远程模式)</a><br/>
+<a href="#二遇到的问题">二、遇到的问题</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-zookeeper">2.1 Zookeeper</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1bind-for-00002181-failed-port-is-already-allocated">1）Bind for 0.0.0.0:2181 failed: port is already allocated</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-hadoop">2.2 Hadoop</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1ssh-connect-to-host-hadoop101-port-22-connection-refused">1）ssh: connect to host hadoop101 port 22: Connection refused</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-mysql">2.3 MySQL</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1docker-access-denied-for-user-rootxxx">1）docker Access denied for user 'root'@'xxx'</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24hive">2.4、Hive</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1nosuchmethoderror-xxxpreconditionscheckargument">1）NoSuchMethodError: xxx.Preconditions.checkArgument</a><br/>
+<a href="#三参考引用">三、参考引用</a><br/>
+</nav>
+
+### 一、基于Docker搭建大数据集群
++ 查看系统内核版本（Debian 11）：cat /proc/version
+```
+Linux version 6.6.32-linuxkit (root@buildkitsandbox) 
+(gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, GNU ld (GNU Binutils) 2.42) 
+1 SMP Thu Jun 13 14:13:01 UTC 2024
+```
++ Hadoop大数据平台安装包<br>
+  各组件版本信息参考 [Cloudera CDP7.1.4](https://docs.cloudera.com/cdp-private-cloud-base/7.1.4/runtime-release-notes/topics/rt-pvc-runtime-component-versions.html)
+
+| 名称     | 版本      | 软件包名及下载地址                                                                                                                                                                        | 安装目录                    |
+|--------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
+| Java   | 1.8u112 | [jdk-8u112-linux-x64.tar.gz](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)                                                                     | /usr/local/jdk1.8.0_112 |
+| MySQL  | 5.6.37  | [mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz](https://dev.mysql.com/downloads/mysql/5.6.html)<br>[mysql-connector-java-5.1.43-bin.jar](https://downloads.mysql.com/archives/c-j/) | /usr/local/mysql-5.6.37 |
+| Hadoop | 3.1.1   | [hadoop-3.1.4.tar.gz](https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz)                                                                            | /usr/local/hadoop-3.1.4 |
+| Hive   | 3.1.2   | [apache-hive-3.1.2-bin.tar.gz](https://archive.apache.org/dist/hive/)                                                                                                            | /usr/local/hive-3.1.2   |
+
++ `运行的服务列表`
+
+| 容器名称      | 对应镜像                                     | 进程                                            |
+|:----------|:-----------------------------------------|:----------------------------------------------|
+| Hadoop101 | 15521147129/bigdata:hadoop-3.1.4         | NameNode、DataNode、ResourceManager、NodeManager |
+| Hadoop102 | 15521147129/bigdata:hadoop-3.1.4         | DataNode、NodeManager                          |
+| Hadoop103 | 15521147129/bigdata:hadoop-3.1.4         | SecondaryNameNode、DataNode                    |
+| mysql     | 15521147129/bigdata:mysql-5.6.37         | mysqld、mysqld_safe                            |
+| hive      | 15521147129/bigdata:hive-3.1.2           | RunJar                                        |
 
 
-#### 基础镜像构建
+#### 1.1 基础镜像构建
 Debian 11 (代号为 "Bullseye") 是 Debian 项目的最新稳定版本，发布于 2021 年。它继承了 Debian 一贯的稳定性和安全性，同时引入了一系列的新特性和软件包更新。Debian 11 提供了一个强大的平台，适合服务器、桌面和嵌入式系统等多种应用场景。
 ```shell
 # https://hub.docker.com/r/amd64/debian/
@@ -25,7 +62,7 @@ docker network ls
 docker inspect <network_id>
 ```
 
-#### Hadoop构建和部署
+#### 1.2 Hadoop构建和部署
 Hadoop各节点说明
 
 | 节点类型                | 服务                                        | 角色                              |
@@ -72,25 +109,66 @@ $HADOOP_HOME/bin/hdfs dfsadmin -report
 `Yarn界面`：http://localhost:8088/<br>
 <img src="00images/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
 
-### MySQL构建与部署
-### Hive构建与部署
-https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz
-https://apache.root.lu/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
+#### 1.3 MySQL构建与部署
+MySQL服务器启动后，会在内存中常驻`mysqld_safe`和`mysqld` 2个进程：
+```
+119 mysql     20   0  146684   7460   3512 S   0.0   0.1   0:00.05 mysqld_safe                                  
+572 mysql     20   0 2979172 529412  15032 S   0.0   8.7   0:05.63 mysqld 
+```
+| 进程名称            | 说明                                                                                                                                                                                                                                                                   |
+|:----------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **mysqld**      | MySQL的核心程序，用于管理mysql的数据库文件以及用户的请求操作。                                                                                                                                                                                                                                 |
+| **mysqld_safe** | mysqld_safe是mysqld的父进程，官方推荐使用 mysqld_safe 启动 mysqld 服务：<br>1.检查系统和选项。<br>2.检查MyISAM表。<br>3.保持MySQL服务器窗口。<br>4. 启动并监视mysqld，如果因错误终止则重启。<br>5. 记录mysqld进程运行信息，保存在错误日志中（error.log，通常在my.cnf中指定）<br>6. mysqld_safe的启动和运行参数与mysqld通用，对mysqld_safe进程施加参数等同于在mysqld进程上施加参数。 |
 
-需要继承Hadoop的镜像，为了确保 Hive 能够：
-正确找到并使用 Hadoop 提供的命令行工具；
-读取 Hadoop 的配置文件，连接到 HDFS 和 YARN；
-正确提交和管理在 Hadoop 集群上执行的作业；
-依赖 Hadoop 的库文件来处理文件系统和作业执行。
+
++ 构建镜像
+```shell
+docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:mysql-5.6.37 -f mysql-5.6.37/Dockerfile .
+```
+
++ 启动服务
+```shell
+docker compose -f mysql-5.6.37/docker-compose.yml up -d
+```
+
++ 查看进程
+```shell
+ps -ef | grep mysqld
+```
+
+#### 1.4 Hive构建与部署(远程模式)
+由于`Hive`依赖`Hadoop`，因此 需要继承`Hadoop`的镜像，这样做的目的有：
+1. 正确找到并使用 Hadoop 提供的命令行工具；
+2. 读取 Hadoop 的配置文件，连接到 HDFS 和 YARN；
+3. 正确提交和管理在 Hadoop 集群上执行的作业；
+4. 依赖 Hadoop 的库文件来处理文件系统和作业执行。
+
 这使得 Hive 能够无缝地与 Hadoop 集群集成，并利用 Hadoop 的分布式存储和计算资源。
 
-### 遇到的问题
-#### 1、Bind for 0.0.0.0:2181 failed: port is already allocated
++ 构建镜像
+```shell
+docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:hive-3.1.2 -f hive-3.1.2/Dockerfile .
+```
+
++ 启动服务
+```shell
+docker compose -f hive-3.1.2/docker-compose.yml up -d
+```
+
++ 查看进程
+```shell
+$JAVA_HOME/bin/jps
+```
+
+### 二、遇到的问题
+#### 2.1 Zookeeper
+##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated
 <img src="00images/zookeeper_端口映射.png" width="50%" height="50%" alt=""><br>
 每个容器之间环境是隔离的，所以容器内所用的端口一样。
 因为在同一台宿主机，端口不能冲突，所以需要将端口映射成不同的端口号，比如2181/2182/2183。
 
-#### 2、hadoop101: ssh: connect to host hadoop101 port 22: Connection refused
+#### 2.2 Hadoop
+##### 1）ssh: connect to host hadoop101 port 22: Connection refused
 ```shell
 # 创建 .ssh 目录并生成 SSH 密钥（以 root 用户运行）
 RUN mkdir -p /home/hadoop/.ssh \
@@ -100,8 +178,10 @@ RUN mkdir -p /home/hadoop/.ssh \
     && chmod 700 /home/hadoop/.ssh \
     && chmod 600 /home/hadoop/.ssh/authorized_keys
 ```
-#### 3、宿主主机访问MySQL：docker Access denied for user 'root'@'xxx'
-在容器内部可以正常访问，但在宿主主机却不行。原因是生成配置时取消了root用户远程登录，重新配置后重启服务即可；或者使用其他用户也可以进行远程登录。
+
+#### 2.3 MySQL
+##### 1）docker Access denied for user 'root'@'xxx'
+在容器内部可以正常访问，但在宿主主机访问MySQL容器时却不行。原因是生成配置时取消了root用户远程登录，重新配置后重启服务即可；或者使用其他用户也可以进行远程登录。
 ```
 ${MYSQL_HOME}/bin/mysql_secure_installation
 ```
@@ -121,7 +201,27 @@ Y
 EOF
 ```
 
+#### 2.4、Hive
+##### 1）NoSuchMethodError: xxx.Preconditions.checkArgument
+一开始启动hive时报错如下，但检查两者的guava.jar版本是一致的，很奇怪，后面重新build又正常了。
+```
+2024-08-17 15:55:57 Exception in thread "main" java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;)V
+2024-08-17 15:55:57     at org.apache.hadoop.conf.Configuration.set(Configuration.java:1357)
+2024-08-17 15:55:57     at org.apache.hadoop.conf.Configuration.set(Configuration.java:1338)
+2024-08-17 15:55:57     at org.apache.hadoop.mapred.JobConf.setJar(JobConf.java:518)
+2024-08-17 15:55:57     at org.apache.hadoop.mapred.JobConf.setJarByClass(JobConf.java:536)
+2024-08-17 15:55:57     at org.apache.hadoop.mapred.JobConf.<init>(JobConf.java:430)
+2024-08-17 15:55:57     at org.apache.hadoop.hive.conf.HiveConf.initialize(HiveConf.java:5141)
+2024-08-17 15:55:57     at org.apache.hadoop.hive.conf.HiveConf.<init>(HiveConf.java:5104)
+```
+原因：Hive内依赖的guava.jar和hadoop内的版本不一致造成的。<br> 
+解决方案：<br>
+1）查看hadoop安装目录下share/hadoop/common/lib内guava.jar版本<br>
+2）查看hive安装目录下lib内guava.jar的版本 如果两者不一致，删除版本低的，并拷贝高版本的
 
-[Docker下安装zookeeper（单机 & 集群）](https://www.cnblogs.com/LUA123/p/11428113.html)
-[林子雨-Hadoop集群安装配置教程_Hadoop3.1.3_Ubuntu](https://dblab.xmu.edu.cn/blog/2775/)
-[hadoop.apache.org](https://hadoop.apache.org/docs/r3.1.1/hadoop-project-dist/hadoop-common/core-default.xml)
+### 三、参考引用
+[1] [Docker下安装zookeeper（单机 & 集群）](https://www.cnblogs.com/LUA123/p/11428113.html)<br>
+[2] [林子雨-Hadoop集群安装配置教程_Hadoop3.1.3_Ubuntu](https://dblab.xmu.edu.cn/blog/2775/)<br>
+[3] [hadoop.apache.org core-default.xml](https://hadoop.apache.org/docs/r3.1.1/hadoop-project-dist/hadoop-common/core-default.xml)<br>
+[4] [hive启动后只有一个runjar进程](https://blog.51cto.com/u_16213437/7337003)<br>
+[5] [知识分享 | mysql服务器启动后，为啥有mysqld_safe和mysqld 2个进程？](https://blog.csdn.net/db_murphy/article/details/120093120)<br>
