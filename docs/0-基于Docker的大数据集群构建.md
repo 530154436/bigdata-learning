@@ -177,6 +177,8 @@ netstat -anop|grep 10002
 - 说明：通过hive shell来操作hive，但是至多只能存在一个hive shell，启动第二个会被阻塞，不支持并发操作。
 - 功能：提供交互式模式的Hive查询运行环境、启动Metastore服务
 - 路径：bin/hive =访问=> MetaStore Server =访问=>MySQL
+
+在远程模式下，必须首先启动Hive metastore服务才可以使用hive。因为`metastore`服务和`hive server`是两个单独的进程了。
 ```
 # 启动Metastore服务(进程为RunJar)
 $HIVE_HOME/bin/hive --service metastore
@@ -307,3 +309,4 @@ Could not open connection to the HS2 server. Please check the server URI and if 
 [3] [hadoop.apache.org core-default.xml](https://hadoop.apache.org/docs/r3.1.1/hadoop-project-dist/hadoop-common/core-default.xml)<br>
 [4] [hive启动后只有一个runjar进程](https://blog.51cto.com/u_16213437/7337003)<br>
 [5] [知识分享 | mysql服务器启动后，为啥有mysqld_safe和mysqld 2个进程？](https://blog.csdn.net/db_murphy/article/details/120093120)<br>
+[6] [HIVE学习之路(三):HIVESERVER2的启动与使用](https://www.freesion.com/article/5239885737/)<br>

@@ -127,12 +127,20 @@ Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数�
 
 ### 2.4 客户端
 #### 2.4.1 Hive Client、Hive Beeline Client、WebUI
-Hive发展至今，总共历经了两代客户端工具。
-
 **第一代客户端 hive shell（已废弃）**：
 - 说明：通过hive shell来操作hive，但是至多只能存在一个hive shell，启动第二个会被阻塞，不支持并发操作。
 - 功能：提供交互式模式的Hive查询运行环境、启动Metastore服务
 - 路径：bin/hive =访问=> MetaStore Server =访问=>MySQL
+
+在远程模式下，必须首先启动Hive metastore服务才可以使用hive。因为`metastore`服务和`hive server`是两个单独的进程了。
+启动`metastore`服务后只有1个`RunJar进程`：
++ `RunJar进程的作用`<br>
+  RunJar进程是Hive启动过程中的一个关键组件。它负责加载Hive的所有依赖项，并启动Hive Server服务。<br>
+  Hive Server是Hive的核心组件之一，用于接收和处理客户端的查询请求。
++ `RunJar进程的运行机制`
+  在启动Hive时，RunJar进程首先会加载Hive的所有依赖项，包括Hadoop和其他必需的库。<br>
+  然后，它会启动Hive Server服务，开始监听来自客户端的查询请求。 <br>
+  在运行过程中，RunJar进程通过连接到Hive Metastore获取元数据信息。
 ```
 # 启动Metastore服务(进程为RunJar)
 $HIVE_HOME/bin/hive --service metastore
@@ -148,7 +156,8 @@ $HIVE_HOME/bin/hive
   ②远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
 - 路径：bin/beeline =访问=> hiveServer2 =访问=> MetaStore Server =访问=> MySQL
 ```
-# 启动hiveserver2服务(进程为RunJar)
+# 前提：Metastore服务已启动
+# 启动hiveserver2服务(也是一个独立的RunJar进程)
 $HIVE_HOME/bin/hive --service metastore
 # jdbc客户端，输入连接：!connect jdbc:hive2://hive:10000
 $HIVE_HOME/bin/beeline
