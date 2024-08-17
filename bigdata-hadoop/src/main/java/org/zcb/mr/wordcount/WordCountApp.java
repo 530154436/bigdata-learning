@@ -7,6 +7,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.zcb.hdfs.HdfsUtil;
+import org.zcb.mr.wordcount.component.WordCountDataGenerator;
 import org.zcb.mr.wordcount.component.WordCountMapper;
 import org.zcb.mr.wordcount.component.WordCountReducer;
 import java.io.IOException;
@@ -18,6 +19,9 @@ import java.io.IOException;
  */
 public class WordCountApp {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+        // 先生成数据
+        WordCountDataGenerator.generateDataToHDFS();
+
         HdfsUtil hdfs = new HdfsUtil();
         hdfs.connect();
         String[] inputPaths = new String[] {"/wordcount/input.txt"};

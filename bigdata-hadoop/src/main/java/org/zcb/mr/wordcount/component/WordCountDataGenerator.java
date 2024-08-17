@@ -23,7 +23,7 @@ public class WordCountDataGenerator {
      *
      * @return 词频数据
      */
-    private static String generateData() {
+    public static String generateData() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             Collections.shuffle(WORD_LIST);
@@ -41,7 +41,7 @@ public class WordCountDataGenerator {
      *
      * @param outputPath 输出文件路径
      */
-    private static void generateDataToLocal(String outputPath) {
+    public static void generateDataToLocal(String outputPath) {
         try {
             java.nio.file.Path path = Paths.get(outputPath);
             if (Files.exists(path)) {
@@ -56,7 +56,7 @@ public class WordCountDataGenerator {
     /**
      * 模拟产生词频数据并输出到HDFS
      */
-    private static void generateDataToHDFS() {
+    public static void generateDataToHDFS() {
         FileSystem fileSystem = null;
         try {
             HdfsUtil hdfs = new HdfsUtil();
