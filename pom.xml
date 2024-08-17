@@ -18,7 +18,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <hadoop.version>3.1.1</hadoop.version>
+        <hadoop.version>3.1.4</hadoop.version>
         <hbase.version>2.2.3</hbase.version>
         <kafka.version>2.4.1</kafka.version>
         <scala.version>2.11.12</scala.version>
