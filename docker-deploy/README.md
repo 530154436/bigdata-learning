@@ -77,6 +77,13 @@ $HADOOP_HOME/bin/hdfs dfsadmin -report
 https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz
 https://apache.root.lu/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
 
+需要继承Hadoop的镜像，为了确保 Hive 能够：
+正确找到并使用 Hadoop 提供的命令行工具；
+读取 Hadoop 的配置文件，连接到 HDFS 和 YARN；
+正确提交和管理在 Hadoop 集群上执行的作业；
+依赖 Hadoop 的库文件来处理文件系统和作业执行。
+这使得 Hive 能够无缝地与 Hadoop 集群集成，并利用 Hadoop 的分布式存储和计算资源。
+
 ### 遇到的问题
 #### 1、Bind for 0.0.0.0:2181 failed: port is already allocated
 <img src="00images/zookeeper_端口映射.png" width="50%" height="50%" alt=""><br>

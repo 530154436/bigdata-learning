@@ -13,23 +13,18 @@
 # Webui:
 # http://cluster1:/
 
-GZ_FILE="/usr/local/CDP7.1.4/apache-hive-3.1.2-bin.编译.tar.gz"
-MS_CONNECTOR="/usr/local/CDP7.1.4/mysql-connector-java-5.1.43-bin.jar"
+GZ_FILE="/usr/local/CDP7.1.4/apache-hive-3.1.2-bin.tar.gz"
 INSTALL_DIR="/usr/local/hive-3.1.2"
 
 USER_GROUP=hadoop
 USER_NAME=hadoop
 HADOOP_HOME=/usr/local/hadoop-3.1.4
 
-BASE_DIR=/home/hadoop_files
-DATA_DIR=$BASE_DIR/hadoop_data
-LOGS_DIR=$BASE_DIR/hadoop_logs
-TEMP_DIR=$BASE_DIR/hadoop_tmp
-
-# 配置文件相关
-mysql_host=mysql
-mysql_connection_user_name=hive
-mysql_connection_password=123456
+# MySQL相关
+MS_CONNECTOR="/usr/local/CDP7.1.4/mysql-connector-java-5.1.43-bin.jar"
+MS_HOST=mysql
+MS_CONNECTION_USER_NAME=hive
+MS_CONNECTION_PASSWORD=123456
 
 # ---------------------------------------------------------------------------
 # 解压缩
@@ -90,20 +85,55 @@ EOF
 # ---------------------------------------------------------------------------
 function configure_hive_site_xml(){
 
-	# 替换非法字符: &#
-	sed -i "s/&#//g" $INSTALL_DIR/conf/hive-default.xml.template
+# 覆盖文件 conf/hive-site.xml
+cat > $INSTALL_DIR/conf/hive-site.xml << EOF
+<configuration>
+    <!-- 存储元数据mysql相关配置 -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value> jdbc:mysql://$MS_HOST:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</value>
+    </property>
 
-	# 修改 xml 的属性值
-	xmlstarlet ed \
-		-u 'configuration/property[name = "javax.jdo.option.ConnectionURL"]/value' -v "jdbc:mysql://$mysql_host:3306/hive" \
-		-u 'configuration/property[name = "javax.jdo.option.ConnectionDriverName"]/value' -v "com.mysql.jdbc.Driver" \
-		-u 'configuration/property[name = "javax.jdo.option.ConnectionPassword"]/value' -v "$mysql_connection_password" \
-		-u 'configuration/property[name = "javax.jdo.option.ConnectionUserName"]/value' -v "$mysql_connection_user_name" \
-		-u 'configuration/property[name = "hive.exec.local.scratchdir"]/value' -v "$TEMP_DIR/hive/iotmp" \
-		-u 'configuration/property[name = "hive.downloaded.resources.dir"]/value' -v "$TEMP_DIR/hive/iotmp" \
-		-u 'configuration/property[name = "hive.querylog.location"]/value' -v "$LOGS_DIR/hive/querylog" \
-		-u 'configuration/property[name = "hive.metastore.schema.verification"]/value' -v "false" \
-		$INSTALL_DIR/conf/hive-default.xml.template > $INSTALL_DIR/conf/hive-site.xml
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>$MS_CONNECTION_PASSWORD</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>$MS_CONNECTION_USER_NAME</value>
+    </property>
+
+    <!-- H2S运行绑定host -->
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>hive</value>
+    </property>
+
+    <!-- 远程模式部署metastore 服务地址 -->
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hive:9083</value>
+    </property>
+
+    <!-- 关闭元数据存储授权  -->
+    <property>
+        <name>hive.metastore.event.db.notification.api.auth</name>
+        <value>false</value>
+    </property>
+
+    <!-- 关闭元数据存储版本的验证 -->
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+    </property>
+</configuration>
+EOF
 
 	echo "$INSTALL_DIR/conf/hive-site.xml 配置完成."
 }
@@ -175,34 +205,7 @@ if ! command -v hive --version ; then
 	# 设置依赖包
 	cp $MS_CONNECTOR $INSTALL_DIR/lib/
 
-	# 创建 Hadoop 的数据存储目录和日志存储目录
-	if [ ! -e $BASE_DIR ]; then
-		mkdir -p $BASE_DIR
-	fi
-	if [ ! -e $DATA_DIR ]; then
-		mkdir -p $DATA_DIR
-	fi
-	if [ ! -e $LOGS_DIR ]; then
-		mkdir -p $LOGS_DIR
-	fi
-	if [ ! -e $TEMP_DIR ]; then
-	    mkdir -p $TEMP_DIR
-	fi
-	if [ ! -e $TEMP_DIR/hive ]; then
-    	mkdir -p $TEMP_DIR/hive
-  	fi
-  	if [ ! -e $TEMP_DIR/hive/iotmp ]; then
-    	mkdir -p $TEMP_DIR/hive/iotmp
-  	fi
-  	if [ ! -e $LOGS_DIR/hive ]; then
-    	mkdir -p $LOGS_DIR/hive
-  	fi
-  	if [ ! -e $LOGS_DIR/hive/querylog ]; then
-    	mkdir -p $LOGS_DIR/hive/querylog
-  	fi
-
 	# 修改文件夹的权限
-	chown -R $USER_GROUP:$USER_NAME $BASE_DIR
 	chown -R $USER_GROUP:$USER_NAME $INSTALL_DIR
 
 	# 解决日志库冲突

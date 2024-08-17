@@ -1,5 +1,7 @@
 FROM 15521147129/bigdata:debian-base
 
+RUN echo 'root:root' | chpasswd
+
 ENV JAVA_HOME=/usr/local/jdk1.8.0_112
 ENV HADOOP_HOME=/usr/local/hadoop-3.1.4
 
