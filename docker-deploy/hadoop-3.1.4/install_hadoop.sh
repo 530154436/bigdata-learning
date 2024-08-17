@@ -217,6 +217,16 @@ cat > $INSTALL_DIR/etc/hadoop/core-site.xml << EOF
 
   <!-- 指定 zookeeper 地址，配置 HA 时需要 -->
 
+  <!-- hiveserver2配置 -->
+  <property>
+    <name>hadoop.proxyuser.hive.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.hive.groups</name>
+    <value>*</value>
+  </property>
+
 </configuration>
 
 

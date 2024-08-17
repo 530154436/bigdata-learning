@@ -126,34 +126,53 @@ Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数�
 <img src="images/hive/hive02_metastore远程模式.png" width="40%" height="40%" alt="">
 
 ### 2.4 客户端
-#### 2.4.1 Hive Client、Hive Beeline Client
+#### 2.4.1 Hive Client、Hive Beeline Client、WebUI
 Hive发展至今，总共历经了两代客户端工具。
 
-**第一代客户端**：
-- 工具：`$HIVE_HOME/bin/hive`
-- 状态：已废弃（deprecated，不推荐使用）
-- 功能：<br>
-  ①提供交互式或批处理模式的Hive查询运行环境。<br>
-  ②用于启动Hive相关服务（如Metastore服务）。
-- 访问路径：直接通过MetaServer访问元数据<br>
-  bin/hive =访问=> MetaStore Server =访问=>MySQL
+**第一代客户端 hive shell（已废弃）**：
+- 说明：通过hive shell来操作hive，但是至多只能存在一个hive shell，启动第二个会被阻塞，不支持并发操作。
+- 功能：提供交互式模式的Hive查询运行环境、启动Metastore服务
+- 路径：bin/hive =访问=> MetaStore Server =访问=>MySQL
+```
+# 启动Metastore服务(进程为RunJar)
+$HIVE_HOME/bin/hive --service metastore
+# 客户端
+$HIVE_HOME/bin/hive
+```
 
 **第二代客户端**：
 - 工具：`$HIVE_HOME/bin/beeline`
-- 状态：官方强烈推荐使用
-- 功能：<br>
-  ①是一个JDBC客户端，性能和安全性较第一代客户端有显著提升。<br>
-  ②在嵌入式模式和远程模式下均可工作。<br>
-  嵌入式模式：运行嵌入式Hive，类似于第一代Hive Client。
-  远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
-- 访问路径：通过HiveServer2访问元数据<br>
-  bin/beeline =访问=> hiveServer2 =访问=> MetaStore Server =访问=> MySQL
-- `Beeline`是JDBC的客户端，通过JDBC协议和Hiveserver2服务进行通信，协议的地址是：`jdbc:hive2://hive:10000`
+- 说明：通过jdbc协议访问hive，支持高并发。
+- 功能：在嵌入式模式和远程模式下均可工作。<br>
+  ①嵌入式模式：运行嵌入式Hive，类似于第一代Hive Client。
+  ②远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
+- 路径：bin/beeline =访问=> hiveServer2 =访问=> MetaStore Server =访问=> MySQL
+```
+# 启动hiveserver2服务(进程为RunJar)
+$HIVE_HOME/bin/hive --service metastore
+# jdbc客户端，输入连接：!connect jdbc:hive2://hive:10000
+$HIVE_HOME/bin/beeline
+```
+```
+hive@hive:~$ $HIVE_HOME/bin/beeline
+Beeline version 3.1.2 by Apache Hive
+beeline> !connect jdbc:hive2://hive:10000
+Connecting to jdbc:hive2://hive:10000
+Enter username for jdbc:hive2://hive:10000: hive
+Enter password for jdbc:hive2://hive:10000: ****
+Connected to: Apache Hive (version 3.1.2)
+Driver: Hive JDBC (version 3.1.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://hive:10000> 
+```
+
+**WebUI**
++ 通过`HUE`/`Zeppelin`来对Hive表进行操作。
   
 那么问题来了，HiveServer2是什么？HiveServer1哪里去了？
 
 #### 2.4.2 HiveServer、HiveServer2服务
-HiveServer、`HiveServer2`(HS2)是Hive自带的一项服务，允许客户端在不启动CLI的情况下对Hive中的数据进行操作，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
+HiveServer(RunJar进程)、`HiveServer2`(HS2、RunJar进程)是Hive自带的一项服务，允许客户端在不启动CLI的情况下对Hive中的数据进行操作，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
 
 + HiveServer不能处理多于一个客户端的并发请求。
 + 因此在Hive-0.11.0版本中重写了HiveServer代码得到了HiveServer2，进而解决了该问题，HiveServer已经被废弃。

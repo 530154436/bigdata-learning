@@ -119,6 +119,16 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
         <value>10000</value>
     </property>
 
+    <!-- H2S web ui-->
+    <property>
+        <name>hive.server2.webui.host</name>
+        <value>0.0.0.0</value>
+    </property>
+    <property>
+        <name>hive.server2.webui.port</name>
+        <value>10002</value>
+    </property>
+
     <!-- 远程模式部署 metastore 服务地址 -->
     <property>
         <name>hive.metastore.uris</name>

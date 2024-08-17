@@ -4,6 +4,9 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-hadoop构建和部署">1.2 Hadoop构建和部署</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-mysql构建与部署">1.3 MySQL构建与部署</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-hive构建与部署远程模式">1.4 Hive构建与部署(远程模式)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#141-部署">1.4.1 部署</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#142-第一代客户端-hive-shell">1.4.2 第一代客户端 hive shell</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#143-hivesever2-和-beeline">1.4.3 HiveSever2 和 Beeline</a><br/>
 <a href="#二遇到的问题">二、遇到的问题</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hadoop">2.1 Hadoop</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1ssh-connect-to-host-hadoop101-port-22-connection-refused">1）ssh: connect to host hadoop101 port 22: Connection refused</a><br/>
@@ -11,6 +14,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1docker-access-denied-for-user-rootxxx">1）docker Access denied for user 'root'@'xxx'</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#23hive">2.3、Hive</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1nosuchmethoderror-xxxpreconditionscheckargument">1）NoSuchMethodError: xxx.Preconditions.checkArgument</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2main-warn-jdbchiveconnection-failed-to-connect-to-hive10000">2）[main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#2x-zookeeper">2.x Zookeeper</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1bind-for-00002181-failed-port-is-already-allocated">1）Bind for 0.0.0.0:2181 failed: port is already allocated</a><br/>
 <a href="#三参考引用">三、参考引用</a><br/>
@@ -143,25 +147,9 @@ ps -ef | grep mysqld
 3. 正确提交和管理在 Hadoop 集群上执行的作业；
 4. 依赖 Hadoop 的库文件来处理文件系统和作业执行。
 
-这使得 Hive 能够无缝地与 Hadoop 集群集成，并利用 Hadoop 的分布式存储和计算资源。<br>
+这使得 Hive 能够无缝地与 Hadoop 集群集成，并利用 Hadoop 的分布式存储和计算资源，此外还依赖`MySQL服务器`。<br>
 
-启动`metastore`服务，只有1个`RunJar进程`：
-+ `RunJar进程的作用`<br>
-  RunJar进程是Hive启动过程中的一个关键组件。它负责加载Hive的所有依赖项，并启动Hive Server服务。<br>
-  Hive Server是Hive的核心组件之一，用于接收和处理客户端的查询请求。
-+ `RunJar进程的运行机制`
-  在启动Hive时，RunJar进程首先会加载Hive的所有依赖项，包括Hadoop和其他必需的库。<br>
-  然后，它会启动Hive Server服务，开始监听来自客户端的查询请求。 <br>
-  在运行过程中，RunJar进程通过连接到Hive Metastore获取元数据信息。
-
-Hive经过发展，推出了第二代客户端`beeline`，但是beeline客户端不是直接访问metastore服务的，而是需要单独启动hiveserver2服务。
-在hive运行的服务器上，首先启动metastore服务，然后启动`hiveserver2`服务：
-- `Beeline`是JDBC的客户端，通过JDBC协议和Hiveserver2服务进行通信
-- Hiveserver2协议的地址是：`jdbc:hive2://hive:10000`
-
-Web UI for HiveServer2：
-
-
+##### 1.4.1 部署
 构建镜像：
 ```shell
 docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:hive-3.1.2 -f hive-3.1.2/Dockerfile .
@@ -176,6 +164,62 @@ docker compose -f hive-3.1.2/docker-compose.yml up -d
 ```shell
 $JAVA_HOME/bin/jps
 ```
+检查HiveSever2是否监听`10000`/`10002`端口
+```
+netstat -anop|grep 10000
+# tcp6     0      0 :::10000    :::*    LISTEN      299/qemu-x86_64      off (0.00/0/0)
+netstat -anop|grep 10002
+# tcp6     0      0 :::10002    :::*    LISTEN      299/qemu-x86_64      off (0.00/0/0)
+```
+
+##### 1.4.2 第一代客户端 hive shell
+**第一代客户端 hive shell（已废弃）**：
+- 说明：通过hive shell来操作hive，但是至多只能存在一个hive shell，启动第二个会被阻塞，不支持并发操作。
+- 功能：提供交互式模式的Hive查询运行环境、启动Metastore服务
+- 路径：bin/hive =访问=> MetaStore Server =访问=>MySQL
+```
+# 启动Metastore服务(进程为RunJar)
+$HIVE_HOME/bin/hive --service metastore
+# 客户端
+$HIVE_HOME/bin/hive
+```
+启动后`metastore`服务只有1个`RunJar进程`：
++ `RunJar进程的作用`<br>
+  RunJar进程是Hive启动过程中的一个关键组件。它负责加载Hive的所有依赖项，并启动Hive Server服务。<br>
+  Hive Server是Hive的核心组件之一，用于接收和处理客户端的查询请求。
++ `RunJar进程的运行机制`
+  在启动Hive时，RunJar进程首先会加载Hive的所有依赖项，包括Hadoop和其他必需的库。<br>
+  然后，它会启动Hive Server服务，开始监听来自客户端的查询请求。 <br>
+  在运行过程中，RunJar进程通过连接到Hive Metastore获取元数据信息。
+
+##### 1.4.3 HiveSever2 和 Beeline
+Hive经过发展，推出了第二代客户端`beeline`，但是beeline客户端不是直接访问metastore服务的，而是需要单独启动hiveserver2服务。
+在hive运行的服务器上，首先启动metastore服务，然后启动`hiveserver2`服务：
+- `Beeline`是JDBC的客户端，通过JDBC协议和Hiveserver2服务进行通信
+- Hiveserver2协议的地址是：`jdbc:hive2://hive:10000`
+
+```
+# 启动hiveserver2服务(进程为RunJar)
+$HIVE_HOME/bin/hive --service hiveserver2
+# jdbc客户端，输入连接：!connect jdbc:hive2://hive:10000
+$HIVE_HOME/bin/beeline
+```
+操作如下：
+```
+hive@hive:~$ $HIVE_HOME/bin/beeline
+Beeline version 3.1.2 by Apache Hive
+beeline> !connect jdbc:hive2://hive:10000
+Connecting to jdbc:hive2://hive:10000
+Enter username for jdbc:hive2://hive:10000: hive
+Enter password for jdbc:hive2://hive:10000: ****
+Connected to: Apache Hive (version 3.1.2)
+Driver: Hive JDBC (version 3.1.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://hive:10000> 
+```
+Web UI for HiveServer2：http://127.0.0.1:10002/<br>
+
+<img src="images/docker/hivesever2_webui.png" width="80%" height="80%" alt=""><br>
 
 ### 二、遇到的问题
 
@@ -238,8 +282,18 @@ EOF
 Could not open connection to the HS2 server. Please check the server URI and if the URI is correct, then ask the administrator to check the server status.
 ```
 原因：客户端无法连接到HiveServer2<br>
-解决方案：<br>
-
+解决方案：$HADOOP_HOME/etc/hadoop的`core-site.xml`缺少以下配置，加入以下配置后问题成功解决。<br>
+```
+<!-- hiveserver2配置 -->
+<property>
+  <name>hadoop.proxyuser.hive.hosts</name>
+  <value>*</value>
+</property>
+<property>
+  <name>hadoop.proxyuser.hive.groups</name>
+  <value>*</value>
+</property>
+```
 
 #### 2.x Zookeeper
 ##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated
