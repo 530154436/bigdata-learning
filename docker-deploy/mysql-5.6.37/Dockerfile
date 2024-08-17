@@ -10,7 +10,8 @@ RUN groupadd mysql \
     && useradd -s /bin/bash -g mysql -d /home/mysql -m mysql \
     && echo 'mysql:mysql' | chpasswd
 # passwordless with sudo for mysql user
-RUN echo "mysql ALL=(ALL)  NOPASSWD:ALL" > /etc/sudoers
+RUN sed -i '1i #includedir /etc/sudoers.d' /etc/sudoers
+RUN echo "mysql ALL=NOPASSWD: ALL" > "/etc/sudoers.d/mysql-docker"
 
 # 安装MySQL
 COPY CDP7.1.4/mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz /usr/local/CDP7.1.4/mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz
