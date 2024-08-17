@@ -1,5 +1,7 @@
 #!/bin/bash
 
+HIVE_HOME=/usr/local/hive-3.1.2
+
 echo "[INFO] hive starting..."
 
 # 通过标志文件来判断 Hive 是否已经初始化。
