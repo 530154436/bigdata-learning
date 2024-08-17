@@ -8,13 +8,13 @@ USER_GROUP=mysql
 USER_NAME=mysql
 MYSQL_ROOT_PASSWORD="123456"
 
-
 # ---------------------------------------------------------------------------
 # 解压缩
 # ---------------------------------------------------------------------------
 function decompress(){
-	if [ -e ${INSTALL_DIR} ]; then
-		echo "安装目录(${INSTALL_DIR})已存在."
+  if [ -e ${INSTALL_DIR} ]; then
+		echo "安装目录(${INSTALL_DIR})已存在.
+		"
 		# rm -r ${INSTALL_DIR}
 		return
 	fi
