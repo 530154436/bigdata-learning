@@ -14,6 +14,7 @@ services:
     ports:
       - 9083:9083
       - 10000:10000
+      - 10002:10002
     environment:
       - PREREQUISITE_SERVERS=mysql-3306:hadoop101-8088
     tty: true

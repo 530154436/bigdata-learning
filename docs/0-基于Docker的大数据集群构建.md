@@ -159,6 +159,9 @@ Hive经过发展，推出了第二代客户端`beeline`，但是beeline客户端
 - `Beeline`是JDBC的客户端，通过JDBC协议和Hiveserver2服务进行通信
 - Hiveserver2协议的地址是：`jdbc:hive2://hive:10000`
 
+Web UI for HiveServer2：
+
+
 构建镜像：
 ```shell
 docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:hive-3.1.2 -f hive-3.1.2/Dockerfile .
@@ -227,6 +230,15 @@ EOF
 解决方案：<br>
 1）查看hadoop安装目录下share/hadoop/common/lib内guava.jar版本<br>
 2）查看hive安装目录下lib内guava.jar的版本 如果两者不一致，删除版本低的，并拷贝高版本的
+
+##### 2）[main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000
+使用beeline客户端访问时报错：
+```
+[main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000
+Could not open connection to the HS2 server. Please check the server URI and if the URI is correct, then ask the administrator to check the server status.
+```
+原因：客户端无法连接到HiveServer2<br>
+解决方案：<br>
 
 
 #### 2.x Zookeeper

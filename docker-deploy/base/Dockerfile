@@ -7,7 +7,7 @@ FROM debian:bullseye-slim
 WORKDIR /root
 
 RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
-    iputils-ping openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat \
+    iputils-ping openssh-client openssh-server rsync grsync curl gnupg sudo vim netcat net-tools \
     libaio1 libncurses5 libnuma1 zlib1g libssl-dev libgcc1 libstdc++6 libtinfo5 perl expect \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

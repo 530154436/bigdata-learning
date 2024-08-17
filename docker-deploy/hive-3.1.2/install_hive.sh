@@ -109,10 +109,14 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
         <value>$MS_CONNECTION_PASSWORD</value>
     </property>
 
-    <!-- H2S运行绑定host -->
+    <!-- H2S运行绑定host/port -->
     <property>
         <name>hive.server2.thrift.bind.host</name>
-        <value>hive</value>
+        <value>0.0.0.0</value>
+    </property>
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
     </property>
 
     <!-- 远程模式部署 metastore 服务地址 -->
