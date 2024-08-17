@@ -5,16 +5,17 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-mysql构建与部署">1.3 MySQL构建与部署</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-hive构建与部署远程模式">1.4 Hive构建与部署(远程模式)</a><br/>
 <a href="#二遇到的问题">二、遇到的问题</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-zookeeper">2.1 Zookeeper</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1bind-for-00002181-failed-port-is-already-allocated">1）Bind for 0.0.0.0:2181 failed: port is already allocated</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-hadoop">2.2 Hadoop</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hadoop">2.1 Hadoop</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1ssh-connect-to-host-hadoop101-port-22-connection-refused">1）ssh: connect to host hadoop101 port 22: Connection refused</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-mysql">2.3 MySQL</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-mysql">2.2 MySQL</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1docker-access-denied-for-user-rootxxx">1）docker Access denied for user 'root'@'xxx'</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24hive">2.4、Hive</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23hive">2.3、Hive</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1nosuchmethoderror-xxxpreconditionscheckargument">1）NoSuchMethodError: xxx.Preconditions.checkArgument</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2x-zookeeper">2.x Zookeeper</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1bind-for-00002181-failed-port-is-already-allocated">1）Bind for 0.0.0.0:2181 failed: port is already allocated</a><br/>
 <a href="#三参考引用">三、参考引用</a><br/>
 </nav>
+
 
 ### 一、基于Docker搭建大数据集群
 查看系统内核版本（Debian 11）：cat /proc/version
