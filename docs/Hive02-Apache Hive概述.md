@@ -148,6 +148,7 @@ Hive发展至今，总共历经了两代客户端工具。
   远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
 - 访问路径：通过HiveServer2访问元数据<br>
   bin/beeline =访问=> hiveServer2 =访问=> MetaStore Server =访问=> MySQL
+- `Beeline`是JDBC的客户端，通过JDBC协议和Hiveserver2服务进行通信，协议的地址是：`jdbc:hive2://hive:10000`
   
 那么问题来了，HiveServer2是什么？HiveServer1哪里去了？
 

@@ -13,6 +13,7 @@ services:
     restart: always
     ports:
       - 9083:9083
+      - 10000:10000
     environment:
       - PREREQUISITE_SERVERS=mysql-3306:hadoop101-8088
     tty: true

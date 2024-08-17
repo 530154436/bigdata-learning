@@ -115,7 +115,7 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
         <value>hive</value>
     </property>
 
-    <!-- 远程模式部署metastore 服务地址 -->
+    <!-- 远程模式部署 metastore 服务地址 -->
     <property>
         <name>hive.metastore.uris</name>
         <value>thrift://hive:9083</value>
