@@ -16,8 +16,8 @@
 GZ_FILE="/usr/local/CDP7.1.4/apache-hive-3.1.2-bin.tar.gz"
 INSTALL_DIR="/usr/local/hive-3.1.2"
 
+USER_NAME=hive
 USER_GROUP=hadoop
-USER_NAME=hadoop
 HADOOP_HOME=/usr/local/hadoop-3.1.4
 
 # MySQL相关

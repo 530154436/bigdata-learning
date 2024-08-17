@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  hive:
+    image: wechar/hive
+    hostname: hive
+    container_name: hive
+    user: hive
+    command: sh -c "/dockerentry/run.sh"
+    restart: always
+    ports:
+      - 9083:9083
+    environment:
+      - PREREQUISITE_SERVERS=mysql-3306:hadoop101-8088
+    tty: true
