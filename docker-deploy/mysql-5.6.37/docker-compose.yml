@@ -14,7 +14,8 @@ services:
       TZ: Asia/Shanghai
     user: mysql
     command: sh -c "/dockerentry/setup-mysql-for-hive.sh"
-    restart: always
+    restart: no
+    # restart: always
     ports:
       - 3307:3306
     tty: true

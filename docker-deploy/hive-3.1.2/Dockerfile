@@ -21,6 +21,10 @@ RUN rm /usr/local/CDP7.1.4/apache-hive-3.1.2-bin.tar.gz
 # 启动脚本
 COPY hive-3.1.2/run.sh /dockerentry/run.sh
 RUN chmod a+x /dockerentry/run.sh
+COPY hive-3.1.2/run-metastore.sh /dockerentry/run-metastore.sh
+RUN chmod a+x /dockerentry/run-metastore.sh
+COPY hive-3.1.2/run-hiveserver2.sh /dockerentry/run-hiveserver2.sh
+RUN chmod a+x /dockerentry/run-hiveserver2.sh
 
 # 设置工作目录为 hadoop 用户的home目录
 USER hive

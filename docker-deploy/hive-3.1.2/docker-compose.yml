@@ -9,8 +9,9 @@ services:
     hostname: hive
     container_name: hive
     user: hive
-    command: sh -c "/dockerentry/run.sh"
-    restart: always
+    command: /bin/bash -c "/dockerentry/run.sh"
+    restart: no
+    # restart: always
     ports:
       - 9083:9083
       - 10000:10000

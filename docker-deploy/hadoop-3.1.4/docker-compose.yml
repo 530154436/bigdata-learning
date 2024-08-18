@@ -11,7 +11,8 @@ services:
     container_name: hadoop101
     user: hadoop
     command: sh -c "/dockerentry/run-namenode.sh"
-    restart: always
+    restart: no
+    # restart: always
     ports:
       - 9000:9000
       - 10020:10020
@@ -34,7 +35,8 @@ services:
     container_name: hadoop102
     user: hadoop
     command: sh -c "/dockerentry/run-datanode.sh"
-    restart: always
+    restart: no
+    # restart: always
     ports:
       - 8888:8888
       - 19866:9866
@@ -50,7 +52,8 @@ services:
     container_name: hadoop103
     user: hadoop
     command: sh -c "/dockerentry/run-datanode.sh"
-    restart: always
+    restart: no
+    # restart: always
     ports:
       - 9868:9868
       - 29866:9866
