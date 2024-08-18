@@ -19,35 +19,33 @@ public class HdfsUtil{
      * 2、加载通过conf.addResources()加载的配置文件
      * 3、加载conf.set(name, value)
      */
-    private Configuration conf = null;
-    private URI uri = null;
-    private FileSystem fs = null;
+    private String fsUri = "hdfs://hadoop101:9000";
+    private String user = "hadoop";
 
-    static final String defaultUser = "hadoop";
-    private String user = null;
+    private Configuration conf = null;
+    private FileSystem fs = null;
 
     public HdfsUtil(){
         this(null);
     }
     public HdfsUtil(Map<String, String> conf){
-        this(conf, defaultUser);
+        this.setConfiguration(conf);
     }
     public HdfsUtil(Map<String, String> conf, String user){
+        this(conf);
         this.user = user;
-        this.setConfiguration(conf);
+    }
+    public HdfsUtil(Map<String, String> conf, String user, String fsUri){
+        this(conf, user);
+        this.fsUri = fsUri;
     }
     public void setConfiguration(Map<String, String> config){
         if(this.conf == null){
             this.conf = new Configuration();
         }
-        try {
-            this.uri = new URI("hdfs://hadoop101:9000");
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
         conf.addResource("hadoop-3.1.1/core-site.xml");
         conf.addResource("hadoop-3.1.1/hdfs-site.xml");
-        conf.set("dfs.client.use.datanode.hostname", "true");
+        conf.set("dfs.client.use.datanode.hostname", "true"); // 解决DataNode找不到的问题
         if(config!= null && !config.isEmpty()){
             for (Map.Entry<String, String> e : config.entrySet()) {
                 conf.set(e.getKey(), e.getValue());
@@ -61,10 +59,11 @@ public class HdfsUtil{
      */
     public void connect(){
         try {
+            URI uri = new URI(this.fsUri);
             fs = FileSystem.get(uri, conf, user);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

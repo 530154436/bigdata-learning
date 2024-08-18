@@ -101,11 +101,11 @@ WebGUI是通过浏览器访问Hive。<br>
 ### 2.3 元数据配置方式
 Metastore服务配置有3种模式：内嵌模式、本地模式、远程模式。区分3种配置方式的关键是弄清楚两个问题：
 
-| 配置方式          | Metastore服务是否需要单独配置、单独启动？ | Metadata存储位置                          |
-|-------------------|--------------------------------------------|-------------------------------------------|
-| **内嵌模式**      | 不需要                                      | 内置的Derby数据库                          |
-| **本地模式**      | 不需要                                      | 第三方RDBMS（如MySQL）                     |
-| **远程模式**      | 需要                                        | 第三方RDBMS（如MySQL）                     |
+| 配置方式     | Metastore服务是否需要单独配置、单独启动？ | Metadata存储位置     |
+|----------|---------------------------|------------------|
+| **内嵌模式** | 不需要                       | 内置的Derby数据库      |
+| **本地模式** | 不需要                       | 第三方RDBMS（如MySQL） |
+| **远程模式** | 需要                        | 第三方RDBMS（如MySQL） |
 
 1、`内嵌模式`（Embedded Metastore）：<br>
 默认部署模式，元数据存储在内置的Derby数据库中。<br>
@@ -191,7 +191,10 @@ HS2 是作为复合服务运行的单个进程，其中包括`基于Thrift的Hiv
 
 > 基于Thrift的Hive服务是HS2的核心，并负责为Hive查询提供服务(例如，来自 Beeline)。 <br>
 Thrift是用于构建跨平台服务的RPC框架，它的堆栈由 4 层组成： 服务器，传输，协议和处理器。<br>
-HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服务器用于 HTTP 模式。
+HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服务器用于 HTTP 模式。 
+
+#### 2.4.3 使用JDBC协议连接SERVER（JavaAPI）
+
 
 ## 三、Hive数据模型
 数据模型：用来描述数据、组织数据和对数据进行操作，是对现实世界数据特征的描述。Hive的数据模型类似于RDBMS库表结构，包含数据库（Database）、表（Table）、分区表（Partition）和桶表（Bucket）四种数据类型，其模型如下图所示。<br>
@@ -244,19 +247,20 @@ Bucket分桶表在hdfs中表现为同一个表目录下数据根据hash散列之
 ## 四、Hive与传统数据库对比
 Hive虽然与RDBMS数据库在数据模型、SQL语法等方面都十分相似，但应用场景却完全不同。Hive只适合用来做海量数据的离线分析。Hive的定位是数据仓库，面向分析的OLAP系统。具体的对比如下图所示：
 
-| 对比项           | Hive    | MySQL                      |
-| ---------------- | ------- | -------------------------- |
-| 查询语言         | Hive QL | SQL                         |
-| 数据存储位置     | HDFS    | 块设备、本地文件系统        |
-| 数据格式         | 用户定义 | 系统决定                   |
-| 数据更新         | 不支持  | 支持                        |
-| 事务             | 不支持  | 支持                        |
-| 执行延迟         | 高      | 低                          |
-| 可扩展性         | 高      | 低                          |
-| 数据规模         | 大      | 小                          |
-| 多表插入         | 支持    | 不支持                      |
+| 对比项    | Hive    | MySQL      |
+|--------|---------|------------|
+| 查询语言   | Hive QL | SQL        |
+| 数据存储位置 | HDFS    | 块设备、本地文件系统 |
+| 数据格式   | 用户定义    | 系统决定       |
+| 数据更新   | 不支持     | 支持         |
+| 事务     | 不支持     | 支持         |
+| 执行延迟   | 高       | 低          |
+| 可扩展性   | 高       | 低          |
+| 数据规模   | 大       | 小          |
+| 多表插入   | 支持      | 不支持        |
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
 [2] [docs4dev-HiveServer2_Overview.html](https://www.docs4dev.com/docs/zh/apache-hive/3.1.1/reference/HiveServer2_Overview.html) <br>
 [3] [Apache-HiveServer2_Overview.html](https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Overview) <br>
+[4] [Apache-HiveServer2 Clients](https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients) <br>

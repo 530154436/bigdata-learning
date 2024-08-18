@@ -215,8 +215,6 @@ cat > $INSTALL_DIR/etc/hadoop/core-site.xml << EOF
     <value>1440</value> 
   </property>
 
-  <!-- 指定 zookeeper 地址，配置 HA 时需要 -->
-
   <!-- hiveserver2配置 -->
   <property>
     <name>hadoop.proxyuser.hive.hosts</name>
@@ -296,18 +294,6 @@ cat > $INSTALL_DIR/etc/hadoop/hdfs-site.xml << EOF
   </property>
 
   <!-- 数据节点配置 -->
-  <property>
-    <name>dfs.datanode.address</name>
-    <value>0000:9866</value>
-  </property>
-  <property>
-    <name>dfs.datanode.http.address</name>
-    <value>0000:9864</value>
-  </property>
-  <property>
-    <name>dfs.datanode.ipc.address</name>
-    <value>0000:9867</value>
-  </property>
   <property>
     <name>dfs.client.use.datanode.hostname</name>
     <value>true</value>

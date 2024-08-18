@@ -12,17 +12,41 @@
         <module>bigdata-common</module>
         <module>bigdata-spark</module>
         <module>bigdata-hadoop</module>
-        <!--        <module>bigdata-hadoop</module>-->
+        <module>bigdata-hive</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <hadoop.version>3.1.4</hadoop.version>
+        <hive.version>3.1.2</hive.version>
         <hbase.version>2.2.3</hbase.version>
         <kafka.version>2.4.1</kafka.version>
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <spark.version>2.4.5</spark.version>
     </properties>
+
+    <dependencies>
+        <!-- 查找依赖:https://mvnrepository.com/-->
+        <!--  单元测试  -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.6.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

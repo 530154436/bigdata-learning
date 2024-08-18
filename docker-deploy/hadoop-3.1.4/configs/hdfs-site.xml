@@ -45,6 +45,11 @@
     <value>true</value> 
   </property>
 
+  <!-- 数据节点配置 -->
+  <property>
+    <name>dfs.client.use.datanode.hostname</name>
+    <value>true</value>
+  </property>
 </configuration>
 
 

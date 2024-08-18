@@ -19,15 +19,18 @@ echo "MySQL 启动完成，准备连接。"
 ## 使用mysqladmin工具进行密码修改
 #${MYSQL_HOME}/bin/mysqladmin -uroot -p123456 password "123456"
 
-# 检查 Hive 数据库是否已经存在
-DB_EXISTS=$(echo "SHOW DATABASES LIKE 'hive';" | ${MYSQL_HOME}/bin/mysql -h${MYSQL_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD} | grep hive)
+# 检查 Hive 用户是否已经存在
+USER_EXISTS=$(echo "SELECT User FROM mysql.user WHERE User = 'hive';" | ${MYSQL_HOME}/bin/mysql -h${MYSQL_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD} | grep hive)
 
 # 如果 Hive 数据库不存在，执行数据库创建和配置
-if [ -z "$DB_EXISTS" ]; then
-  echo "Hive 数据库不存在，正在创建..."
+if [ -z "$USER_EXISTS" ]; then
+  echo "Hive 用户不存在，正在创建..."
   ${MYSQL_HOME}/bin/mysql -h${MYSQL_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD} <<EOF
-    /* 创建 Hive 数据库 */
-    CREATE DATABASE hive;
+    /* 创建 Hive 用户并授予权限 */
+    CREATE USER 'hive'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
+    GRANT ALL ON hive.* TO 'hive'@'%';
+    GRANT ALL ON hive.* TO 'hive'@'localhost';
+    GRANT ALL ON hive.* TO 'hive'@'hive';
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
     /* 设置编码 */
@@ -39,16 +42,10 @@ if [ -z "$DB_EXISTS" ]; then
     SET collation_connection = utf8_general_ci;
     SET collation_database = utf8_general_ci;
     SET collation_server = utf8_general_ci;
-    /* 创建用户并授予权限 */
-    CREATE USER 'hive'@'%' IDENTIFIED BY '123456';
-    GRANT ALL ON hive.* TO 'hive'@'%';
-    GRANT ALL ON hive.* TO 'hive'@'localhost';
-    GRANT ALL ON hive.* TO 'hive'@'hive';
-    FLUSH PRIVILEGES;
 EOF
-  echo "Hive 数据库创建成功。"
+  echo "Hive 用户创建成功。"
 else
-  echo "Hive 数据库已存在，跳过创建。"
+  echo "Hive 用户已存在，跳过创建。"
 fi
 
 # 查看当前用户

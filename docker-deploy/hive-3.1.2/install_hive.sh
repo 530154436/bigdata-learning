@@ -112,17 +112,21 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
     <!-- H2S运行绑定host/port -->
     <property>
         <name>hive.server2.thrift.bind.host</name>
-        <value>0.0.0.0</value>
+        <value>hive</value>
     </property>
     <property>
         <name>hive.server2.thrift.port</name>
         <value>10000</value>
     </property>
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>true</value>
+    </property>
 
     <!-- H2S web ui-->
     <property>
         <name>hive.server2.webui.host</name>
-        <value>0.0.0.0</value>
+        <value>hive</value>
     </property>
     <property>
         <name>hive.server2.webui.port</name>
