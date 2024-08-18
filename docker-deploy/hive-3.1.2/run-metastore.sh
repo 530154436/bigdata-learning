@@ -2,7 +2,7 @@
 
 # hive启动后只有一个RunJar进程
 echo "[INFO] 启动 Metastore 服务..."
-nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.log.file=hivemetastore.log --hiveconf hive.log.dir=/var/log/hive > /var/log/hive/metastore.out 2> /var/log/hive/metastore.err &
+nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.log.file=hivemetastore.log --hiveconf hive.log.dir=/var/log/hive > /var/log/hive/hivemetastore.out &
 
 # 设置超时时间（例如，60秒）
 timeout=600
