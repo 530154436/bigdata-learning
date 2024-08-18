@@ -296,6 +296,19 @@ Could not open connection to the HS2 server. Please check the server URI and if 
   <value>*</value>
 </property>
 ```
+##### 3）[main]: java.net.SocketException: Connection reset
+执行`$HIVE_HOME/bin/hive`后报错：
+```
+FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.DDLTask.
+MetaException(message:Got exception: 
+java.net.ConnectException Call From hive/172.18.0.6 to hadoop101:9000 failed 
+on connection exception: java.net.ConnectException: Connection refused; 
+For more details see:  http://wiki.apache.org/hadoop/ConnectionRefused)
+
+Could not open client transport with JDBC Uri: 
+jdbc:hive2://hive:10000/test: java.net.SocketException: Connection reset
+```
+莫名其妙，过一会又自己好了，不知道是不是因为跟mac M1上运行docker有关系.
 
 #### 2.x Zookeeper
 ##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated

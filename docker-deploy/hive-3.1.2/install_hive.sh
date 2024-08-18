@@ -93,17 +93,14 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
         <name>javax.jdo.option.ConnectionURL</name>
         <value> jdbc:mysql://$MS_HOST:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</value>
     </property>
-
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>com.mysql.jdbc.Driver</value>
     </property>
-
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
         <value>$MS_CONNECTION_USER_NAME</value>
     </property>
-
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>$MS_CONNECTION_PASSWORD</value>
