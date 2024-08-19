@@ -48,6 +48,19 @@ Hadoop大数据平台安装包：各组件版本信息参考 [Cloudera CDP7.1.4]
 | hive      | 15521147129/bigdata:hive-3.1.2           | RunJar                                        |
 
 
+`UI 列表`：
+Namenode: http://localhost:9870/dfshealth.html#tab-overview
+Datanode: http://localhost:9864/
+ResourceManager: http://localhost:8088/cluster
+NodeManager: http://localhost:8042/node
+HistoryServer: http://localhost:8188/applicationhistory
+HiveServer2: http://localhost:10002/
+Spark Master: http://localhost:8080/
+Spark Worker: http://localhost:8081/
+Spark Job WebUI: http://localhost:4040/ (当 Spark 任务在 spark-master 运行时才可访问)
+Presto WebUI: http://localhost:8090/
+Spark History Server：http://localhost:18080/
+
 #### 1.1 基础镜像构建
 Debian 11 (代号为 "Bullseye") 是 Debian 项目的最新稳定版本，发布于 2021 年。它继承了 Debian 一贯的稳定性和安全性，同时引入了一系列的新特性和软件包更新。Debian 11 提供了一个强大的平台，适合服务器、桌面和嵌入式系统等多种应用场景。
 ```shell
@@ -308,7 +321,7 @@ Error: Could not open client transport with JDBC Uri: jdbc:hive2://hive:10000: F
 172.18.0.5      hadoop101
 ```
 
-##### 4）[main]: java.net.SocketException: Connection reset/refused
+##### 4）[main]: java.net.SocketException: Connection reset/refused(待定)
 通过Java程序JDBC连接Hive时报错：
 ```
 java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2://hive:10000/test: java.net.SocketException: Connection reset
@@ -317,7 +330,7 @@ java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2
   at java.sql.DriverManager.getConnection(DriverManager.java:664)
   at java.sql.DriverManager.getConnection(DriverManager.java:247)
 ```
-同时，HiveServer2服务在启动时也经常报以下错误：
+HiveServer2服务在启动时也经常报以下错误：
 ```
 2024-08-19T14:39:56,201 DEBUG [main] ipc.Client: Failed to connect to server: hadoop101/172.18.0.2:9000: try once and fail.
 java.net.ConnectException: Connection refused
@@ -325,19 +338,26 @@ java.net.ConnectException: Connection refused
         at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717) ~[?:1.8.0_112]
         at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206) ~[hadoop-common-3.1.4.jar:?]
 ```
-原因：<br>
-Hadoop NameNode在hadoop101上监听172.18.0.4:9000端口是正常的。
+HiveServer2服务一直在重启
 ```
-netstat -anop|grep 9083
-tcp6     0      0 :::9083    :::*    LISTEN       391/qemu-x86_64      off (0.00/0/0)
+024-08-19T18:00:09,632  INFO [main] handler.ContextHandler: Stopped o.e.j.w.WebAppContext@62f11ebb{/,null,UNAVAILABLE}{jar:file:/usr/local/hive-3.1.2/lib/hive-service-3.1.2.jar!/hive-webapps/hiveserver2}
+2024-08-19T18:00:09,632 DEBUG [main] component.AbstractLifeCycle: STOPPED o.e.j.w.WebAppContext@62f11ebb{/,null,UNAVAILABLE}{jar:file:/usr/local/hive-3.1.2/lib/hive-service-3.1.2.jar!/hive-webapps/hiveserver2}
+2024-08-19T18:00:09,632 DEBUG [main] component.AbstractLifeCycle: STOPPED org.eclipse.jetty.rewrite.handler.RewriteHandler@41fa769c
+2024-08-19T18:00:09,632 DEBUG [main] component.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.ContextHandlerCollection@40113163[org.eclipse.jetty.rewrite.handler.RewriteHandler@41fa769c, o.e.j.s.ServletContextHandler@23ed382c{/static,jar:file:/usr/local/hive-3.1.2/lib/hive-service-3.1.2.jar!/hive-webapps/static,UNAVAILABLE}, o.e.j.s.ServletContextHandler@3850e90c{/logs,file:///var/log/hive/,UNAVAILABLE}]
+2024-08-19T18:00:09,632 DEBUG [main] component.AbstractLifeCycle: stopping org.eclipse.jetty.server.LowResourceMonitor@7a3269f5
+2024-08-19T18:00:09,632 DEBUG [main] component.AbstractLifeCycle: stopping org.eclipse.jetty.server.LowResourceMonitor$LRMScheduler@b27b210
+2024-08-19T18:00:09,638 DEBUG [main] component.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.LowResourceMonitor$LRMScheduler@b27b210
+2024-08-19T18:00:09,638 DEBUG [main] component.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.LowResourceMonitor@7a3269f5
+2024-08-19T18:00:09,650 DEBUG [main] component.AbstractLifeCycle: stopping hiveserver2-web{STARTED,8<=8<=50,i=8,q=0}
+2024-08-19T18:00:09,661 DEBUG [main] component.AbstractLifeCycle: STOPPED hiveserver2-web{STOPPED,8<=8<=50,i=0,q=0}
+2024-08-19T18:00:09,662 DEBUG [main] component.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.Server@21bd128b
 ```
-然而，在Hive容器中，Metastore服务却监听在IPv6上(:::9083)而不是IPv4上，HiveServer2服务也类似。
+而 Hadoop NameNode在hadoop101上监听172.18.0.4:9000端口是正常的。
 ```
-netstat -anop|grep 10000
-tcp6     0      0 :::10000    :::*    LISTEN      299/qemu-x86_64      off (0.00/0/0)
+netstat -anop|grep 9000
+tcp   0    0 172.18.0.4:9000   0.0.0.0:*    LISTEN   365/qemu-x86_64   off (0.00/0/0)
 ```
-解决方案：<br>
-
+TODO: 卡了好几天，实在搞不定...先放着
 
 
 #### 2.x Zookeeper
