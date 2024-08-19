@@ -296,19 +296,27 @@ Could not open connection to the HS2 server. Please check the server URI and if 
   <value>*</value>
 </property>
 ```
-##### 3）[main]: java.net.SocketException: Connection reset
+##### 3）[main]: java.net.SocketException: Connection refused
 执行`$HIVE_HOME/bin/hive`后报错：
 ```
-FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.DDLTask.
-MetaException(message:Got exception: 
-java.net.ConnectException Call From hive/172.18.0.6 to hadoop101:9000 failed 
-on connection exception: java.net.ConnectException: Connection refused; 
-For more details see:  http://wiki.apache.org/hadoop/ConnectionRefused)
-
-Could not open client transport with JDBC Uri: 
-jdbc:hive2://hive:10000/test: java.net.SocketException: Connection reset
+24/08/19 04:43:07 [main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000
+Error: Could not open client transport with JDBC Uri: jdbc:hive2://hive:10000: Failed to open new session: java.lang.RuntimeException: java.net.ConnectException: Call From hive/172.18.0.6 to hadoop101:9000 failed on connection exception: java.net.ConnectException: Connection refused; For more details see:  http://wiki.apache.org/hadoop/ConnectionRefused (state=08S01,code=0)
 ```
-莫名其妙，过一会又自己好了，不知道是不是因为跟mac M1上运行docker有关系.
+原因： NameNode主机名解析问题，即hadoop101主机名无法正确解析为IP地址。
+解决方案：在/etc/hosts文件中添加hadoop101的映射，确保容器能够正确解析主机名。
+```
+172.18.0.5      hadoop101
+```
+
+##### 4）[main]: java.net.SocketException: Connection reset
+报错：
+```
+java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2://hive:10000/test: java.net.SocketException: Connection reset
+  at org.apache.hive.jdbc.HiveConnection.<init>(HiveConnection.java:256)
+  at org.apache.hive.jdbc.HiveDriver.connect(HiveDriver.java:107)
+  at java.sql.DriverManager.getConnection(DriverManager.java:664)
+  at java.sql.DriverManager.getConnection(DriverManager.java:247)
+```
 
 #### 2.x Zookeeper
 ##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated

@@ -109,7 +109,7 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
     <!-- H2S运行绑定host/port -->
     <property>
         <name>hive.server2.thrift.bind.host</name>
-        <value>hive</value>
+        <value>0.0.0.0</value>
     </property>
     <property>
         <name>hive.server2.thrift.port</name>
@@ -123,7 +123,7 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
     <!-- H2S web ui-->
     <property>
         <name>hive.server2.webui.host</name>
-        <value>hive</value>
+        <value>0.0.0.0</value>
     </property>
     <property>
         <name>hive.server2.webui.port</name>

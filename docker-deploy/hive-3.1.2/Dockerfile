@@ -19,6 +19,8 @@ RUN bash /dockerentry/install_hive.sh
 RUN rm /usr/local/CDP7.1.4/apache-hive-3.1.2-bin.tar.gz
 
 # 启动脚本
+COPY hive-3.1.2/run-getent-hosts.sh /dockerentry/run-getent-hosts.sh
+RUN chmod a+x /dockerentry/run-getent-hosts.sh
 COPY hive-3.1.2/run.sh /dockerentry/run.sh
 RUN chmod a+x /dockerentry/run.sh
 COPY hive-3.1.2/run-metastore.sh /dockerentry/run-metastore.sh

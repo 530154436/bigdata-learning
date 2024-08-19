@@ -20,6 +20,7 @@ if [ ! -d /var/log/hive ]; then
   sudo chown -R hive:hadoop /var/log/hive
 fi
 
+bash -c /dockerentry/run-getent-hosts.sh
 bash -c /dockerentry/run-metastore.sh
 bash -c /dockerentry/run-hiveserver2.sh
 
