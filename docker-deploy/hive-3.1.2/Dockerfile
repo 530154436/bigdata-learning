@@ -18,6 +18,11 @@ RUN chmod a+x /dockerentry/install_hive.sh
 RUN bash /dockerentry/install_hive.sh
 RUN rm /usr/local/CDP7.1.4/apache-hive-3.1.2-bin.tar.gz
 
+# 禁用ipv6
+#ENV JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+RUN echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+RUN echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
+
 # 启动脚本
 COPY hive-3.1.2/run-getent-hosts.sh /dockerentry/run-getent-hosts.sh
 RUN chmod a+x /dockerentry/run-getent-hosts.sh

@@ -2,6 +2,7 @@ networks:
   default:
     name: hadoop-docker-bridge
     external: true
+    enable_ipv6: false
 
 services:
   hive:

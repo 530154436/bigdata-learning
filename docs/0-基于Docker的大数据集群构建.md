@@ -302,14 +302,14 @@ Could not open connection to the HS2 server. Please check the server URI and if 
 24/08/19 04:43:07 [main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000
 Error: Could not open client transport with JDBC Uri: jdbc:hive2://hive:10000: Failed to open new session: java.lang.RuntimeException: java.net.ConnectException: Call From hive/172.18.0.6 to hadoop101:9000 failed on connection exception: java.net.ConnectException: Connection refused; For more details see:  http://wiki.apache.org/hadoop/ConnectionRefused (state=08S01,code=0)
 ```
-原因： NameNode主机名解析问题，即hadoop101主机名无法正确解析为IP地址。
+原因： NameNode主机名解析问题，即hadoop101主机名无法正确解析为IP地址。<br>
 解决方案：在/etc/hosts文件中添加hadoop101的映射，确保容器能够正确解析主机名。
 ```
 172.18.0.5      hadoop101
 ```
 
-##### 4）[main]: java.net.SocketException: Connection reset
-报错：
+##### 4）[main]: java.net.SocketException: Connection reset/refused
+通过Java程序JDBC连接Hive时报错：
 ```
 java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2://hive:10000/test: java.net.SocketException: Connection reset
   at org.apache.hive.jdbc.HiveConnection.<init>(HiveConnection.java:256)
@@ -317,6 +317,28 @@ java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2
   at java.sql.DriverManager.getConnection(DriverManager.java:664)
   at java.sql.DriverManager.getConnection(DriverManager.java:247)
 ```
+同时，HiveServer2服务在启动时也经常报以下错误：
+```
+2024-08-19T14:39:56,201 DEBUG [main] ipc.Client: Failed to connect to server: hadoop101/172.18.0.2:9000: try once and fail.
+java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method) ~[?:1.8.0_112]
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717) ~[?:1.8.0_112]
+        at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206) ~[hadoop-common-3.1.4.jar:?]
+```
+原因：<br>
+Hadoop NameNode在hadoop101上监听172.18.0.4:9000端口是正常的。
+```
+netstat -anop|grep 9083
+tcp6     0      0 :::9083    :::*    LISTEN       391/qemu-x86_64      off (0.00/0/0)
+```
+然而，在Hive容器中，Metastore服务却监听在IPv6上(:::9083)而不是IPv4上，HiveServer2服务也类似。
+```
+netstat -anop|grep 10000
+tcp6     0      0 :::10000    :::*    LISTEN      299/qemu-x86_64      off (0.00/0/0)
+```
+解决方案：<br>
+
+
 
 #### 2.x Zookeeper
 ##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated
