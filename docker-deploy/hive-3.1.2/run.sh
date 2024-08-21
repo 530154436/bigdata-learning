@@ -5,15 +5,15 @@ HIVE_HOME=/usr/local/hive-3.1.2
 echo "[INFO] hive starting..."
 
 # create /user/hive directory on hdfs if not exists
-$HADOOP_HOME/bin/hdfs dfs -test -d /user/hive
-result=$?
-if [ $result -ne 0 ]; then
-  # should create hdfs for hive user
-  $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/hive/warehouse
-  $HADOOP_HOME/bin/hdfs dfs -chown -R hive /user/hive
-  $HADOOP_HOME/bin/hdfs dfs -chown -R hive:hdfs /user/hive/warehouse
-  $HADOOP_HOME/bin/hdfs dfs -chmod 777 /user/hive/warehouse
-fi
+#$HADOOP_HOME/bin/hdfs dfs -test -d /user/hive
+#result=$?
+#if [ $result -ne 0 ]; then
+#  # should create hdfs for hive user
+#  $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/hive/warehouse
+#  $HADOOP_HOME/bin/hdfs dfs -chown -R hive /user/hive
+#  $HADOOP_HOME/bin/hdfs dfs -chown -R hive:hdfs /user/hive/warehouse
+#  $HADOOP_HOME/bin/hdfs dfs -chmod 777 /user/hive/warehouse
+#fi
 
 
 # 通过标志文件来判断 Hive 是否已经初始化。

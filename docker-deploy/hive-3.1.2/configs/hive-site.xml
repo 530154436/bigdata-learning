@@ -20,7 +20,7 @@
         <value>123456</value>
     </property>
 
-    <!-- H2S运行绑定host/port -->
+    <!-- H2S运行绑定host/port、身份校验 -->
     <property>
         <name>hive.server2.thrift.bind.host</name>
         <value>hive</value>
@@ -32,6 +32,10 @@
     <property>
         <name>hive.server2.enable.doAs</name>
         <value>true</value>
+    </property>
+    <property>
+        <name>hive.server2.authentication</name>
+        <value>none</value>
     </property>
 
     <!-- H2S web ui-->

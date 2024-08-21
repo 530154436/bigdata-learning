@@ -5,8 +5,7 @@ export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
 
 # hive启动后只有一个RunJar进程
 echo "[INFO] 启动 Metastore 服务..."
-nohup $HIVE_HOME/bin/hive --service metastore > /var/log/hive/hivemetastore.out &
-
+nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.root.logger=INFO,console > hivemetastore.out 2>&1 &
 # 设置超时时间（例如，60秒）
 timeout=600
 counter=0
