@@ -117,7 +117,7 @@ cat > $INSTALL_DIR/conf/hive-site.xml << EOF
     </property>
     <property>
         <name>hive.server2.enable.doAs</name>
-        <value>true</value>
+        <value>false</value>
     </property>
 
     <!-- H2S web ui-->

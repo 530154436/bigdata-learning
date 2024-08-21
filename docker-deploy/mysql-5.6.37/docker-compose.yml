@@ -4,7 +4,7 @@ networks:
     external: true
 
 services:
-  hadoop101:
+  mysql:
     platform: linux/amd64
     image: 15521147129/bigdata:mysql-5.6.37
     hostname: mysql

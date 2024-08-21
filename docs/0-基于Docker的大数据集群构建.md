@@ -357,7 +357,14 @@ HiveServer2服务一直在重启
 netstat -anop|grep 9000
 tcp   0    0 172.18.0.4:9000   0.0.0.0:*    LISTEN   365/qemu-x86_64   off (0.00/0/0)
 ```
-TODO: 卡了好几天，实在搞不定...先放着
+从hive容器远程访问也有问题：
+```
+hive@hive:~$ nc -zv hadoop101 9000
+nc: connect to hadoop101 (172.18.0.2) port 9000 (tcp) failed: Connection refused
+hive@hive:~$ nc -zv 172.18.0.3 9000
+Connection to 172.18.0.3 9000 port [tcp/*] succeeded!
+```
+TODO: 卡了好几天，实在搞不定...先放着，初步怀疑是docker的环境配置问题
 
 
 #### 2.x Zookeeper

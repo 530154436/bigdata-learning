@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # 禁用ipv6
-#export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
 
 # 启动 HiveServer2（可能需要手动启动）
 timeout=600
 counter=0
 hiveserver_port=10000  # 默认端口是 10000
 echo "[INFO] HiveServer2 服务启动中，检测 $hiveserver_port 端口......"
-nohup $HIVE_HOME/bin/hive --service hiveserver2 --hiveconf hive.root.logger=DEBUG,console --hiveconf hive.log.file=hiveserver2.log --hiveconf hive.log.dir=/var/log/hive > /var/log/hive/hiveserver2.out &
+nohup $HIVE_HOME/bin/hive --service hiveserver2 > /var/log/hive/hiveserver2.out &
 while true; do
     nc -zv localhost $hiveserver_port
     status=$?

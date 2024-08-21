@@ -10,7 +10,7 @@ services:
     hostname: hadoop101
     container_name: hadoop101
     user: hadoop
-    command: sh -c "/dockerentry/run-namenode.sh"
+    command: /bin/bash -c "/dockerentry/run-namenode.sh"
     restart: no
     # restart: always
     ports:
@@ -27,6 +27,8 @@ services:
       - 9866:9866
       - 9867:9867
       - 19:22
+    environment:
+      TZ: Asia/Shanghai
     tty: true
 
   hadoop102:
@@ -35,14 +37,15 @@ services:
     hostname: hadoop102
     container_name: hadoop102
     user: hadoop
-    command: sh -c "/dockerentry/run-datanode.sh"
+    command: /bin/bash -c "/dockerentry/run-datanode.sh"
     restart: no
     # restart: always
     ports:
       - 8888:8888
       - 19866:9866
       - 20:22
-#    environment:
+    environment:
+      TZ: Asia/Shanghai
 #      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
     tty: true
 
@@ -52,11 +55,13 @@ services:
     hostname: hadoop103
     container_name: hadoop103
     user: hadoop
-    command: sh -c "/dockerentry/run-datanode.sh"
+    command: /bin/bash -c "/dockerentry/run-datanode.sh"
     restart: no
     # restart: always
     ports:
       - 9868:9868
       - 29866:9866
       - 21:22
+    environment:
+      TZ: Asia/Shanghai
     tty: true

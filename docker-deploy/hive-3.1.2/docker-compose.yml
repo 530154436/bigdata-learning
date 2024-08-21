@@ -2,7 +2,6 @@ networks:
   default:
     name: hadoop-docker-bridge
     external: true
-    enable_ipv6: false
 
 services:
   hive:
@@ -19,4 +18,5 @@ services:
       - 10002:10002
     environment:
       - PREREQUISITE_SERVERS=mysql-3306:hadoop101-8088
+      - TZ=Asia/Shanghai
     tty: true
