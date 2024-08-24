@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 禁用ipv6
-export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+#export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
 
 # 启动 HiveServer2（可能需要手动启动）
 timeout=600

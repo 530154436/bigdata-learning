@@ -9,10 +9,10 @@ $HADOOP_HOME/bin/hdfs dfs -test -d /user/hive
 result=$?
 if [ $result -ne 0 ]; then
   # should create hdfs for hive user
-  $HADOOP_HOME/bin/hdfs hive:hadoop -mkdir -p /user/hive/warehouse
-  $HADOOP_HOME/bin/hdfs hive:hadoop -chown -R hive /user/hive
-  $HADOOP_HOME/bin/hdfs hive:hadoop -chown -R hive:hdfs /user/hive/warehouse
-  $HADOOP_HOME/bin/hdfs hive:hadoop -chmod 777 /user/hive/warehouse
+  $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/hive/warehouse
+  $HADOOP_HOME/bin/hdfs dfs -chown -R hive /user/hive
+  $HADOOP_HOME/bin/hdfs dfs -chown -R hive:hadoop /user/hive/warehouse
+  $HADOOP_HOME/bin/hdfs dfs -chmod 777 /user/hive/warehouse
 fi
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 禁用ipv6
-export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+#export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
 
 # create /user/hive directory on hdfs if not exists
 $HADOOP_HOME/bin/hdfs dfs -test -d /user/hive
