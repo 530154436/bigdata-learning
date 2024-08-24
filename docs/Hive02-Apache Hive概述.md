@@ -159,8 +159,12 @@ $HIVE_HOME/bin/hive
 # 前提：Metastore服务已启动
 # 启动hiveserver2服务(也是一个独立的RunJar进程)
 $HIVE_HOME/bin/hive --service metastore
-# jdbc客户端，输入连接：!connect jdbc:hive2://hive:10000
+
+# 启动客户端
 $HIVE_HOME/bin/beeline
+# 输入连接：!connect jdbc:hive2://hive:10000
+
+$HIVE_HOME/bin/beeline -u jdbc:hive2://hive:10000 -n hive
 ```
 ```
 hive@hive:~$ $HIVE_HOME/bin/beeline
