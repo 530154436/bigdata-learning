@@ -33,15 +33,73 @@ select * from t_archer;
 /**
   文件hot_hero_skin_price.txt中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
  */
-create table t_hot_hero_skin_price(
+create table if not exists t_hot_hero_skin_price(
     id int,
     name string,
     win_rate int,
     skin_price map<string,int>
 )
 row format delimited
-fields terminated by ','
-collection items terminated by '-'
-map keys terminated by ':' ;
+fields terminated by ','            -- 指定字段之间的分隔符
+collection items terminated by '-'  -- 指定集合元素之间的分隔符
+map keys terminated by ':'          -- 指定map元素kv之间的分隔符
+;
 
 select * from t_hot_hero_skin_price;
+
+
+/**
+  文件[team_ace_player.txt](honor_of_kings/team_ace_player.txt)中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
+ */
+create table if not exists t_team_ace_player(
+    id int,
+    team_name string,
+    ace_player_name string
+)
+;
+
+select * from t_team_ace_player;
+
+/**
+  location语法来更改数据在HDFS上的存储路径
+ */
+
+drop table if exists t_team_ace_player;
+create table if not exists t_team_ace_player(
+    id int,
+    team_name string,
+    ace_player_name string
+) location "/data"
+;
+select * from t_team_ace_player;
+
+desc formatted t_team_ace_player;
+
+
+/**
+  内部表、外部表
+ */
+create table student (
+    num  int,
+    name string,
+    sex  string,
+    age  int,
+    dept string
+)
+row format delimited
+    fields terminated by ',';
+
+desc formatted student;
+
+
+create external table student_ext (
+                         num  int,
+                         name string,
+                         sex  string,
+                         age  int,
+                         dept string
+)
+    row format delimited
+        fields terminated by ',';
+
+desc formatted student_ext;
