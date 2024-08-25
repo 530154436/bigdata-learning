@@ -1,5 +1,5 @@
 
-## 一、Hive DDL
+## 二、Hive DDL建库语法
 ```sql
 -- 创建数据库
 create database if not exists itheima;
@@ -8,8 +8,8 @@ show databases;
 -- 切换数据库
 use itheima;
 ```
-
-### 1.建表语法练习1
+## 二、Hive DDL建表语法
+### 1.1 建表语法练习1
 文件archer.txt中记录了手游《王者荣耀》射手的相关信息，内容如下所示，其中字段之间分隔符为制表符\t,要求在Hive中建表映射成功该文件。
 
 ```sql
@@ -36,4 +36,4 @@ $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hero/archer.txt /user/h
 
 select * from t_archer;
 ```
-<img src="images/hive练习1_1.png" width="80%" height="80%" alt="">
+<img src="images/hive练习1_1.png" width="100%" height="100%" alt="">
