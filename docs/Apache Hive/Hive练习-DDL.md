@@ -95,12 +95,8 @@ select * from t_team_ace_player;
 
 ### 2.4 指定存储路径
 在Hive建表的时候，可以通过location语法来更改数据在HDFS上的存储路径，使得建表加载数据更加灵活方便。
-```
-语法：LOCATION '<hdfs_location>'。
-
-$HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/team_ace_player.txt /data/t_team_ace_player
-```
 ```sql
+-- 语法：LOCATION '<hdfs_location>'。
 drop table if exists t_team_ace_player;
 create table if not exists t_team_ace_player(
     id int,
@@ -117,7 +113,8 @@ select * from t_team_ace_player;
 
 `内部表`（Internal table）也称为被Hive拥有和管理的托管表（Managed table）。 默认情况下创建的表就是内部表，Hive拥有该表的结构和文件。`当删除内部表时，它会删除数据以及表的元数据`。
 ```sql
-create table student (
+drop table if exists student;
+create table if not exists student (
     num  int,
     name string,
     sex  string,
@@ -125,16 +122,22 @@ create table student (
     dept string
 )
 row format delimited
-    fields terminated by ',';
+    fields terminated by ','
+location "/data";
 
 desc formatted student;
+
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/students.txt /data/student
+select  * from student;
+drop table student;
 ```
 <img src="images/hive练习2_1.png" width="100%" height="100%" alt=""><br>
 
 `外部表`（External table）中的数据不是Hive拥有或管理的，只管理表元数据的生命周期。要创建一个外部表，需要使用`EXTERNAL`语法关键字。
 删除外部表只会删除元数据，而不会删除实际数据。在Hive外部仍然可以访问实际数据。 而且外部表更为方便的是可以搭配`location`语法指定数据的路径。
 ```sql
-create external table student_ext (
+drop table if exists student_ext;
+create external table if not exists student_ext (
     num  int,
     name string,
     sex  string,
@@ -142,9 +145,14 @@ create external table student_ext (
     dept string
 )
 row format delimited
-    fields terminated by ',';
+    fields terminated by ','
+location "/data";;
 
 desc formatted student_ext;
+
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/students.txt /data/student_ext
+select  * from student_ext;
+drop table student_ext;
 ```
 <img src="images/hive练习2_2.png" width="100%" height="100%" alt=""><br>
 

@@ -79,7 +79,9 @@ desc formatted t_team_ace_player;
 /**
   内部表、外部表
  */
-create table student (
+drop table if exists student;
+create table student
+(
     num  int,
     name string,
     sex  string,
@@ -87,19 +89,23 @@ create table student (
     dept string
 )
 row format delimited
-    fields terminated by ',';
-
+    fields terminated by ','
+location "/data";
 desc formatted student;
+select  * from student;
+drop table student;
 
 
-create external table student_ext (
-                         num  int,
-                         name string,
-                         sex  string,
-                         age  int,
-                         dept string
+drop table if exists student_ext;
+create external table if not exists student_ext (
+    num  int,
+    name string,
+    sex  string,
+    age  int,
+    dept string
 )
-    row format delimited
-        fields terminated by ',';
-
-desc formatted student_ext;
+row format delimited
+    fields terminated by ','
+location "/data";
+select  * from student_ext;
+drop table student_ext;
