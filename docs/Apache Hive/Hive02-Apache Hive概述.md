@@ -59,13 +59,13 @@ Apache Hive是一款建立在Hadoop之上的开源数据仓库系统，可以将
 + 最终效果<br>
 基于上述分析，最终要想模拟实现的Hive的功能，需要下图所示组件参与其中：
 
-<img src="images/hive/hive02_如何模拟实现Hive的功能.png" width="60%" height="60%" alt="">
+<img src="images/hive02_如何模拟实现Hive的功能.png" width="60%" height="60%" alt="">
 
 ## 二、Hive系统架构和工作原理
 ### 2.1 Hive系统架构
 Hive是底层封装了Hadoop的数据仓库处理工具，它运行在Hadoop基础上，其系统架构组成主要包含4个部分，具体如下图所示。
 
-<img src="images/hive/hive02_hive架构图.png" width="60%" height="60%" alt="">
+<img src="images/hive02_hive架构图.png" width="60%" height="60%" alt="">
 
 1. `用户接口`：包括 CLI、JDBC/ODBC、WebGUI<br>
 CLI(command line interface)为shell命令行；
@@ -111,19 +111,19 @@ Metastore服务配置有3种模式：内嵌模式、本地模式、远程模式�
 默认部署模式，元数据存储在内置的Derby数据库中。<br>
 Derby数据库和Metastore服务嵌入在HiveServer进程中，无需单独配置和启动Metastore服务。<br>
 仅支持一个活动用户，适合测试使用，不适合生产环境。<br>
-<img src="images/hive/hive02_metastore内嵌模式.png" width="40%" height="40%" alt="">
+<img src="images/hive02_metastore内嵌模式.png" width="40%" height="40%" alt="">
    
 2、`本地模式`（Local Metastore）：<br>
 Metastore服务与HiveServer进程在同一进程中运行，但元数据存储在单独的外部数据库（推荐使用MySQL）中。<br>
 Metastore服务通过JDBC与数据库通信。判断是否为本地模式的依据是hive.metastore.uris参数是否为空。<br>
 缺点是每次启动Hive服务都会内置启动一个Metastore服务实例。<br>
-<img src="images/hive/hive02_metastore本地模式.png" width="40%" height="40%" alt="">
+<img src="images/hive02_metastore本地模式.png" width="40%" height="40%" alt="">
    
 3、`远程模式`（Remote Metastore）：<br>
 Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数据存储在单独的外部数据库。<br>
 其他进程可以通过Thrift Network API与Metastore服务通信，适合生产环境。<br>
 提供更好的可管理性和安全性，需配置hive.metastore.uris参数并手动启动Metastore服务。<br>
-<img src="images/hive/hive02_metastore远程模式.png" width="40%" height="40%" alt="">
+<img src="images/hive02_metastore远程模式.png" width="40%" height="40%" alt="">
 
 ### 2.4 客户端
 #### 2.4.1 Hive Client、Hive Beeline Client、WebUI
@@ -202,7 +202,7 @@ HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服�
 
 ## 三、Hive数据模型
 数据模型：用来描述数据、组织数据和对数据进行操作，是对现实世界数据特征的描述。Hive的数据模型类似于RDBMS库表结构，包含数据库（Database）、表（Table）、分区表（Partition）和桶表（Bucket）四种数据类型，其模型如下图所示。<br>
-<img src="images/hive/hive02_数据模型.png" width="40%" height="40%" alt="">
+<img src="images/hive02_数据模型.png" width="40%" height="40%" alt="">
 
 ### 3.1 Databases
 Hive作为一个数据仓库，在结构上与传统数据库类似，也分数据库（Schema），每个数据库下面有各自的表组成。
@@ -237,7 +237,7 @@ Partition分区是hive的一种优化手段表。`分区是指根据分区列（
 + 一个文件夹表示一个分区，子文件命名标准：分区列=分区值。
 
 Hive还支持分区下继续创建分区，即多重分区。<br>
-<img src="images/hive/hive02_数据模型分区表.png" width="50%" height="50%" alt="">
+<img src="images/hive02_数据模型分区表.png" width="50%" height="50%" alt="">
 
 ### 3.4 Buckets
 Bucket分桶表是hive的一种优化手段表。`分桶是指根据表中字段（例如“编号ID”）的值,经过hash计算规则将数据文件划分成指定的若干个小文件`。
@@ -245,7 +245,7 @@ Bucket分桶表是hive的一种优化手段表。`分桶是指根据表中字段
 + 分桶的好处是可以优化join查询和方便抽样查询。
   
 Bucket分桶表在hdfs中表现为同一个表目录下数据根据hash散列之后变成多个文件。<br>
-<img src="images/hive/hive02_数据模型分桶表.png" width="50%" height="50%" alt="">
+<img src="images/hive02_数据模型分桶表.png" width="50%" height="50%" alt="">
 
 
 ## 四、Hive与传统数据库对比
