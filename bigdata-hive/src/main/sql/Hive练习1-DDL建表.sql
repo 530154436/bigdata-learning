@@ -1,5 +1,8 @@
--- 切换数据库
+-- 创建数据库
 create database if not exists itheima;
+show databases;
+
+-- 切换数据库
 use itheima;
 
 /**
@@ -27,3 +30,4 @@ show tables;
 -- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hero/archer.txt /user/hive/warehouse/itheima.db/t_archer
 
 select * from t_archer;
+
