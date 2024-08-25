@@ -36,4 +36,4 @@ $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hero/archer.txt /user/h
 
 select * from t_archer;
 ```
-<img src="images/hive练习1_1.png" width="50%" height="50%" alt="">
+<img src="images/hive练习1_1.png" width="80%" height="80%" alt="">
