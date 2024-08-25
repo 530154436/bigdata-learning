@@ -109,12 +109,11 @@ select * from t_team_ace_player;
 
 ## 三、Hive DDL-内部表、外部表
 ### 3.1 内部表、外部表
-
-
 `内部表`（Internal table）也称为被Hive拥有和管理的托管表（Managed table）。 默认情况下创建的表就是内部表，Hive拥有该表的结构和文件。`当删除内部表时，它会删除数据以及表的元数据`。
 ```sql
 drop table if exists student;
-create table if not exists student (
+create table student
+(
     num  int,
     name string,
     sex  string,
@@ -123,7 +122,7 @@ create table if not exists student (
 )
 row format delimited
     fields terminated by ','
-location "/data";
+location "/data/student";
 
 desc formatted student;
 
@@ -146,7 +145,7 @@ create external table if not exists student_ext (
 )
 row format delimited
     fields terminated by ','
-location "/data";;
+location "/data/student_ext";;
 
 desc formatted student_ext;
 
@@ -167,7 +166,70 @@ drop table student_ext;
 | 事务       | 支持ACID/事务性                                      | 不支持                 |
 | 缓存       | 支持结果缓存                                          | 不支持                 |
 
+### 3.2 分区表
+现有6份数据文件，分别记录了《王者荣耀》中6种位置的英雄相关信息。现要求通过建立一张表t_all_hero，把6份文件同时映射加载。
+```sql
+create table t_all_hero(
+   id int,
+   name string,
+   hp_max int,
+   mp_max int,
+   attack_max int,
+   defense_max int,
+   attack_range string,
+   role_main string,
+   role_assist string
+)
+row format delimited
+    fields terminated by "\t";
 
+-- cd /home/hive/honor_of_kings/
+-- $HADOOP_HOME/bin/hdfs dfs -put archer.txt assassin.txt mage.txt support.txt tank.txt warrior.txt /user/hive/warehouse/itheima.db/t_all_hero
+```
+现要求查询role_main主要定位是射手并且hp_max最大生命大于6000的有几个，如何优化可以加快查询，减少全表扫描呢？
+```sql
+select count(*) from t_all_hero where role_main="archer" and hp_max >6000;
+```
+针对《王者荣耀》英雄数据，重新创建一张分区表t_all_hero_part，以role角色作为分区字段。
+`注意`：分区字段不能是表中已经存在的字段，因为分区字段最终也会以虚拟字段的形式显示在表结构上。
+
+#### 3.2.1 分区表数据加载-静态分区
+```sql
+create table t_all_hero_part(
+       id int,
+       name string,
+       hp_max int,
+       mp_max int,
+       attack_max int,
+       defense_max int,
+       attack_range string,
+       role_main string,
+       role_assist string
+) 
+partitioned by (role string)
+row format delimited
+fields terminated by "\t";
+```
+`静态分区`指的是分区的字段值是由用户在加载数据的时候手动指定。 语法如下：
+```sql
+load data [local] inpath ' ' into table tablename partition(分区字段='分区值'...);
+
+-- 载入数据
+load data local inpath '/root/hivedata/archer.txt' into table t_all_hero_part partition(role='sheshou');
+load data local inpath '/root/hivedata/assassin.txt' into table t_all_hero_part partition(role='cike');
+load data local inpath '/root/hivedata/mage.txt' into table t_all_hero_part partition(role='fashi');
+load data local inpath '/root/hivedata/support.txt' into table t_all_hero_part partition(role='fuzhu');
+load data local inpath '/root/hivedata/tank.txt' into table t_all_hero_part partition(role='tanke');
+load data local inpath '/root/hivedata/warrior.txt' into table t_all_hero_part partition(role='zhanshi');
+```
+
+#### 3.2.2 分区表数据加载-动态分区
+动态分区是指分区的字段值是基于查询结果自动推断。核心语法就是insert+select。启用hive动态分区，需要在hive会话中设置两个参数：
+```sql
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+```
+第一个参数表示开启动态分区功能，第二个参数指定动态分区的模式。分为nonstick非严格模式和strict严格模式。strict严格模式要求至少有一个分区为静态分区。
 
 
 

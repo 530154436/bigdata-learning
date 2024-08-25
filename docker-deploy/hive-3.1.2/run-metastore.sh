@@ -3,17 +3,6 @@
 # 禁用ipv6
 #export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
 
-# create /user/hive directory on hdfs if not exists
-$HADOOP_HOME/bin/hdfs dfs -test -d /user/hive
-result=$?
-if [ $result -ne 0 ]; then
-  # should create hdfs for hive user
-  $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/hive/warehouse
-  $HADOOP_HOME/bin/hdfs dfs -chown -R hive /user/hive
-  $HADOOP_HOME/bin/hdfs dfs -chown -R hive:hdfs /user/hive/warehouse
-  $HADOOP_HOME/bin/hdfs dfs -chmod 777 /user/hive/warehouse
-fi
-
 # hive启动后只有一个RunJar进程
 echo "[INFO] 启动 Metastore 服务..."
 nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.root.logger=INFO,console > hivemetastore.out &
