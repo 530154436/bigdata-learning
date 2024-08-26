@@ -170,29 +170,32 @@ drop table student_ext;
 现有6份数据文件，分别记录了《王者荣耀》中6种位置的英雄相关信息。现要求通过建立一张表t_all_hero，把6份文件同时映射加载。
 ```sql
 create table t_all_hero(
-   id int,
-   name string,
-   hp_max int,
-   mp_max int,
-   attack_max int,
-   defense_max int,
-   attack_range string,
-   role_main string,
-   role_assist string
+    id int,
+    name string,
+    hp_max int,
+    mp_max int,
+    attack_max int,
+    defense_max int,
+    attack_range string,
+    role_main string,
+    role_assist string
 )
-row format delimited
-    fields terminated by "\t";
+    row format delimited
+        fields terminated by "\t";
 
--- cd /home/hive/honor_of_kings/
+-- cd /home/hive/honor_of_kings/hero/
 -- $HADOOP_HOME/bin/hdfs dfs -put archer.txt assassin.txt mage.txt support.txt tank.txt warrior.txt /user/hive/warehouse/itheima.db/t_all_hero
 ```
-<img src="images/hive练习2_3.png" width="100%" height="100%" alt=""><br><br>
+<img src="images/hive练习3_2_01.png" width="100%" height="100%" alt=""><br><br>
 
 
 现要求查询role_main主要定位是射手并且hp_max最大生命大于6000的有几个，如何优化可以加快查询，减少全表扫描呢？
 ```sql
+-- 2m31s
 select count(*) from t_all_hero where role_main="archer" and hp_max >6000;
 ```
+<img src="images/hive练习3_2_02.png" width="100%" height="100%" alt=""><br><br>
+
 针对《王者荣耀》英雄数据，重新创建一张分区表t_all_hero_part，以role角色作为分区字段。
 `注意`：分区字段不能是表中已经存在的字段，因为分区字段最终也会以虚拟字段的形式显示在表结构上。
 
@@ -218,15 +221,22 @@ fields terminated by "\t";
 load data [local] inpath ' ' into table tablename partition(分区字段='分区值'...);
 
 -- 载入数据
-load data local inpath '/root/hivedata/archer.txt' into table t_all_hero_part partition(role='sheshou');
-load data local inpath '/root/hivedata/assassin.txt' into table t_all_hero_part partition(role='cike');
-load data local inpath '/root/hivedata/mage.txt' into table t_all_hero_part partition(role='fashi');
-load data local inpath '/root/hivedata/support.txt' into table t_all_hero_part partition(role='fuzhu');
-load data local inpath '/root/hivedata/tank.txt' into table t_all_hero_part partition(role='tanke');
-load data local inpath '/root/hivedata/warrior.txt' into table t_all_hero_part partition(role='zhanshi');
+load data local inpath '/home/hive/honor_of_kings/hero/archer.txt' into table t_all_hero_part partition(role='archer');
+load data local inpath '/home/hive/honor_of_kings/hero/assassin.txt' into table t_all_hero_part partition(role='assassin');
+load data local inpath '/home/hive/honor_of_kings/hero/mage.txt' into table t_all_hero_part partition(role='mage');
+load data local inpath '/home/hive/honor_of_kings/hero/support.txt' into table t_all_hero_part partition(role='support');
+load data local inpath '/home/hive/honor_of_kings/hero/tank.txt' into table t_all_hero_part partition(role='tank');
+load data local inpath '/home/hive/honor_of_kings/hero/warrior.txt' into table t_all_hero_part partition(role='warrior');
 ```
 
-<img src="images/hive练习2_4.png" width="100%" height="100%" alt=""><br>
+<img src="images/hive练习3_2_1_01.png" width="100%" height="100%" alt=""><br>
+
+重新执行统计SQL：耗时仅`32s`
+```sql
+-- 32s
+select count(*) from t_all_hero_part where role="archer" and hp_max >6000;
+```
+<img src="images/hive练习3_2_1_02.png" width="100%" height="100%" alt=""><br>
 
 
 #### 3.2.2 分区表数据加载-动态分区
@@ -235,8 +245,33 @@ load data local inpath '/root/hivedata/warrior.txt' into table t_all_hero_part p
 set hive.exec.dynamic.partition=true;
 set hive.exec.dynamic.partition.mode=nonstrict;
 ```
-第一个参数表示开启动态分区功能，第二个参数指定动态分区的模式。分为nonstick非严格模式和strict严格模式。strict严格模式要求至少有一个分区为静态分区。
+第一个参数表示开启动态分区功能，第二个参数指定动态分区的模式。分为`nonstick非严格模式`和`strict严格模式`。strict严格模式要求至少有一个分区为静态分区。<br>
+创建一张新的分区表t_all_hero_part_dynamic：
+```sql
+create table t_all_hero_part_dynamic(
+    id int,
+    name string,
+    hp_max int,
+    mp_max int,
+    attack_max int,
+    defense_max int,
+    attack_range string,
+    role_main string,
+    role_assist string
+) 
+partitioned by (role string)
+row format delimited
+    fields terminated by "\t";
+```
+执行动态分区插入:
+```sql
+-- 46s
+insert into table t_all_hero_part_dynamic partition(role)
+select tmp.*,tmp.role_main from t_all_hero tmp;
+```
+动态分区插入时，分区值是根据查询返回字段位置自动推断的。<br>
 
+<img src="images/hive练习3_2_2_01.png" width="100%" height="100%" alt=""><br>
 
 
 

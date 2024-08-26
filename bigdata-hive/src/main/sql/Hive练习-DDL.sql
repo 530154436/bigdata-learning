@@ -117,6 +117,7 @@ drop table student_ext;
   分区表
   现要求查询hero_main主要定位是射手并且hp_max最大生命大于6000的有几个，如何优化可以加快查询，减少全表扫描呢？
  */
+drop table t_all_hero;
 create table t_all_hero(
    id int,
    name string,
@@ -125,17 +126,20 @@ create table t_all_hero(
    attack_max int,
    defense_max int,
    attack_range string,
-   hero_main string,
-   hero_assist string
+   role_main string,
+   role_assist string
 )
 row format delimited
     fields terminated by "\t";
 
 select * from t_all_hero;
 
-select count(*) from t_all_hero where hero_main="archer" and hp_max >6000;
+-- 2m31s
+select count(*) from t_all_hero where role_main="archer" and hp_max >6000;
 
 
+// 静态分区
+drop table t_all_hero_part;
 create table t_all_hero_part(
     id int,
     name string,
@@ -144,18 +148,50 @@ create table t_all_hero_part(
     attack_max int,
     defense_max int,
     attack_range string,
-    hero_main string,
-    hero_assist string
+    role_main string,
+    role_assist string
 )
-partitioned by (hero string)
+partitioned by (role string)
 row format delimited
     fields terminated by "\t";
 
-load data local inpath '/home/hive/honor_of_kings/hero/archer.txt' into table t_all_hero_part partition(role='sheshou');
-load data local inpath '/home/hive/honor_of_kings/hero/assassin.txt' into table t_all_hero_part partition(role='cike');
-load data local inpath '/home/hive/honor_of_kings/hero/mage.txt' into table t_all_hero_part partition(role='fashi');
-load data local inpath '/home/hive/honor_of_kings/hero/support.txt' into table t_all_hero_part partition(role='fuzhu');
-load data local inpath '/home/hive/honor_of_kings/hero/tank.txt' into table t_all_hero_part partition(role='tanke');
-load data local inpath '/home/hive/honor_of_kings/hero/warrior.txt' into table t_all_hero_part partition(role='zhanshi');
+
+desc formatted t_all_hero_part;
+
+load data local inpath '/home/hive/honor_of_kings/hero/archer.txt' into table t_all_hero_part partition(role='archer');
+load data local inpath '/home/hive/honor_of_kings/hero/assassin.txt' into table t_all_hero_part partition(role='assassin');
+load data local inpath '/home/hive/honor_of_kings/hero/mage.txt' into table t_all_hero_part partition(role='mage');
+load data local inpath '/home/hive/honor_of_kings/hero/support.txt' into table t_all_hero_part partition(role='support');
+load data local inpath '/home/hive/honor_of_kings/hero/tank.txt' into table t_all_hero_part partition(role='tank');
+load data local inpath '/home/hive/honor_of_kings/hero/warrior.txt' into table t_all_hero_part partition(role='warrior');
 
 show partitions t_all_hero_part;
+
+-- 32s
+select count(*) from t_all_hero_part where role="archer" and hp_max >6000;
+
+
+// 动态分区
+drop table if exists t_all_hero_part_dynamic;
+create table if not exists t_all_hero_part_dynamic(
+    id int,
+    name string,
+    hp_max int,
+    mp_max int,
+    attack_max int,
+    defense_max int,
+    attack_range string,
+    role_main string,
+    role_assist string
+)
+partitioned by (role string)
+row format delimited
+    fields terminated by "\t";
+
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+-- 46s
+insert into table t_all_hero_part_dynamic partition(role)
+select tmp.*,tmp.role_main from t_all_hero tmp;
+
