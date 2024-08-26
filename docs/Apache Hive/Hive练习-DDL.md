@@ -186,6 +186,9 @@ row format delimited
 -- cd /home/hive/honor_of_kings/
 -- $HADOOP_HOME/bin/hdfs dfs -put archer.txt assassin.txt mage.txt support.txt tank.txt warrior.txt /user/hive/warehouse/itheima.db/t_all_hero
 ```
+<img src="images/hive练习2_3.png" width="100%" height="100%" alt=""><br><br>
+
+
 现要求查询role_main主要定位是射手并且hp_max最大生命大于6000的有几个，如何优化可以加快查询，减少全表扫描呢？
 ```sql
 select count(*) from t_all_hero where role_main="archer" and hp_max >6000;
@@ -222,6 +225,9 @@ load data local inpath '/root/hivedata/support.txt' into table t_all_hero_part p
 load data local inpath '/root/hivedata/tank.txt' into table t_all_hero_part partition(role='tanke');
 load data local inpath '/root/hivedata/warrior.txt' into table t_all_hero_part partition(role='zhanshi');
 ```
+
+<img src="images/hive练习2_4.png" width="100%" height="100%" alt=""><br>
+
 
 #### 3.2.2 分区表数据加载-动态分区
 动态分区是指分区的字段值是基于查询结果自动推断。核心语法就是insert+select。启用hive动态分区，需要在hive会话中设置两个参数：
