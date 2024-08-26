@@ -195,3 +195,17 @@ set hive.exec.dynamic.partition.mode=nonstrict;
 insert into table t_all_hero_part_dynamic partition(role)
 select tmp.*,tmp.role_main from t_all_hero tmp;
 
+
+// 多分区
+--单分区表，按省份分区
+create table t_user_province (id int, name string,age int) partitioned by (province string);
+desc formatted t_user_province;
+
+--双分区表，按省份和市分区
+create table t_user_province_city (id int, name string,age int) partitioned by (province string, city string);
+desc formatted t_user_province_city;
+
+--三分区表，按省份、市、县分区
+create table t_user_province_city_county (id int, name string,age int) partitioned by (province string, city string,county string);
+desc formatted t_user_province_city_county;
+

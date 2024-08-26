@@ -6,9 +6,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * create database test;--创建数据库
+ * create database itheima;--创建数据库
  * show databases;--列出所有数据库
- * use test;--切换数据库
+ * use itheima;--切换数据库
  * create table t_student(id int,name varchar(255)); --建表
  * insert into table t_student values(1,"allen"); --插入一条数据
  * select * from t_student; --查询表数据

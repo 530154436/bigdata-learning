@@ -273,12 +273,42 @@ select tmp.*,tmp.role_main from t_all_hero tmp;
 
 <img src="images/hive练习3_2_2_01.png" width="100%" height="100%" alt=""><br>
 
+#### 3.2.3 多重分区表
 
+通过建表语句中关于分区的相关语法可以发现，Hive支持多个分区字段：
+```sql
+PARTITIONED BY (partition1 data_type, partition2 data_type,….)
 
+```
+多重分区下，分区之间是一种递进关系，可以理解为在前一个分区的基础上继续分区。从HDFS的角度来看就是文件夹下继续划分子文件夹。
+```sql
+--单分区表，按省份分区
+create table t_user_province (id int, name string,age int) partitioned by (province string);
 
+--双分区表，按省份和市分区
+create table t_user_province_city (id int, name string,age int) partitioned by (province string, city string);
 
+--三分区表，按省份、市、县分区
+create table t_user_province_city_county (id int, name string,age int) partitioned by (province string, city string,county string);
+```
 
+#### 3.2.4 分区表使用总结
 
+分区的概念： 
++ 提供了一种将 Hive 表数据分离为多个文件/目录的方法。
++ `不同分区对应着不同的文件夹`，同一分区的数据存储在同一个文件夹下。
++ 只需根据分区值找到对应的文件夹，扫描该分区下的文件，避免全表数据扫描。
+
+分区表使用重点：
+1. 建表时选择合适的分区字段： 根据业务场景设置合适的分区字段，比如日期、地域、类别等。
+2. 查询时使用分区过滤：查询时尽量使用 `WHERE` 子句进行分区过滤，避免全表扫描，查询指定分区的数据。
+
+分区表注意事项：
+1. 可选优化手段：分区表不是建表的必要语法规则，`只是一种优化手段`。
+2. **分区字段不能重复**：分区字段不能是表中已有的字段，`不能重复定义`。
+3. **虚拟字段**：分区字段是虚拟字段，其数据并不存储在底层文件中。
+4. **分区字段值的确定**：分区字段值可以由用户手动指定（静态分区）或根据查询结果自动推断（动态分区）。
+5. 多重分区支持：Hive 支持多重分区，即在分区的基础上可以继续分区，以达到更细粒度的划分。
 
 
 
