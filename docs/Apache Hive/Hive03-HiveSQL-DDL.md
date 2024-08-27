@@ -17,8 +17,8 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-分桶表的创建加载数据">3.3.2 分桶表的创建、加载数据</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#333-分桶表的使用好处">3.3.3 分桶表的使用好处</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-hive-transactional-tables事务表">3.4 Hive Transactional Tables事务表</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#341-概述">3.4.1 概述</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#342-创建和使用事务表">3.4.2 创建和使用事务表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#341-概述">3.4.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#342-创建和使用事务表">3.4.2 创建和使用事务表</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#35-hive视图view">3.5 Hive视图（View）</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#351-概述">3.5.1 概述</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#352-view相关语法">3.5.2 View相关语法</a><br/>
@@ -29,8 +29,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#363-案例物化视图查询重写">3.6.3 案例：物化视图查询重写</a><br/>
 <a href="#参考引用">参考引用</a><br/>
 </nav>
-
-
 
 ## 一、Hive DDL建库语法
 ```sql
@@ -420,7 +418,7 @@ HDFS上查看t_usa_covid19_bucket底层数据结构可以发现，数据被分�
 
 ### 3.4 Hive Transactional Tables事务表
 
-### 3.4.1 概述
+#### 3.4.1 概述
 
 Hive 最初不支持事务，其核心目标是将结构化数据映射为表进行 SQL 分析处理。由于数据通常存储于 HDFS，而 HDFS 不支持随机修改文件，因此早期 Hive 不具备 `UPDATE` 和 `DELETE` 操作，也午所谓事务支持。<br>
 
@@ -447,7 +445,7 @@ Hive事务表局限性：
   表参数transactional必须为true；
   外部表不能成为ACID表，不允许从非ACID会话读取/写入ACID表。
 
-### 3.4.2 创建和使用事务表
+#### 3.4.2 创建和使用事务表
 ```sql
 --1、开启事务配置（可以使用set设置当前session生效 也可以配置在hive-site.xml中）
 set hive.support.concurrency = true; --Hive是否支持并发
