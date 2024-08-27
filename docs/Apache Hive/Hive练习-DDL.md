@@ -40,7 +40,7 @@ $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hero/archer.txt /user/h
 
 select * from t_archer;
 ```
-<img src="images/hive练习1_1.png" width="100%" height="100%" alt="">
+<img src="images/hive练习2_1_01.png" width="100%" height="100%" alt="">
 
 ### 2.2 复杂数据类型案例
 文件[hot_hero_skin_price.txt](honor_of_kings/hot_hero_skin_price.txt)中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
@@ -68,7 +68,7 @@ $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hot_hero_skin_price.txt
 
 select * from t_hot_hero_skin_price;
 ```
-<img src="images/hive练习1_2.png" width="100%" height="100%" alt="">
+<img src="images/hive练习2_2_01.png" width="100%" height="100%" alt="">
 
 ### 2.3 默认分隔符案例
 文件[team_ace_player.txt](honor_of_kings/team_ace_player.txt)中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
@@ -91,7 +91,7 @@ $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/team_ace_player.txt /us
 
 select * from t_team_ace_player;
 ```
-<img src="images/hive练习1_3.png" width="100%" height="100%" alt="">
+<img src="images/hive练习2_3_01.png" width="100%" height="100%" alt="">
 
 ### 2.4 指定存储路径
 在Hive建表的时候，可以通过location语法来更改数据在HDFS上的存储路径，使得建表加载数据更加灵活方便。
@@ -130,7 +130,7 @@ desc formatted student;
 select  * from student;
 drop table student;
 ```
-<img src="images/hive练习2_1.png" width="100%" height="100%" alt=""><br>
+<img src="images/hive练习3_1_01.png" width="100%" height="100%" alt=""><br>
 
 `外部表`（External table）中的数据不是Hive拥有或管理的，只管理表元数据的生命周期。要创建一个外部表，需要使用`EXTERNAL`语法关键字。
 删除外部表只会删除元数据，而不会删除实际数据。在Hive外部仍然可以访问实际数据。 而且外部表更为方便的是可以搭配`location`语法指定数据的路径。
@@ -153,7 +153,7 @@ desc formatted student_ext;
 select  * from student_ext;
 drop table student_ext;
 ```
-<img src="images/hive练习2_2.png" width="100%" height="100%" alt=""><br>
+<img src="images/hive练习3_1_02.png" width="100%" height="100%" alt=""><br>
 
 内部表与外部表的区别：
 
