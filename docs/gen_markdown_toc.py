@@ -67,4 +67,4 @@ if __name__ == "__main__":
     # process_markdown_file("./Hive01-数据仓库.md")
     # process_markdown_file("./Hive02-Apache Hive概述.md")
     # process_markdown_file("./0-基于Docker的大数据集群构建.md")
-    process_markdown_file("./Apache Hive/Hive练习-DDL.md")
+    process_markdown_file("./Apache Hive/Hive03-HiveSQL-DDL.md")

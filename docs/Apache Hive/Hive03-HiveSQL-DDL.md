@@ -1,11 +1,11 @@
 <nav>
 <a href="#一hive-ddl建库语法">一、Hive DDL建库语法</a><br/>
-<a href="#二hive-ddl-建表语法">二、Hive DDL-建表语法</a><br/>
+<a href="#二hive-ddl建表基础">二、Hive DDL建表基础</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-原生数据类型案例">2.1 原生数据类型案例</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-复杂数据类型案例">2.2 复杂数据类型案例</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-默认分隔符案例">2.3 默认分隔符案例</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-指定存储路径">2.4 指定存储路径</a><br/>
-<a href="#三hive-ddl-内部表外部表">三、Hive DDL-内部表、外部表</a><br/>
+<a href="#三hive-ddl建表高阶">三、Hive DDL建表高阶</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-内部表外部表">3.1 内部表、外部表</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-分区表">3.2 分区表</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#321-分区表数据加载-静态分区">3.2.1 分区表数据加载-静态分区</a><br/>
@@ -16,7 +16,20 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#331-分桶表的概念">3.3.1 分桶表的概念</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-分桶表的创建加载数据">3.3.2 分桶表的创建、加载数据</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#333-分桶表的使用好处">3.3.3 分桶表的使用好处</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-hive-transactional-tables事务表">3.4 Hive Transactional Tables事务表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#341-概述">3.4.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#342-创建和使用事务表">3.4.2 创建和使用事务表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#35-hive视图view">3.5 Hive视图（View）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#351-概述">3.5.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#352-view相关语法">3.5.2 View相关语法</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#353-view的好处">3.5.3 View的好处</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#36-hive30新特性物化视图-materialized-views">3.6 Hive3.0新特性：物化视图 materialized views</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#361-概述">3.6.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#362-物化视图语法">3.6.2 物化视图语法</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#363-案例物化视图查询重写">3.6.3 案例：物化视图查询重写</a><br/>
+<a href="#参考引用">参考引用</a><br/>
 </nav>
+
 
 
 ## 一、Hive DDL建库语法
@@ -462,14 +475,15 @@ select * from trans_student;
 select * from trans_student;
 ```
 `DELETE` 操作实际上没有删除数据，而是增加了标志位。<br>
-<img src="images/hive03_3_4_2_01.png" width="80%" height="80%" alt=""><br>
+<img src="images/hive03_3_4_2_01.png" width="100%" height="100%" alt=""><br>
 
 
 ### 3.5 Hive视图（View）
 #### 3.5.1 概述
-Hive中的视图（view）是一种`虚拟表`，**只保存定义，不实际存储数据**，也没有提高查询性能。
-通常从真实的物理表查询中创建生成视图，也可以从已经存在的视图上创建新视图。
-创建视图时，将冻结视图的架构，如果删除或更改基础表，则视图将失败，并且视图不能存储、操作数据，只能查询。
+Hive中的视图（view）是一种`虚拟表`，**只保存定义，不实际存储数据**。<br>
+通常从真实的物理表查询中创建生成视图，也可以从已经存在的视图上创建新视图。<br>
+创建视图时，将冻结视图的架构，如果删除或更改基础表，则视图将失败，并且视图不能存储、操作数据，只能查询。<br>
+视图是用来简化操作的，不缓冲记录，也没有提高查询性能。<br>
 
 #### 3.5.2 View相关语法
 ```sql
@@ -525,8 +539,139 @@ select * from people join cart on (cart.pepople_id = people.id) where firstname 
 select lastname from shorter_join where id = 3;
 ```
 
+### 3.6 Hive3.0新特性：物化视图 materialized views
+#### 3.6.1 概述
+`物化视图`（Materialized View）是一个包括查询结果的数据库对像，可以用于`预先计算并保存表连接或聚集等耗时较多的操作的结果`。
+在执行查询时，就可以避免进行这些耗时的操作，从而快速的得到结果。<br>
+
+Hive 3.0引入了物化视图，并实现了基于`Apache Calcite`的`查询自动重写功能`。
+用户可选择将物化视图存储在Hive或通过自定义存储处理器存储在其他系统（如Druid）。
+Hive 3.0弃用了索引的语法支持，推荐使用`物化视图`和`列式存储文件格式`来加快查询的速度。<br>
+
+物化视图与普通视图的**主要区别**在于：
++ 视图是虚拟的、逻辑存在的，只有定义没有存储数据，目的是简化查询复杂度；
++ 物化视图是真实的、物理存在的，存储预计算数据，用于提升查询性能。
+
+#### 3.6.2 物化视图语法
+```sql
+CREATE MATERIALIZED VIEW [IF NOT EXISTS] [db_name.]materialized_view_name
+    [DISABLE REWRITE]
+    [COMMENT materialized_view_comment]
+    [PARTITIONED ON (col_name, ...)]
+    [CLUSTERED ON (col_name, ...) | DISTRIBUTED ON (col_name, ...) SORTED ON (col_name, ...)]
+    [
+    [ROW FORMAT row_format]
+    [STORED AS file_format]
+    | STORED BY 'storage.handler.class.name' [WITH SERDEPROPERTIES (...)]
+  ]
+  [LOCATION hdfs_path]
+  [TBLPROPERTIES (property_name=property_value, ...)]
+AS SELECT ...;
+```
+语法说明：<br>
+（1）物化视图创建后，select查询执行数据自动落地，"自动"也即在query的执行期间，任何用户对该物化视图是不可见的<br>
+（2）默认该物化视图可被用于`查询优化器optimizer查询重写`（在物化视图创建期间可以通过DISABLE REWRITE参数设置禁止使用）<br>
+（3）SerDe和storage format非强制参数，可以用户配置，默认可用hive.materializedview.serde、 hive.materializedview.fileformat<br>
+（4）物化视图可以使用custom storage handlers`存储在外部系统`（如druid）例如：
+```sql
+CREATE MATERIALIZED VIEW druid_wiki_mv
+STORED AS 'org.apache.hadoop.hive.druid.DruidStorageHandler'
+AS
+SELECT __time, page, user, c_added, c_removed FROM src;
+```
+
+目前支持物化视图的drop和show操作，后续会增加其他操作：
+```sql
+-- Drops a materialized view
+DROP MATERIALIZED VIEW [db_name.]materialized_view_name;
+-- Shows materialized views (with optional filters)
+SHOW MATERIALIZED VIEWS [IN database_name];
+-- Shows information about a specific materialized view
+DESCRIBE [EXTENDED | FORMATTED] [db_name.]materialized_view_name;
+```
+
+当数据源变更（新数据插入inserted、数据修改modified），物化视图也需要更新以保持数据一致性，目前需要用户主动触发rebuild:
+```sql
+ALTER MATERIALIZED VIEW [db_name.]materialized_view_name REBUILD;
+```
+
+`基于物化视图的查询重写`：物化视图创建后即可用于相关查询的加速，用户提交查询query，若该query经过重写后可命中已建视图，则被重写命中相关已建视图实现查询加速。
+```sql
+-- 是否重写查询使用物化视图可以通过全局参数控制，默认为true：
+SET hive.materializedview.rewriting=true;
+-- 用户可选择性的失能物化视图的重写：
+ALTER MATERIALIZED VIEW [db_name.]materialized_view_name ENABLE|DISABLE REWRITE;
+```
+
+#### 3.6.3 案例：物化视图查询重写
+1、新建普通表（`student`）、事务表（`student_trans`）
+```sql
+set hive.support.concurrency = true; --Hive是否支持并发
+set hive.enforce.bucketing = true; --从Hive2.0开始不再需要  是否开启分桶功能
+set hive.exec.dynamic.partition.mode = nonstrict; --动态分区模式  非严格
+set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager; --
+set hive.compactor.initiator.on = true; --是否在Metastore实例上运行启动线程和清理线程
+set hive.compactor.worker.threads = 1; --在此metastore实例上运行多少个压缩程序工作线程。
+
+drop table if exists student;
+create table if not exists student
+(
+    sno  int,
+    sname string,
+    ssex  string,
+    sage  int,
+    sdept string
+)
+row format delimited
+    fields terminated by ',';
+
+create table if not exists  student_trans(
+    sno  int,
+    sname string,
+    ssex  string,
+    sage  int,
+    sdept string
+)
+clustered by (sno) into 2 buckets
+stored as orc
+TBLPROPERTIES ('transactional' = 'true');
+```
+
+2、导入数据到`student`、`student_trans`中
+```sql
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/students.txt /user/hive/warehouse/itheima.db/student
+select * from student;
+
+insert overwrite table student_trans select sno,sname,ssex,sage,sdept from student;
+select * from student_trans;
+```
+<img src="images/hive03_3_6_3_01.png" width="100%" height="100%" alt=""><br>
 
 
+3、对`student_trans`建立聚合物化视图
+```sql
+CREATE MATERIALIZED VIEW student_trans_agg
+AS
+SELECT sdept, count(*) as sdept_cnt from student_trans group by sdept;
 
+--可以发现当下的数据库中有了一个物化视图
+show materialized views;
+SELECT * FROM student_trans_agg;
+```
+
+4、查询原始表`student_trans`，转换成了对物化视图的查询，提高了查询效率
+```sql
+--由于会命中物化视图，重写query查询物化视图，查询速度会加快（没有启动MR，只是普通的table scan）
+SELECT sdept, count(*) as sdept_cnt from student_trans group by sdept;
+
+--查询执行计划可以发现：查询被自动重写为TableScan alias: itcast.student_trans_agg
+explain SELECT sdept, count(*) as sdept_cnt from student_trans group by sdept;
+```
+<img src="images/hive03_3_6_3_02.png" width="100%" height="100%" alt=""><br>
+
+
+## 参考引用
+[1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
+[2] [Apache Hive -Materialized views](https://cwiki.apache.org/confluence/display/Hive/Materialized+views)
 
 

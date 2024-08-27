@@ -311,7 +311,64 @@ SELECT * FROM tmp_v_v_usa_covid19;
 DROP VIEW tmp_v_v_usa_covid19;
 
 
+/**
+  案例：物化视图查询重写
+ */
+--1、新建一张事务表 student_trans
+set hive.support.concurrency = true; --Hive是否支持并发
+set hive.enforce.bucketing = true; --从Hive2.0开始不再需要  是否开启分桶功能
+set hive.exec.dynamic.partition.mode = nonstrict; --动态分区模式  非严格
+set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager; --
+set hive.compactor.initiator.on = true; --是否在Metastore实例上运行启动线程和清理线程
+set hive.compactor.worker.threads = 1; --在此metastore实例上运行多少个压缩程序工作线程。
 
+drop table if exists student;
+create table if not exists student
+(
+    sno  int,
+    sname string,
+    ssex  string,
+    sage  int,
+    sdept string
+)
+row format delimited
+    fields terminated by ',';
+
+create table if not exists  student_trans(
+    sno  int,
+    sname string,
+    ssex  string,
+    sage  int,
+    sdept string
+)
+clustered by (sno) into 2 buckets
+stored as orc
+TBLPROPERTIES ('transactional' = 'true');
+
+--2、导入数据到student_trans中
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/students.txt /user/hive/warehouse/itheima.db/student
+select * from student;
+
+insert overwrite table student_trans select sno,sname,ssex,sage,sdept from student;
+select * from student_trans;
+
+--3、对student_trans建立聚合物化视图
+CREATE MATERIALIZED VIEW student_trans_agg
+AS
+SELECT sdept, count(*) as sdept_cnt from student_trans group by sdept;
+
+--注意 这里当执行CREATE MATERIALIZED VIEW，会启动一个MR对物化视图进行构建
+--可以发现当下的数据库中有了一个物化视图
+show materialized views;
+SELECT * FROM student_trans_agg;
+
+--4、对原始表student_trans查询
+--由于会命中物化视图，重写query查询物化视图，查询速度会加快（没有启动MR，只是普通的table scan）
+SELECT sdept, count(*) as sdept_cnt from student_trans group by sdept;
+
+--5、查询执行计划可以发现 查询被自动重写为TableScan alias: itcast.student_trans_agg
+--转换成了对物化视图的查询  提高了查询效率
+explain SELECT sdept, count(*) as sdept_cnt from student_trans group by sdept;
 
 
 
