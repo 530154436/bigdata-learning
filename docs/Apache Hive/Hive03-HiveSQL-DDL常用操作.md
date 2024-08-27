@@ -7,9 +7,9 @@ CREATE (DATABASE|SCHEMA) [IF NOT EXISTS] database_name
 [LOCATION hdfs_path]
 [WITH DBPROPERTIES (property_name=property_value, ...)]
 ```
-1）COMMENT：数据库的注释说明语句<br>
-2）指定数据库在HDFS存储位置，默认`/user/hive/warehouse`<br>
-3）用于指定一些数据库的属性配置。<br>
+（1）COMMENT：数据库的注释说明语句<br>
+（2）指定数据库在HDFS存储位置，默认`/user/hive/warehouse`<br>
+（3）用于指定一些数据库的属性配置。<br>
 **注意**：使用`location`指定路径的时候，最好是一个新创建的空文件夹。
 
 ```sql
@@ -48,12 +48,17 @@ DROP DATABASE IF EXISTS itcast CASCADE;
 
 ## 二、表DDL操作（Table）
 ```sql
--- 创建表
+-- 创建示例表
 create table if not exists table_name(id int, name string);
 ```
 ### 2.1 Describe table
 Hive中的DESCRIBE table语句用于显示Hive中表的元数据信息。
 ```sql
+-- 语法
+describe formatted [db_name.]table_name;
+describe extended [db_name.]table_name;
+
+-- 示例
 describe formatted table_name;
 describe extended table_name;
 ```
