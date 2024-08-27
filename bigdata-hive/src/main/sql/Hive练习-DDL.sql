@@ -209,3 +209,59 @@ desc formatted t_user_province_city;
 create table t_user_province_city_county (id int, name string,age int) partitioned by (province string, city string,county string);
 desc formatted t_user_province_city_county;
 
+
+
+/**
+  分桶表
+ */
+-- 创建普通表
+DROP TABLE IF EXISTS t_usa_covid19;
+CREATE TABLE IF NOT EXISTS t_usa_covid19(
+    count_date string,
+    county string,
+    state string,
+    fips int,
+    cases int,
+    deaths int
+)
+row format delimited
+fields terminated by ",";
+SELECT * FROM t_usa_covid19;
+
+-- 创建分桶表
+DROP TABLE IF EXISTS t_usa_covid19_bucket;
+CREATE TABLE IF NOT EXISTS t_usa_covid19_bucket(
+    count_date string,
+    county string,
+    state string,
+    fips int,
+    cases int,
+    deaths int
+)
+CLUSTERED BY(state) sorted by(cases DESC) INTO 5 BUCKETS;
+
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/us-covid19-counties.dat /user/hive/warehouse/itheima.db/t_usa_covid19
+
+--使用insert+select语法将数据加载到分桶表中，3245条数据耗时：1m51s
+INSERT INTO t_usa_covid19_bucket SELECT * FROM t_usa_covid19;
+
+
+
+select * from t_usa_covid19_bucket where state="New York";
+select * from t_usa_covid19 where state="New York";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

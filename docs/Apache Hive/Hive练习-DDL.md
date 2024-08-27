@@ -10,7 +10,7 @@ use itheima;
 ```
 ## 二、Hive DDL-建表语法
 ### 2.1 原生数据类型案例
-文件[archer.txt](honor_of_kings/hero/archer.txt)中记录了手游《王者荣耀》射手的相关信息，其中字段之间分隔符为制表符\t,要求在Hive中建表映射成功该文件。<br>
+文件[archer.txt](data/honor_of_kings/hero/archer.txt)中记录了手游《王者荣耀》射手的相关信息，其中字段之间分隔符为制表符\t,要求在Hive中建表映射成功该文件。<br>
 ```
 1	后羿	5986	1784	396	336	remotely	archer
 2	马可波罗	5584	200	362	344	remotely	archer
@@ -43,7 +43,7 @@ select * from t_archer;
 <img src="images/hive练习2_1_01.png" width="100%" height="100%" alt="">
 
 ### 2.2 复杂数据类型案例
-文件[hot_hero_skin_price.txt](honor_of_kings/hot_hero_skin_price.txt)中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
+文件[hot_hero_skin_price.txt](data/honor_of_kings/hot_hero_skin_price.txt)中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
 ```
 1,孙悟空,53,西部大镖客:288-大圣娶亲:888-全息碎片:0-至尊宝:888-地狱火:1688
 2,鲁班七号,54,木偶奇遇记:288-福禄兄弟:288-黑桃队长:60-电玩小子:2288-星空梦想:0
@@ -71,7 +71,7 @@ select * from t_hot_hero_skin_price;
 <img src="images/hive练习2_2_01.png" width="100%" height="100%" alt="">
 
 ### 2.3 默认分隔符案例
-文件[team_ace_player.txt](honor_of_kings/team_ace_player.txt)中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
+文件[team_ace_player.txt](data/honor_of_kings/team_ace_player.txt)中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
 ```
 1成都AG超玩会一诺
 2重庆QGhappyHurt
@@ -196,7 +196,7 @@ select count(*) from t_all_hero where role_main="archer" and hp_max >6000;
 ```
 <img src="images/hive练习3_2_02.png" width="100%" height="100%" alt=""><br><br>
 
-针对《王者荣耀》英雄数据，重新创建一张分区表t_all_hero_part，以role角色作为分区字段。
+针对《王者荣耀》英雄数据，重新创建一张分区表t_all_hero_part，以role角色作为分区字段。<br>
 `注意`：分区字段不能是表中已经存在的字段，因为分区字段最终也会以虚拟字段的形式显示在表结构上。
 
 #### 3.2.1 分区表数据加载-静态分区
@@ -242,10 +242,11 @@ select count(*) from t_all_hero_part where role="archer" and hp_max >6000;
 #### 3.2.2 分区表数据加载-动态分区
 动态分区是指分区的字段值是基于查询结果自动推断。核心语法就是insert+select。启用hive动态分区，需要在hive会话中设置两个参数：
 ```sql
+-- 开启动态分区功能
 set hive.exec.dynamic.partition=true;
+-- 指定动态分区的模式：分为`nonstick非严格模式`和`strict严格模式`；strict严格模式要求至少有一个分区为静态分区。
 set hive.exec.dynamic.partition.mode=nonstrict;
 ```
-第一个参数表示开启动态分区功能，第二个参数指定动态分区的模式。分为`nonstick非严格模式`和`strict严格模式`。strict严格模式要求至少有一个分区为静态分区。<br>
 创建一张新的分区表t_all_hero_part_dynamic：
 ```sql
 create table t_all_hero_part_dynamic(
@@ -309,6 +310,98 @@ create table t_user_province_city_county (id int, name string,age int) partition
 3. **虚拟字段**：分区字段是虚拟字段，其数据并不存储在底层文件中。
 4. **分区字段值的确定**：分区字段值可以由用户手动指定（静态分区）或根据查询结果自动推断（动态分区）。
 5. 多重分区支持：Hive 支持多重分区，即在分区的基础上可以继续分区，以达到更细粒度的划分。
+
+
+### 3.3 分桶表
+#### 3.3.1 分桶表的概念
+`分桶表`也叫做桶表，源自建表语法中`bucket`单词。是一种用于优化查询而设计的表类型，该功能可以让数据分解为若干个部分易于管理。
+在分桶时，需要指定根据哪个字段将数据分为几桶（几个部分）。默认规则是：
+```
+Bucket number = hash_function(bucketing_column) mod num_buckets
+如果是int类型，hash_function(int) == int;
+如果是其他类型，比如bigint、string或者复杂数据类型，将传入该类型派生的某个数字，比如hashcode值：hash_function(hashcode)
+```
+
+需要注意的是，`分桶的字段必须是表中已经存在的字段`。 分桶表建表语句如下：
+```sql
+CREATE [EXTERNAL] TABLE [db_name.]table_name
+[(col_name data_type, ...)]
+CLUSTERED BY (col_name) INTO N BUCKETS;
+-- 其中CLUSTERED BY (col_name)表示根据哪个字段进行分；
+-- INTO N BUCKETS表示分为几桶（也就是几个部分）。
+```
+#### 3.3.2 分桶表的创建、加载数据
+现有美国2021-1-28号，各个县county的新冠疫情累计案例信息，包括确诊病例和死亡病例，数据格式如下所示：
+```
+count_date（统计日期）,county（县）,state（州）,fips（县编码code）,cases（累计确诊病例）,deaths（累计死亡病例）
+2021-01-28,Juneau City and Borough,Alaska,02110,1108,3
+2021-01-28,Kenai Peninsula Borough,Alaska,02122,3866,18
+2021-01-28,Ketchikan Gateway Borough,Alaska,02130,272,1
+```
+根据state州把数据分为5桶，在创建分桶表时，还可以指定分桶内的数据`排序规则`，建表语句如下：
+```sql
+--根据state州分为5桶 每个桶内根据cases确诊病例数倒序排序
+CREATE TABLE IF NOT EXISTS t_usa_covid19_bucket
+(
+    count_date string,
+    county     string,
+    state      string,
+    fips       int,
+    cases      int,
+    deaths     int
+)
+CLUSTERED BY (state) sorted by (cases DESC) INTO 5 BUCKETS;
+```
+数据加载：
+```
+-- 第1步：创建普通表并把源数据加载到普通hive表中
+CREATE TABLE t_usa_covid19(
+    count_date string,
+    county string,
+    state string,
+    fips int,
+    cases int,
+    deaths int
+);
+$HADOOP_HOME/bin/hdfs dfs -put /home/hive/us-covid19-counties.dat /user/hive/warehouse/itheima.db/t_usa_covid19
+
+-- 第2步：使用insert+select语法将数据加载到分桶表中，3245条数据耗时：1m51s
+INSERT INTO t_usa_covid19_bucket SELECT * FROM t_usa_covid19;
+```
+HDFS上查看t_usa_covid19_bucket底层数据结构可以发现，数据被分为了5个部分。<br>
+<img src="images/hive练习3_3_2_01.png" width="100%" height="100%" alt=""><br>
+
+#### 3.3.3 分桶表的使用好处
+和非分桶表相比，分桶表的使用好处有以下几点：
+1. 基于分桶字段查询时，`减少全表扫描`<br>
+    ```sql
+    select * from t_usa_covid19_bucket where state="New York";
+    ```
+2. `JOIN`时可以提高MR程序效率，减少笛卡尔积数量<br>
+   对于JOIN操作两个表有一个相同的列，如果对这两个表都进行了分桶操作。那么将保存相同列值的桶进行JOIN操作即可，大大较少JOIN的数据量。<br>
+   <img src="images/hive练习3_3_3_01.png" width="100%" height="100%" alt=""><br>
+
+3. 分桶表数据进行抽样<br>
+   当数据量特别大时，对全体数据进行处理存在困难时，抽样可以从被抽取的数据中估计和推断出整体的特性，是科学实验、质量检验、社会调查普遍采用的一种经济有效的工作和研究方法。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
