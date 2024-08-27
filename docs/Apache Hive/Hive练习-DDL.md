@@ -1,3 +1,23 @@
+<nav>
+<a href="#一hive-ddl建库语法">一、Hive DDL建库语法</a><br/>
+<a href="#二hive-ddl-建表语法">二、Hive DDL-建表语法</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-原生数据类型案例">2.1 原生数据类型案例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-复杂数据类型案例">2.2 复杂数据类型案例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-默认分隔符案例">2.3 默认分隔符案例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-指定存储路径">2.4 指定存储路径</a><br/>
+<a href="#三hive-ddl-内部表外部表">三、Hive DDL-内部表、外部表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-内部表外部表">3.1 内部表、外部表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-分区表">3.2 分区表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#321-分区表数据加载-静态分区">3.2.1 分区表数据加载-静态分区</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#322-分区表数据加载-动态分区">3.2.2 分区表数据加载-动态分区</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#323-多重分区表">3.2.3 多重分区表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#324-分区表使用总结">3.2.4 分区表使用总结</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-分桶表">3.3 分桶表</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#331-分桶表的概念">3.3.1 分桶表的概念</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#332-分桶表的创建加载数据">3.3.2 分桶表的创建、加载数据</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#333-分桶表的使用好处">3.3.3 分桶表的使用好处</a><br/>
+</nav>
+
 
 ## 一、Hive DDL建库语法
 ```sql
@@ -379,7 +399,7 @@ HDFS上查看t_usa_covid19_bucket底层数据结构可以发现，数据被分�
     ```
 2. `JOIN`时可以提高MR程序效率，减少笛卡尔积数量<br>
    对于JOIN操作两个表有一个相同的列，如果对这两个表都进行了分桶操作。那么将保存相同列值的桶进行JOIN操作即可，大大较少JOIN的数据量。<br>
-   <img src="images/hive练习3_3_3_01.png" width="100%" height="100%" alt=""><br>
+   <img src="images/hive练习3_3_3_01.png" width="80%" height="80%" alt=""><br>
 
 3. 分桶表数据进行抽样<br>
    当数据量特别大时，对全体数据进行处理存在困难时，抽样可以从被抽取的数据中估计和推断出整体的特性，是科学实验、质量检验、社会调查普遍采用的一种经济有效的工作和研究方法。
