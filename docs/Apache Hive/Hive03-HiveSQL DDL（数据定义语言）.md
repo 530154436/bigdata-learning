@@ -413,16 +413,16 @@ Hive 最初不支持事务，其核心目标是将结构化数据映射为表进
 
 为了应对以下场景，Hive 从 0.14 版本开始引入 ACID 事务：
 
-1. **流式数据传输**  
++ **流式数据传输**  
    使用如 Apache Flume 或 Apache Kafka 之类的工具，可以将数据流式传输到 Hadoop 集群中。<br>
    虽然这些工具能够以每秒数百行的速度写入数据，但 Hive 只能在一定时间间隔内（如 15 分钟或一小时）添加分区。<br>
    频繁添加分区会导致表中出现大量分区（小文件），并造成查询效率下降。<br>
    通过引入事务，Hive 能够在流式数据写入时为读者提供一致的数据视图，同时避免生成过多小文件给 NameNode 带来压力。<br>
 
-2. **缓慢变化的维度表**  
++ **缓慢变化的维度表**  
    在星型模式的数据仓库中，维度表（如商店信息）可能随着时间发生变化。Hive 的事务功能允许在需要时`更新`或`插入`新记录，支持对缓慢变化的数据进行精确处理。
 
-3. **数据修正**  
++ **数据修正**  
    有时发现收集的数据不正确，需要更正。
    事务使 Hive 能够处理数据的修正需求，支持 `INSERT`、`UPDATE` 和 `DELETE` 操作。
 
@@ -452,10 +452,12 @@ create table trans_student(
 )
 clustered by (id) into 2 buckets stored as orc TBLPROPERTIES('transactional'='true');
 
---3、针对事务表进行insert update delete操作
-insert into trans_student (id, name, age) values (1,"allen",18);
-update trans_student set age = 20 where id = 1;
-delete from trans_student where id =1;
+--3、针对事务表进行insert update delete操作（效率很低）
+insert into trans_student (id, name, age) values (1,"allen",18);  -- 2 m 3 s
+update trans_student set age = 20 where id = 1;                   -- 29 s 426 ms
+delete from trans_student where id = 1;                           -- 1 m 14 s
+select * from trans_student;
+
 
 select * from trans_student;
 ```
@@ -463,14 +465,65 @@ select * from trans_student;
 <img src="images/hive03_3_4_2_01.png" width="80%" height="80%" alt=""><br>
 
 
+### 3.5 Hive视图（View）
+#### 3.5.1 概述
+Hive中的视图（view）是一种`虚拟表`，**只保存定义，不实际存储数据**，也没有提高查询性能。
+通常从真实的物理表查询中创建生成视图，也可以从已经存在的视图上创建新视图。
+创建视图时，将冻结视图的架构，如果删除或更改基础表，则视图将失败，并且视图不能存储、操作数据，只能查询。
 
+#### 3.5.2 View相关语法
+```sql
+SELECT * FROM itheima.t_usa_covid19;
 
-### 3.5 Hive Transactional Tables事务表
+--1、创建视图和查询
+CREATE VIEW tmp_v_usa_covid19 AS SELECT count_date, county,state,deaths FROM t_usa_covid19 LIMIT 5;
+SELECT * FROM tmp_v_usa_covid19;
 
-### 3.5.1 概述
+--从已有的视图中创建视图
+CREATE VIEW tmp_v_v_usa_covid19 AS SELECT * FROM tmp_v_usa_covid19 LIMIT 2;
+SELECT * FROM tmp_v_v_usa_covid19;
 
+--2、显示当前已有的视图
+SHOW VIEWS;
 
+--能否插入数据到视图中呢？
+--不行 报错  SemanticException:A view cannot be used as target table for LOAD or INSERT
+INSERT INTO tmp_v_v_usa_covid19 SELECT count_date, county,state,deaths FROM t_usa_covid19 ;
 
+--3、查看视图定义
+SHOW CREATE TABLE tmp_v_usa_covid19;
+
+--4、更改视图属性
+   ALTER VIEW tmp_v_usa_covid19 set TBLPROPERTIES ('comment' = '这货是个视图');
+
+--5、更改视图定义
+   ALTER VIEW tmp_v_v_usa_covid19 AS select county,deaths from t_usa_covid19 limit 2;
+SELECT * FROM tmp_v_v_usa_covid19;
+
+--6、删除视图
+DROP VIEW tmp_v_v_usa_covid19;
+```
+#### 3.5.3 View的好处
+1、将真实表中特定的列数据提供给用户，**保护数据隐私**
+```sql
+--通过视图来限制数据访问可以用来保护信息不被随意查询:
+create table userinfo(firstname string, lastname string, ssn string, password string);
+create view safer_user_info as select firstname, lastname from userinfo;
+```
+
+2、降低查询的复杂度，**优化查询语句**
+```sql
+--使用视图优化嵌套查询
+from (
+    select * from people join cart on(cart.pepople_id = people.id) where firstname = 'join'
+)a select a.lastname where a.id = 3;
+
+--把嵌套子查询变成一个视图
+create view shorter_join as
+select * from people join cart on (cart.pepople_id = people.id) where firstname = 'join';
+--基于视图查询
+select lastname from shorter_join where id = 3;
+```
 
 
 

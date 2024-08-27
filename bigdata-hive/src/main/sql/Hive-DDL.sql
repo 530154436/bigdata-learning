@@ -277,8 +277,38 @@ delete from trans_student where id = 1;                           -- 1 m 14 s
 select * from trans_student;
 
 
+/**
+  Hive视图View
+ */
+SELECT * FROM itheima.t_usa_covid19;
 
+--1、创建视图和查询
+CREATE VIEW tmp_v_usa_covid19 AS SELECT count_date, county,state,deaths FROM t_usa_covid19 LIMIT 5;
+SELECT * FROM tmp_v_usa_covid19;
 
+--从已有的视图中创建视图
+CREATE VIEW tmp_v_v_usa_covid19 AS SELECT * FROM tmp_v_usa_covid19 LIMIT 2;
+SELECT * FROM tmp_v_v_usa_covid19;
+
+--2、显示当前已有的视图
+SHOW VIEWS;
+
+--能否插入数据到视图中呢？
+--不行 报错  SemanticException:A view cannot be used as target table for LOAD or INSERT
+INSERT INTO tmp_v_v_usa_covid19 SELECT count_date, county,state,deaths FROM t_usa_covid19 ;
+
+--3、查看视图定义
+SHOW CREATE TABLE tmp_v_usa_covid19;
+
+--4、更改视图属性
+ALTER VIEW tmp_v_usa_covid19 set TBLPROPERTIES ('comment' = '这货是个视图');
+
+--5、更改视图定义
+ALTER VIEW tmp_v_v_usa_covid19 AS select county,deaths from t_usa_covid19 limit 2;
+SELECT * FROM tmp_v_v_usa_covid19;
+
+--6、删除视图
+DROP VIEW tmp_v_v_usa_covid19;
 
 
 
