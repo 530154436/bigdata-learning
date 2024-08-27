@@ -245,14 +245,36 @@ CLUSTERED BY(state) sorted by(cases DESC) INTO 5 BUCKETS;
 --使用insert+select语法将数据加载到分桶表中，3245条数据耗时：1m51s
 INSERT INTO t_usa_covid19_bucket SELECT * FROM t_usa_covid19;
 
-
-
 select * from t_usa_covid19_bucket where state="New York";
 select * from t_usa_covid19 where state="New York";
 
 
+/**
+  事务表
+ */
+--1、开启事务配置（可以使用set设置当前session生效 也可以配置在hive-site.xml中）
+set hive.support.concurrency = true; --Hive是否支持并发
+set hive.enforce.bucketing = true; --从Hive2.0开始不再需要  是否开启分桶功能
+set hive.exec.dynamic.partition.mode = nonstrict; --动态分区模式  非严格
+set hive.txn.manager = org.apache.hadoop.hive.ql.lockmgr.DbTxnManager; --
+set hive.compactor.initiator.on = true; --是否在Metastore实例上运行启动线程和清理线程
+set hive.compactor.worker.threads = 1; --在此metastore实例上运行多少个压缩程序工作线程。
 
+--2、创建Hive事务表
+create table trans_student(
+    id int,
+    name String,
+    age int
+)
+clustered by (id) into 2 buckets
+stored as orc
+TBLPROPERTIES('transactional'='true');
 
+--3、针对事务表进行insert update delete操作（效率很低）
+insert into trans_student (id, name, age) values (1,"allen",18);  -- 2 m 3 s
+update trans_student set age = 20 where id = 1;                   -- 29 s 426 ms
+delete from trans_student where id = 1;                           -- 1 m 14 s
+select * from trans_student;
 
 
 
