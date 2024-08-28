@@ -69,17 +69,49 @@ describe extended table_name;
 DROP TABLE删除该表的元数据和数据。 如果已配置垃圾桶（且未指定PURGE），则该表对应的数据实际上将移动到`.Trash/Current目录`，而元数据完全丢失。<br>
 删除EXTERNAL表时，该表中的数据不会从文件系统中删除，只删除元数据。 如果指定了`PURGE`，则表数据不会进入.Trash/Current目录，跳过垃圾桶直接被删除。因此如果DROP失败，则无法挽回该表数据。
 ```sql
+-- 语法
 DROP TABLE [IF EXISTS] table_name [PURGE];  -- (Note: PURGE available in Hive 0.14.0 and later)
+
+-- 示例
+
 ```
 
 ### 2.3 Truncate table
 从表中`删除所有行`。可以简单理解为清空表的所有数据但是保留表的元数据结构。如果HDFS启用了垃圾桶，数据将被丢进垃圾桶，否则将被删除。
 ```sql
+-- 语法
 TRUNCATE [TABLE] table_name;
+
+-- 示例
+TRUNCATE TABLE table_name;
 ```
 
 ### 2.4 Alter table
+```sql
+--1、更改表名
+ALTER TABLE table_name RENAME TO new_table_name;
+ALTER TABLE new_table_name RENAME TO table_name;
 
+--2、更改表属性
+-- ALTER TABLE table_name SET TBLPROPERTIES (property_name = property_value, ... );
+ALTER TABLE table_name SET TBLPROPERTIES ("createdBy" = "Edward");
+
+--更改表注释
+ALTER TABLE table_name SET TBLPROPERTIES ('comment' = "new comment for student table");
+
+--3、更改表的文件存储格式 该操作仅更改表元数据。现有数据的任何转换都必须在Hive之外进行。
+-- ALTER TABLE table_name  SET FILEFORMAT file_format;
+ALTER TABLE table_name  SET FILEFORMAT ORC;
+
+--4、更改表的存储位置路径
+ALTER TABLE table_name SET LOCATION "/data/table_name";
+
+--5、添加/替换列
+--使用ADD COLUMNS，您可以将新列添加到现有列的末尾但在分区列之前。
+--REPLACE COLUMNS 将删除所有现有列，并添加新的列集。
+-- ALTER TABLE table_name ADD|REPLACE COLUMNS (col_name data_type,...);
+ALTER TABLE table_name ADD COLUMNS (age INT);
+```
 
 
 ## 参考引用

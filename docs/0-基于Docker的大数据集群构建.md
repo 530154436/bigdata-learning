@@ -219,7 +219,7 @@ $HIVE_HOME/bin/hive --service hiveserver2
 # jdbc客户端，输入连接：!connect jdbc:hive2://hive:10000
 $HIVE_HOME/bin/beeline
 或
-$HIVE_HOME/bin/beeline -u "jdbc:hive2://hive:10000"
+$HIVE_HOME/bin/beeline -u "jdbc:hive2://hive:10000" -n hive
 ```
 操作如下：
 ```

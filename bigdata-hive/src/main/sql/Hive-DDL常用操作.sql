@@ -30,6 +30,7 @@ ALTER DATABASE itcast SET LOCATION "hdfs:///data/itcast.db";
 DROP DATABASE IF EXISTS itcast;
 DROP DATABASE IF EXISTS itcast CASCADE;
 
+
 /**
   表DDL操作（Table）
  */
@@ -46,4 +47,32 @@ describe extended table_name;
 -- 清空表
 TRUNCATE TABLE table_name;
 
+--1、更改表名
+ALTER TABLE table_name RENAME TO new_table_name;
+ALTER TABLE new_table_name RENAME TO table_name;
 
+--2、更改表属性
+-- ALTER TABLE table_name SET TBLPROPERTIES (property_name = property_value, ... );
+ALTER TABLE table_name SET TBLPROPERTIES ("createdBy" = "Edward");
+
+--更改表注释
+ALTER TABLE table_name SET TBLPROPERTIES ('comment' = "new comment for student table");
+
+--3、更改表的文件存储格式 该操作仅更改表元数据。现有数据的任何转换都必须在Hive之外进行。
+-- ALTER TABLE table_name  SET FILEFORMAT file_format;
+ALTER TABLE table_name  SET FILEFORMAT ORC;
+
+--4、更改表的存储位置路径
+ALTER TABLE table_name SET LOCATION "/data/table_name";
+
+--5、添加/替换列
+--使用ADD COLUMNS，您可以将新列添加到现有列的末尾但在分区列之前。
+--REPLACE COLUMNS 将删除所有现有列，并添加新的列集。
+-- ALTER TABLE table_name ADD|REPLACE COLUMNS (col_name data_type,...);
+ALTER TABLE table_name ADD COLUMNS (age INT);
+
+
+/**
+  表DDL操作（Table）
+  分区DDL操作（Partition）
+ */
