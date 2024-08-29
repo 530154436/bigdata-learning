@@ -73,6 +73,93 @@ ALTER TABLE table_name ADD COLUMNS (age INT);
 
 
 /**
-  表DDL操作（Table）
   分区DDL操作（Partition）
  */
+
+--1、增加分区
+drop table if exists table_name;
+create table if not exists table_name(id int) PARTITIONED BY (dt string);
+--一次添加一个分区
+ALTER TABLE table_name ADD PARTITION (dt='20170101') location '/user/hadoop/warehouse/table_name/dt=20170101';
+show partitions table_name;
+
+drop table if exists table_name;
+create table if not exists table_name(id int) PARTITIONED BY (dt string, country string);
+-- 一次添加多个分区
+ALTER TABLE table_name ADD PARTITION (dt='20170101', country='us') location '/user/hadoop/warehouse/table_name/dt=20170101/country=us';
+show partitions table_name;
+
+
+--2、重命名分区
+-- 语法
+ALTER TABLE table_name PARTITION partition_spec RENAME TO PARTITION partition_spec;
+-- 示例
+ALTER TABLE table_name PARTITION (dt='20170101', country='us') RENAME TO PARTITION (dt='20080809', country='cn');
+
+
+--3、删除分区
+ALTER TABLE table_name DROP IF EXISTS PARTITION (dt='20080809', country='cn');
+ALTER TABLE table_name DROP IF EXISTS PARTITION (dt='20080809', country='cn') PURGE; --直接删除数据 不进垃圾桶
+show partitions table_name;
+
+--4、修复分区
+MSCK REPAIR TABLE table_name;
+show partitions table_name;
+
+
+--5、修改分区
+--更改分区文件存储格式
+ALTER TABLE table_name PARTITION (dt='2008-08-09') SET FILEFORMAT file_format;
+--更改分区位置
+ALTER TABLE table_name PARTITION (dt='2008-08-09') SET LOCATION "new location";
+
+
+/**
+  Hive Show显示语法
+ */
+--1、显示所有数据库 SCHEMAS和DATABASES的用法 功能一样
+show databases;
+show schemas;
+
+--2、显示当前数据库所有表/视图/物化视图/分区/索引
+show tables;
+show tables IN itheima; --指定某个数据库
+
+--3、显示当前数据库下所有视图
+Show Views;
+SHOW VIEWS 'tmp_v_*'; -- show all views that start with "test_"
+SHOW VIEWS FROM itheima; -- show views from database test1
+SHOW VIEWS IN itheima;
+
+--4、显示当前数据库下所有物化视图
+SHOW MATERIALIZED VIEWS IN itheima;
+
+--5、显示表分区信息，分区按字母顺序列出，不是分区表执行该语句会报错
+show partitions table_name;
+
+--6、显示表/分区的扩展信息
+SHOW TABLE EXTENDED IN itheima LIKE table_name;
+show table extended like student;
+
+--7、显示表的属性信息
+SHOW TBLPROPERTIES table_name;
+show tblproperties student;
+
+--8、显示表、视图的创建语句
+SHOW CREATE TABLE itheima.t_usa_covid19_bucket;
+show create table student;
+
+--9、显示表中的所有列，包括分区列。
+SHOW COLUMNS IN t_usa_covid19_bucket IN itheima;
+show columns  in student;
+
+--10、显示当前支持的所有自定义和内置的函数
+show functions;
+
+--11、Describe desc
+--查看表信息
+desc extended table_name;
+--查看表信息（格式化美观）
+desc formatted table_name;
+--查看数据库相关信息
+describe database itheima;

@@ -1,3 +1,20 @@
+<nav>
+<a href="#一数据库ddl操作databaseschema">一、数据库DDL操作（Database|schema）</a><br/>
+<a href="#二表ddl操作table">二、表DDL操作（Table）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-describe-table">2.1 Describe table</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-drop-table">2.2 Drop table</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-truncate-table">2.3 Truncate table</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-alter-table">2.4 Alter table</a><br/>
+<a href="#三分区ddl操作partition">三、分区DDL操作（Partition）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-add-partition">3.1 Add partition</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-rename-partition">3.2 rename partition</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-delete-partition">3.3 delete partition</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-alter-partition">3.4 alter partition</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#35-msck-partition">3.5 Msck partition</a><br/>
+<a href="#四hive-show显示语法">四、Hive Show显示语法</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 
 ## 一、数据库DDL操作（Database|schema）
 Hive中DATABASE的概念和RDBMS中类似，我们称之为`数据库`。在Hive中， DATABASE和SCHEMA是可互换的，使用DATABASE或SCHEMA都可以。
@@ -113,6 +130,109 @@ ALTER TABLE table_name SET LOCATION "/data/table_name";
 ALTER TABLE table_name ADD COLUMNS (age INT);
 ```
 
+## 三、分区DDL操作（Partition）
+### 3.1 Add partition
+分区值仅在为字符串时才应加引号，位置必须是数据文件所在的目录。 `ADD PARTITION`会更改表元数据，但不会加载数据。如果分区位置中不存在数据，查询将不会返回任何结果。
+```sql
+drop table if exists table_name;
+create table if not exists table_name(id int) PARTITIONED BY (dt string);
+--一次添加一个分区
+ALTER TABLE table_name ADD PARTITION (dt='20170101') location '/user/hadoop/warehouse/table_name/dt=20170101';
+show partitions table_name;
+
+drop table if exists table_name;
+create table if not exists table_name(id int) PARTITIONED BY (dt string, country string);
+-- 一次添加多个分区
+ALTER TABLE table_name ADD PARTITION (dt='20170101', country='us') location '/user/hadoop/warehouse/table_name/dt=20170101/country=us';
+show partitions table_name;
+```
+
+### 3.2 rename partition
+```sql
+-- 语法
+ALTER TABLE table_name PARTITION partition_spec RENAME TO PARTITION partition_spec;
+-- 示例
+ALTER TABLE table_name PARTITION (dt='20170101', country='us') RENAME TO PARTITION (dt='20080809', country='cn');
+```
+### 3.3 delete partition
+可以使用`ALTER TABLE DROP PARTITION`删除表的分区，这将删除该分区的数据和元数据。
+```sql
+ALTER TABLE table_name DROP IF EXISTS PARTITION (dt='20080809', country='cn');
+ALTER TABLE table_name DROP IF EXISTS PARTITION (dt='20080809', country='cn') PURGE; --直接删除数据 不进垃圾桶
+show partitions table_name;
+```
+
+### 3.4 alter partition
+```sql
+--更改分区文件存储格式
+ALTER TABLE table_name PARTITION (dt='2008-08-09') SET FILEFORMAT file_format;
+--更改分区位置
+ALTER TABLE table_name PARTITION (dt='2008-08-09') SET LOCATION "new location";
+```
+
+### 3.5 Msck partition
+Hive将每个表的分区列表信息存储在其metastore中。但是，如果将新分区直接添加到HDFS（例如通过使用hadoop fs -put命令）或从HDFS中直接删除分区文件夹，则除非用户ALTER TABLE table_name ADD/DROP PARTITION在每个新添加的分区上运行命令，否则metastore（也就是Hive）将不会意识到分区信息的这些更改。
+但是，用户可以使用修复表选项运行metastore check命令。
+```sql
+-- 语法
+MSCK [REPAIR] TABLE table_name [ADD/DROP/SYNC PARTITIONS];
+-- 示例
+MSCK REPAIR TABLE table_name;
+```
+MSC命令的默认选项是“添加分区”。使用此选项，它将把HDFS上存在但元存储中不存在的所有分区添加到元存储中。<br>
+DROP PARTITIONS选项将从已经从HDFS中删除的metastore中删除分区信息。<br>
+SYNC PARTITIONS选项等效于调用ADD和DROP PARTITIONS。<br>
+如果存在大量未跟踪的分区，则可以批量运行MSCK REPAIR TABLE，以避免OOME（内存不足错误）。<br>
+
+## 四、Hive Show显示语法
+```sql
+--1、显示所有数据库 SCHEMAS和DATABASES的用法 功能一样
+show databases;
+show schemas;
+
+--2、显示当前数据库所有表/视图/物化视图/分区/索引
+show tables;
+show tables IN itheima; --指定某个数据库
+
+--3、显示当前数据库下所有视图
+Show Views;
+SHOW VIEWS 'tmp_v_*'; -- show all views that start with "test_"
+SHOW VIEWS FROM itheima; -- show views from database test1
+SHOW VIEWS IN itheima;
+
+--4、显示当前数据库下所有物化视图
+SHOW MATERIALIZED VIEWS IN itheima;
+
+--5、显示表分区信息，分区按字母顺序列出，不是分区表执行该语句会报错
+show partitions table_name;
+
+--6、显示表/分区的扩展信息
+SHOW TABLE EXTENDED IN itheima LIKE table_name;
+show table extended like student;
+
+--7、显示表的属性信息
+SHOW TBLPROPERTIES table_name;
+show tblproperties student;
+
+--8、显示表、视图的创建语句
+SHOW CREATE TABLE itheima.t_usa_covid19_bucket;
+show create table student;
+
+--9、显示表中的所有列，包括分区列。
+SHOW COLUMNS IN t_usa_covid19_bucket IN itheima;
+show columns  in student;
+
+--10、显示当前支持的所有自定义和内置的函数
+show functions;
+
+--11、Describe desc
+--查看表信息
+desc extended table_name;
+--查看表信息（格式化美观）
+desc formatted table_name;
+--查看数据库相关信息
+describe database itheima;
+```
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
