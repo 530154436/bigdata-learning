@@ -5,7 +5,10 @@
 
 # hive启动后只有一个RunJar进程
 echo "[INFO] 启动 Metastore 服务..."
-nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.root.logger=INFO,console > hivemetastore.out &
+
+# > 将标准输出（stdout）重定向到 hiveserver2.out 文件中。
+# 2>&1 将标准错误（stderr）重定向到标准输出，使得错误输出和标准输出都写入 hiveserver2.out 文件中
+nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.root.logger=INFO,console > hivemetastore.out 2>&1 &
 # 设置超时时间（例如，60秒）
 timeout=600
 counter=0
