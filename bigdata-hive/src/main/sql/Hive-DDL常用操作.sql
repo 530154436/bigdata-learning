@@ -103,8 +103,50 @@ ALTER TABLE table_name DROP IF EXISTS PARTITION (dt='20080809', country='cn') PU
 show partitions table_name;
 
 --4、修复分区
-MSCK REPAIR TABLE table_name;
-show partitions table_name;
+
+use itheima;
+-- ① 创建一张分区表，直接使用HDFS命令在表文件夹下创建分区文件夹并上传数据，此时在Hive中查询是无法显示表数据的，因为metastore中没有记录，使用`MSCK ADD PARTITIONS`进行修复。
+--Step1：创建分区表
+create table t_all_hero_part_msck
+(
+    id           int,
+    name         string,
+    hp_max       int,
+    mp_max       int,
+    attack_max   int,
+    defense_max  int,
+    attack_range string,
+    role_main    string,
+    role_assist  string
+) partitioned by (role string)
+row format delimited
+    fields terminated by "\t";
+
+--Step2：在linux上，使用HDFS命令创建分区文件夹
+-- $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/hive/warehouse/itheima.db/t_all_hero_part_msck/role=sheshou
+-- $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/hive/warehouse/itheima.db/t_all_hero_part_msck/role=tanke
+
+--Step3：把数据文件上传到对应的分区文件夹下
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hero/archer.txt /user/hive/warehouse/itheima.db/t_all_hero_part_msck/role=sheshou
+-- $HADOOP_HOME/bin/hdfs dfs -put /home/hive/honor_of_kings/hero/tank.txt /user/hive/warehouse/itheima.db/t_all_hero_part_msck/role=tanke
+
+--Step4：查询表 可以发现没有数据
+select * from t_all_hero_part_msck;
+--Step5：使用MSCK命令进行修复
+--add partitions可以不写 因为默认就是增加分区
+MSCK repair table t_all_hero_part_msck add partitions;
+
+-- ② 针对分区表，直接使用HDFS命令删除分区文件夹，此时在Hive中查询显示分区还在，因为metastore中还没有被删除，使用`MSCK DROP PARTITIONS`进行修复。
+--Step1：直接使用HDFS命令删除分区表的某一个分区文件夹
+-- $HADOOP_HOME/bin/hdfs dfs -rm -r /user/hive/warehouse/itheima.db/t_all_hero_part_msck/role=sheshou
+
+--Step2：查询发现还有分区信息
+--因为元数据信息没有删除
+show partitions t_all_hero_part_msck;
+
+--Step3：使用MSCK命令进行修复
+MSCK repair table t_all_hero_part_msck drop partitions;
+show partitions t_all_hero_part_msck;
 
 
 --5、修改分区
