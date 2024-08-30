@@ -172,7 +172,7 @@ ALTER TABLE table_name PARTITION (dt='2008-08-09') SET LOCATION "new location";
 
 ### 3.5 Msck partition
 Hive将每个表的分区列表信息存储在其metastore中。但是，如果将新分区直接添加到HDFS（例如通过使用hadoop fs -put命令）或从HDFS中直接删除分区文件夹，则除非用户ALTER TABLE table_name ADD/DROP PARTITION在每个新添加的分区上运行命令，否则metastore（也就是Hive）将不会意识到分区信息的这些更改。
-但是，用户可以使用修复表选项运行metastore check命令。
+但是，用户可以使用修复表选项运行`metastore check`命令。
 ```sql
 -- 语法
 MSCK [REPAIR] TABLE table_name [ADD/DROP/SYNC PARTITIONS];
@@ -183,6 +183,14 @@ MSC命令的默认选项是“添加分区”。使用此选项，它将把HDFS�
 DROP PARTITIONS选项将从已经从HDFS中删除的metastore中删除分区信息。<br>
 SYNC PARTITIONS选项等效于调用ADD和DROP PARTITIONS。<br>
 如果存在大量未跟踪的分区，则可以批量运行MSCK REPAIR TABLE，以避免OOME（内存不足错误）。<br>
+
+#### 3.5.1 Hive MSCK 修复partition
+① 创建一张分区表，直接使用HDFS命令在表文件夹下创建分区文件夹并上传数据，此时在Hive中查询是无法显示表数据的，因为metastore中没有记录，使用`MSCK ADD PARTITIONS`进行修复。
+```sql
+```
+② 针对分区表，直接使用HDFS命令删除分区文件夹，此时在Hive中查询显示分区还在，因为metastore中还没有被删除，使用`MSCK DROP PARTITIONS`进行修复。
+```sql
+```
 
 ## 四、Hive Show显示语法
 ```sql
