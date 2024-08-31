@@ -254,7 +254,7 @@ select * from t_usa_covid19 cluster by county;
 + 如果用sort by进行排序，并且设置mapred.reduce.tasks>1，则`sort by只保证每个reducer的输出有序，不保证全局有序`。
 + 如果distribute和sort的字段是同一个时，此时，`cluster by = distribute by + sort by`
 
-<img src="images/hive03_dql_2_1_03.png" width="70%" height="70%" alt=""><br>
+<img src="images/hive03_dql_2_1_03.png" width="60%" height="60%" alt=""><br>
 
 ### 2.2 Union联合查询
 `UNION`用于将来自多个SELECT语句的结果合并为一个结果集。语法如下：
@@ -414,10 +414,11 @@ select * from q1;
 select * from v1;
 ```
 
-### 2.5 Join连接查询
+### 三、Join连接查询
 
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
 [2] [Apache Hive - LanguageManual Select](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Select) <br>
 [3] [Hive SQL 语句的执行顺序](https://gairuo.com/p/hive-sql-execution-order) <br>
+[4] [Apache Hive -LanguageManual+Joins](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Joins) <br>
