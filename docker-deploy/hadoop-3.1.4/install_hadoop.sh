@@ -409,6 +409,12 @@ cat > $INSTALL_DIR/etc/hadoop/yarn-site.xml << EOF
     <value>$LOGS_DIR/yarn</value> 
   </property>
 
+  <!-- 配置hadoop日志服务 -->
+  <property>
+      <name>yarn.log.server.url</name>
+      <value>http://hadoop101:19888/jobhistory/logs</value>
+  </property>
+
   <property>
     <name>yarn.resourcemanager.address</name>
     <value>hadoop101:8032</value> 
@@ -427,13 +433,29 @@ cat > $INSTALL_DIR/etc/hadoop/yarn-site.xml << EOF
   <!-- 配置 nodemanager 可用的资源内存 -->
   <property>
     <name>yarn.nodemanager.resource.memory-mb</name>
-    <value>20480</value>
+    <value>4096</value>
   </property>
 
   <!-- 配置 nodemanager 可用的资源 CPU -->
   <property>
     <name>yarn.nodemanager.resource.cpu-vcores</name>
     <value>24</value>
+  </property>
+
+  <!-- 容器job内存限制 -->
+  <property>
+    <name>yarn.scheduler.maximum-allocation-mb</name>
+    <value>8192</value>
+  </property>
+  <!-- 是否对容器强制执行虚拟内存限制 -->
+  <property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+  </property>
+  <!-- 为容器设置内存限制时虚拟内存与物理内存之间的比率 -->
+  <property>
+    <name>yarn.nodemanager.vmem-pmem-ratio</name>
+    <value>4</value>
   </property>
 
 </configuration>

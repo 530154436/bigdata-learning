@@ -126,6 +126,9 @@ web管理界面：
 `Yarn界面`：http://localhost:8088/<br>
 <img src="images/docker/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
 
+`日志服务`：http://localhost:19888/<br>
+<img src="images/docker/hadoop_job_history.png" width="80%" height="80%" alt=""><br>
+
 #### 1.3 MySQL构建与部署
 MySQL服务器启动后，会在内存中常驻`mysqld_safe`和`mysqld` 2个进程：
 ```
