@@ -208,10 +208,126 @@ select * from t_usa_covid19 distribute by county sort by county;
 select * from t_usa_covid19 cluster by county;
 
 
+/**
+  select查询-Union联合查询
+*/
+
+--使用DISTINCT关键字与使用UNION默认值效果一样，都会删除重复行。
+select count_date, state  from t_usa_covid19_p
+UNION -- DISTINCT
+select count_date, state from t_usa_covid19_p;
+
+--使用ALL关键字会保留重复行。
+select count_date, state  from t_usa_covid19_p
+UNION ALL
+select count_date, state from t_usa_covid19_p;
+
+--如果要将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT子句应用于整个UNION结果
+--请将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT放在最后一个之后。
+select count_date, state from t_usa_covid19_p
+UNION
+select count_date, state from t_usa_covid19_p
+order by state desc;
 
 
+/**
+  select查询-Subqueries子查询
+*/
+--from子句中子查询（Subqueries）
+SELECT state
+FROM (
+    select count_date, state
+    from t_usa_covid19_p
+) tmp;
+
+--包含UNION ALL的子查询的示例
+SELECT t3.state
+FROM (
+    select state from t_usa_covid19_p
+    UNION distinct
+    select state from t_usa_covid19_p
+) t3;
 
 
+/**
+  select查询-where子句中子查询
+*/
+--不相关子查询，相当于IN、NOT IN,子查询只能选择一个列。
+--（1）执行子查询，其结果不被显示，而是传递给外部查询，作为外部查询的条件使用。
+--（2）执行外部查询，并显示整个结果。　　
+SELECT *
+FROM t_usa_covid19
+WHERE t_usa_covid19.state IN (select state from t_usa_covid19_p limit 2);
+
+--相关子查询，指EXISTS和NOT EXISTS子查询
+--子查询的WHERE子句中支持对父查询的引用
+SELECT *
+FROM t_usa_covid19 T1
+WHERE EXISTS (SELECT state FROM t_usa_covid19_p T2 WHERE T1.state = T2.state);
+
+
+/**
+  select查询-CTE
+*/
+--选择语句中的CTE
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+select * from q1;
+
+-- from风格
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+from q1
+select *;
+
+-- chaining CTEs 链式
+with q1 as ( select * from t_usa_covid19_p where state = 'Arizona'),
+     q2 as ( select county,state,deaths,count_date from q1)
+select * from q2;
+
+-- union案例
+with q1 as (select * from t_usa_covid19_p where state = 'Arizona'),
+     q2 as (select * from t_usa_covid19_p where state = 'Alabama')
+select * from q1 union all select * from q2;
+
+--视图，CTAS和插入语句中的CTE
+-- insert
+create table s1 like t_usa_covid19_p;
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+from q1
+insert overwrite table s1 select *;
+select * from s1;
+
+-- ctas
+create table s2 as
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+select * from q1;
+select * from s2;
+
+-- view
+create table v1 as
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+select * from q1;
+select * from v1;
+
+
+SET hive.optimize.cte.materialize.threshold = 2
+;
+WITH t0 AS (SELECT rand() AS c0),
+     t1 AS (SELECT c0, rand() AS c FROM t0),
+     t2 AS (SELECT c0, rand() AS c FROM t0)
+SELECT * FROM t1   -- c0 0.5134221478450147
+union all
+SELECT * FROM t2   -- c0 0.5134221478450147
+;
 
 
 

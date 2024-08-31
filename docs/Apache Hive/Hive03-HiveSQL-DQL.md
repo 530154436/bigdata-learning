@@ -254,12 +254,167 @@ select * from t_usa_covid19 cluster by county;
 + 如果用sort by进行排序，并且设置mapred.reduce.tasks>1，则`sort by只保证每个reducer的输出有序，不保证全局有序`。
 + 如果distribute和sort的字段是同一个时，此时，`cluster by = distribute by + sort by`
 
-<img src="images/hive03_dql_2_1_03.png" width="100%" height="100%" alt=""><br>
+<img src="images/hive03_dql_2_1_03.png" width="70%" height="70%" alt=""><br>
 
-### 1.11 Union联合查询
-### 1.12 Subqueries子查询
-### 1.13 where子句中子查询
-### Join连接查询
+### 2.2 Union联合查询
+`UNION`用于将来自多个SELECT语句的结果合并为一个结果集。语法如下：
+```sql
+select_statement UNION [ALL | DISTINCT] select_statement UNION [ALL | DISTINCT] select_statement ...
+```
+（1）使用`DISTINCT`关键字与只使用`UNION`默认值效果一样，**都会删除重复行**。<br>
+（2）使用`ALL`关键字，不会删除重复行，结果集包括所有SELECT语句的匹配行（包括重复行）。<br>
+（3）每个select_statement返回的`列的数量和名称必须相同`。<br>
+```sql
+--使用DISTINCT关键字与使用UNION默认值效果一样，都会删除重复行。
+select count_date, state  from t_usa_covid19_p
+UNION -- DISTINCT
+select count_date, state from t_usa_covid19_p;
+
+--使用ALL关键字会保留重复行。
+select count_date, state  from t_usa_covid19_p
+UNION ALL
+select count_date, state from t_usa_covid19_p;
+
+--如果要将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT子句应用于整个UNION结果
+--请将ORDER BY，SORT BY，CLUSTER BY，DISTRIBUTE BY或LIMIT放在最后一个之后。
+select count_date, state from t_usa_covid19_p
+UNION
+select count_date, state from t_usa_covid19_p
+order by state desc;
+```
+
+### 2.3 Subqueries子查询
+#### 2.3.1 ` from子句中子查询
+在Hive0.12版本，仅在FROM子句中支持子查询，而且必须要给子查询一个名称，因为FROM子句中的每个表都必须有一个名称。<br>
++ 子查询返回结果中的列必须具有唯一的名称。
++ 子查询返回结果中的列在外部查询中可用，就像真实表的列一样。
++ 子查询也可以是带有UNION的查询表达式。
++ Hive支持任意级别的子查询，也就是所谓的嵌套子查询。 
++ Hive 0.13.0和更高版本中的子查询名称之前可以包含可选关键字“`AS`” 。
+```sql
+--from子句中子查询（Subqueries）
+SELECT state
+FROM (
+    select count_date, state
+    from t_usa_covid19_p
+) tmp;
+
+--包含UNION ALL的子查询的示例
+SELECT t3.state
+FROM (
+    select state from t_usa_covid19_p
+    UNION distinct
+    select state from t_usa_covid19_p
+) t3;
+```
+
+#### 2.3.2 where子句中子查询
+从Hive 0.13开始，`WHERE`子句支持某些类型的子查询。
+```sql
+--不相关子查询，相当于IN、NOT IN,子查询只能选择一个列。
+--（1）执行子查询，其结果不被显示，而是传递给外部查询，作为外部查询的条件使用。
+--（2）执行外部查询，并显示整个结果。　　
+SELECT *
+FROM t_usa_covid19
+WHERE t_usa_covid19.state IN (select state from t_usa_covid19_p limit 2);
+
+--相关子查询，指EXISTS和NOT EXISTS子查询
+--子查询的WHERE子句中支持对父查询的引用
+SELECT *
+FROM t_usa_covid19 T1
+WHERE EXISTS (SELECT state FROM t_usa_covid19_p T2 WHERE T1.state = T2.state);
+```
+
+### 2.4 CTE(Common Table Expression)
+
+#### 2.4.1 CTE介绍
+公共表表达式 (CTE) 是从 `WITH` 子句中指定的简单查询派生的临时结果集，它紧跟在 SELECT 或 INSERT 关键字之前。
+CTE 仅在单个语句的执行范围内定义。
+在 Hive SELECT、INSERT、 CREATE TABLE AS SELECT或CREATE VIEW AS SELECT语句中可以使用一个或多个 CTE 。
+
++ **作用**<br>
+相当于视图，定义了一个SQL片段，每次使用时候可以将该定义的SQL片段拿出来再被使用，该SQL片段可以理解为一个变量，主要用途简化SQL，让SQL更简洁，替换子查询，方便定位问题。
+
++ **语法**<br>
+` WITH temp_name AS (select statement)`
+
++ **规则**<br>
+1) 子查询块中不支持 WITH 子句；<br>
+2) 视图、CTAS(Create Table As Select)和 INSERT 语句支持 CTE；<br>
+3) 不支持递归查询。<br>
+
+
+默认情况下，如果使用CTE后被多次使用，则CTE子句就会被执行多次，若需要用HIVE CTE进行优化，则需要通过参数调优，即：
+```sql
+SET hive.optimize.cte.materialize.threshold = 2;
+```
+该参数默认值为：-1，表示不开启物化，当开启（大于等于0），比如设置为2，表示如果WITH…AS语句被引用2次及以上时，
+会把WITH…AS语句生成的table物化，从而做到WITH…AS语句只执行一次，来提高效率。在默认情况下，可以通过explain来查看执行计划。
+```sql
+SET hive.optimize.cte.materialize.threshold = 2
+;
+WITH t0 AS (SELECT rand() AS c0),
+     t1 AS (SELECT c0, rand() AS c FROM t0),
+     t2 AS (SELECT c0, rand() AS c FROM t0)
+SELECT * FROM t1   -- c0=0.5134221478450147
+union all
+SELECT * FROM t2   -- c0=0.5134221478450147
+;
+```
+
+#### 2.4.1 CTE案例
+```sql
+--选择语句中的CTE
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+select * from q1;
+
+-- from风格
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+from q1
+select *;
+
+-- chaining CTEs 链式
+with q1 as ( select * from t_usa_covid19_p where state = 'Arizona'),
+     q2 as ( select county,state,deaths,count_date from q1)
+select * from q2;
+
+-- union案例
+with q1 as (select * from t_usa_covid19_p where state = 'Arizona'),
+     q2 as (select * from t_usa_covid19_p where state = 'Alabama')
+select * from q1 union all select * from q2;
+
+--视图，CTAS和插入语句中的CTE
+-- insert
+create table s1 like t_usa_covid19_p;
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+from q1
+insert overwrite table s1 select *;
+select * from s1;
+
+-- ctas
+create table s2 as
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+select * from q1;
+select * from s2;
+
+-- view
+create table v1 as
+with q1 as (
+    select * from t_usa_covid19_p where state = 'Arizona'
+)
+select * from q1;
+select * from v1;
+```
+
+### 2.5 Join连接查询
 
 
 ## 参考引用
