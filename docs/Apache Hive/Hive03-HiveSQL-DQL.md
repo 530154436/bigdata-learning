@@ -414,8 +414,251 @@ select * from q1;
 select * from v1;
 ```
 
-### 三、Join连接查询
+## 三、Join连接查询
+### 3.1 Join连接概述
+在Hive中，`JOIN` 语法用于在查询中根据两个或多个表之间的关系连接这些表，以获取完整的数据集。与关系型数据库管理系统（RDBMS）中的 JOIN 语法相似，Hive 也支持多种 JOIN 类型，常见的有：`inner join`（内连接）、`left join`（左连接）、`right join`（右连接）、`full outer join`（全外连接）、`left semi join`（左半开连接）、`cross join`（交叉连接，也叫做笛卡尔乘积）。语法规则如下：
+```sql
+join_table:
+table_reference [INNER] JOIN table_factor [join_condition]
+| table_reference {LEFT|RIGHT|FULL} [OUTER] JOIN table_reference join_condition
+| table_reference LEFT SEMI JOIN table_reference join_condition
+| table_reference CROSS JOIN table_reference [join_condition] (as of Hive 0.10)
 
+table_reference:
+table_factor
+| join_table
+
+table_factor:
+tbl_name [alias]
+| table_subquery alias
+| ( table_references )
+
+join_condition:
+ON expression
+```
+（1）`table_reference`：是join查询中使用的表名，也可以是子查询别名（查询结果当成表参与join）。<br>
+（2）`table_factor`：与table_reference相同,是联接查询中使用的表名,也可以是子查询别名。<br>
+（3）`join_condition`：join查询关联的条件， 如果在两个以上的表上需要连接，则使用AND关键字。<br>
+
+Hive 0.13.0开始，支持隐式联接表示法（请参阅HIVE-5558）。这允许`FROM子句连接以逗号分隔的表列表，而省略JOIN关键字`。例如：
+```sql
+SELECT *
+FROM table1 t1, table2 t2, table3 t3
+WHERE t1.id = t2.id AND t2.id = t3.id AND t1.zipcode = '02535';
+```
+从Hive 2.2.0开始，支持ON子句中的复杂表达式，支持不相等连接（请参阅HIVE-15211和HIVE-15251）。在此之前，Hive不支持不是相等条件的联接条件。
+```sql
+SELECT a.* FROM a JOIN b ON (a.id = b.id)
+SELECT a.* FROM a JOIN b ON (a.id = b.id AND a.department = b.department)
+SELECT a.* FROM a LEFT OUTER JOIN b ON (a.id <> b.id)
+```
+
+### 3.2 案例数据准备
+表1：employee 员工表；
+表2：employee_address 员工住址信息表；
+表3：employee_connection 员工联系方式表；
+```sql
+--table1: 员工表
+CREATE TABLE employee(
+    id     int,
+    name   string,
+    deg    string,
+    salary int,
+    dept   string
+)
+row format delimited
+    fields terminated by ',';
+
+--table2:员工住址信息表
+CREATE TABLE employee_address(
+    id     int,
+    hno    string,
+    street string,
+    city   string
+)
+row format delimited
+    fields terminated by ',';
+
+--table3:员工联系方式表
+CREATE TABLE employee_connection (
+    id    int,
+    phno  string,
+    email string
+)
+row format delimited
+    fields terminated by ',';
+
+--加载数据到表中
+load data local inpath '/home/hive/hive_join/employee.txt' into table employee;
+load data local inpath '/home/hive/hive_join/employee_address.txt' into table employee_address;
+load data local inpath '/home/hive/hive_join/employee_connection.txt' into table employee_connection;
+```
+
+### 3.3 Hive inner join
+内连接是最常见的一种连接，它也被称为普通连接，而关系模型提出者E.FCodd（埃德加•科德）最早称之为自然连接。其中inner可以省略。`inner join <=> join` 等价于早期的连接语法。
+内连接，`只有进行连接的两个表中都存在与连接条件相匹配的数据才会被留下来`。
+
+```sql
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+inner join employee_address e_a on e.id =e_a.id;
+
+--等价于 inner join=join
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+join employee_address e_a on e.id =e_a.id;
+
+--等价于 隐式连接表示法
+select e.id,e.name,e_a.city,e_a.street
+from employee e, employee_address e_a
+where e.id =e_a.id;
+```
+
+### 3.4 Hive left join
+
+left join中文叫做是`左外连接`(Left Outer Jion)或者左连接，其中outer可以省略，left outer join是早期的写法。
+左指的是join关键字左边的表，简称左表。<br>
+通俗解释：`join时以左表的全部数据为准，右边与之关联；左表数据全部返回，右表关联上的显示返回，关联不上的显示null返回。`
+```sql
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+left join employee_connection e_conn on e.id =e_conn.id;
+
+--等价于 left outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+left outer join  employee_connection e_conn on e.id =e_conn.id;
+```
+
+### 3.5 Hive right join
+right join中文叫做是`右外连接`(Right Outer Jion)或者右连接，其中outer可以省略。
+right join的核心在于Right右，右指的是join关键字右边的表，简称右表。<br>
+通俗解释：join时以右表的全部数据为准，左边与之关联；右表数据全部返回，左表关联上的显示返回，关联不上的显示null返回。
+
+```sql
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+right join employee_connection e_conn on e.id =e_conn.id;
+
+--等价于 right outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e 
+right outer join employee_connection e_conn on e.id =e_conn.id;
+```
+
+### 3.6 Hive full outer join
+full outer join 等价 full join  ,中文叫做`全外连接`或者外连接。
+包含左、右两个表的全部行，不管另外一边的表中是否存在与它们匹配的行。<br>
+在功能上，它等价于对这两个数据集合分别进行左外连接和右外连接，然后再使用消去重复行的操作将上述两个结果集合并为一个结果集。
+
+```sql
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+full outer join employee_address e_a on e.id =e_a.id;
+
+--等价于
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+full join employee_address e_a on e.id =e_a.id;
+```
+
+### 3.7 Hive left semi join
+`左半开连接`（LEFT SEMI JOIN）是一种特殊的连接操作，它与普通的 LEFT JOIN 类似，但`只返回左表中满足连接条件的行`，不返回右表的列，在实现上更接近于 `IN 子查询`，而不是传统的连接。
+```sql
+select *
+from employee e
+left semi join employee_address e_addr on e.id =e_addr.id;
+
+-- 等价于 In 子查询
+select *
+from employee e
+where  e.id in (select `id` from employee_address);
+```
+
+### 3.8 Hive cross join
+
+`交叉连接`（cross join），将会返回被连接的两个表的笛卡尔积，返回结果的行数等于两个表行数的乘积。
+```sql
+--下列A、B、C 执行结果相同，但是效率不一样：
+select a.*,b.* from employee a, employee_address b where a.id=b.id;
+--B:
+select * from employee a cross join employee_address b on a.id=b.id;
+select * from employee a cross join employee_address b where a.id=b.id;
+
+--C:
+select * from employee a inner join employee_address b on a.id=b.id;
+```
+一般不建议使用方法A和B，因为如果有WHERE子句的话，往往会先进行笛卡尔积返回数据然后才根据WHERE条件从中选择。 因此，如果两个表太大，将会非常非常慢，不建议使用。
+
+
+### 3.9 Hive join使用注意事项
+总体来说，随着Hive的版本发展，join语法的功能也愈加丰富。有以下几点需要注意：
+a) 允许使用复杂的联接表达式
+```sql
+SELECT a.* FROM a JOIN b ON (a.id = b.id);
+SELECT a.* FROM a JOIN b ON (a.id = b.id AND a.department = b.department);
+SELECT a.* FROM a LEFT OUTER JOIN b ON (a.id <> b.id);
+```
+
+b) 同一查询中可以连接2个以上的表
+```sql
+SELECT a.val, b.val, c.val
+FROM a
+JOIN b ON (a.key = b.key1)
+JOIN c ON (c.key = b.key2);
+```
+
+c) 如果每个表在联接子句中使用相同的列，则Hive将多个表上的联接转换为单个MR作业
+```sql
+--由于联接中仅涉及b的key1列，因此被转换为1个MR作业来执行
+SELECT a.val, b.val, c.val
+FROM a
+JOIN b ON (a.key = b.key1)
+JOIN c ON (c.key = b.key1);
+
+--会转换为两个MR作业，因为在第一个连接条件中使用了b中的key1列，而在第二个连接条件中使用了b中的key2列。
+--第一个map / reduce作业将a与b联接在一起，然后将结果与c联接到第二个map / reduce作业中。
+SELECT a.val, b.val, c.val
+FROM a
+JOIN b ON (a.key = b.key1)
+JOIN c ON (c.key = b.key2);
+```
+
+d) join时的最后一个表会通过reducer流式传输，并在其中缓冲之前的其他表，因此，`将大表放置在最后有助于减少reducer阶段缓存数据所需要的内存`。
+```sql
+--由于联接中仅涉及b的key1列，因此被转换为1个MR作业来执行，并且表a和b的键的特定值的值被缓冲在reducer的内存中。
+--对于从c中检索的每一行，将使用缓冲的行来计算联接。
+SELECT a.val, b.val, c.val
+FROM a
+JOIN b ON (a.key = b.key1)
+JOIN c ON (c.key = b.key1)
+
+--计算涉及两个MR作业。其中的第一个将a与b连接起来，并缓冲a的值，同时在reducer中流式传输b的值。
+--在第二个MR作业中，将缓冲第一个连接的结果，同时将c的值通过reducer流式传输。
+SELECT a.val, b.val, c.val
+FROM a
+JOIN b ON (a.key = b.key1)
+JOIN c ON (c.key = b.key2)
+```
+
+e) 在join的时候，可以通过语法`STREAMTABLE提示指定要流式传输的表`。如果省略STREAMTABLE提示，则Hive将流式传输最右边的表。
+```sql
+--a,b,c三个表都在一个MR作业中联接，并且表b和c的键的特定值的值被缓冲在reducer的内存中。
+--然后，对于从a中检索到的每一行，将使用缓冲的行来计算联接。如果省略STREAMTABLE提示，则Hive将流式传输最右边的表。
+SELECT /*+ STREAMTABLE(a) */ a.val, b.val, c.val
+FROM a
+JOIN b ON (a.key = b.key1)
+JOIN c ON (c.key = b.key1)
+```
+
+f) `join在WHERE条件之前进行`。<br>
+g) 如果除一个要连接的表之外的所有表都很小，则可以将其作为仅map作业执行
+```sql
+--不需要reducer。对于A的每个Mapper，B都会被完全读取。限制是不能执行FULL / RIGHT OUTER JOIN b。
+SELECT /*+ MAPJOIN(b) */ a.key, a.value
+FROM a
+JOIN b ON a.key = b.key
+```
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>

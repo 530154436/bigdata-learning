@@ -330,8 +330,123 @@ SELECT * FROM t2   -- c0 0.5134221478450147
 ;
 
 
+/**
+  Join连接查询
+ */
+--table1: 员工表
+CREATE TABLE employee(
+    id     int,
+    name   string,
+    deg    string,
+    salary int,
+    dept   string
+)
+row format delimited
+    fields terminated by ',';
+
+--table2:员工住址信息表
+CREATE TABLE employee_address(
+    id     int,
+    hno    string,
+    street string,
+    city   string
+)
+row format delimited
+    fields terminated by ',';
+
+--table3:员工联系方式表
+CREATE TABLE employee_connection (
+    id    int,
+    phno  string,
+    email string
+)
+row format delimited
+    fields terminated by ',';
+
+--加载数据到表中
+load data local inpath '/home/hive/hive_join/employee.txt' into table employee;
+load data local inpath '/home/hive/hive_join/employee_address.txt' into table employee_address;
+load data local inpath '/home/hive/hive_join/employee_connection.txt' into table employee_connection;
 
 
+SELECT * FROM employee;
 
+/**
+  Join连接查询-inner join
+ */
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+inner join employee_address e_a on e.id =e_a.id;
 
+--等价于 inner join=join
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+join employee_address e_a on e.id =e_a.id;
 
+--等价于 隐式连接表示法
+select e.id,e.name,e_a.city,e_a.street
+from employee e, employee_address e_a
+where e.id =e_a.id;
+
+/**
+  Join连接查询-left join
+ */
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+left join employee_connection e_conn on e.id =e_conn.id;
+
+--等价于 left outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+left outer join  employee_connection e_conn on e.id =e_conn.id;
+
+/**
+  Join连接查询-right join
+ */
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+right join employee_connection e_conn on e.id =e_conn.id;
+
+--等价于 right outer join
+select e.id,e.name,e_conn.phno,e_conn.email
+from employee e
+right outer join employee_connection e_conn on e.id =e_conn.id;
+
+/**
+  Join连接查询-full outer join
+ */
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+full outer join employee_address e_a on e.id =e_a.id;
+
+--等价于
+select e.id,e.name,e_a.city,e_a.street
+from employee e
+full join employee_address e_a on e.id =e_a.id;
+
+/**
+  Join连接查询-left semi join
+ */
+select *
+from employee e
+left semi join employee_address e_addr on e.id =e_addr.id;
+
+-- 等价于 In 子查询
+select *
+from employee e
+where  e.id in (select `id` from employee_address);
+
+/**
+  Join连接查询-cross join
+ */
+--下列A、B、C 执行结果相同，但是效率不一样：
+select a.*,b.* from employee a, employee_address b where a.id=b.id;
+--B:
+select * from employee a cross join employee_address b on a.id=b.id;
+select * from employee a cross join employee_address b where a.id=b.id;
+
+--C:
+select * from employee a inner join employee_address b on a.id=b.id;
+
+--一般不建议使用方法A和B，因为如果有WHERE子句的话，往往会先进行笛卡尔积返回数据然后才根据WHERE条件从中选择。
+--因此，如果两个表太大，将会非常非常慢，不建议使用。
