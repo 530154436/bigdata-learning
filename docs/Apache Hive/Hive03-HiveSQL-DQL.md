@@ -1,3 +1,41 @@
+<nav>
+<a href="#一select基础查询">一、Select基础查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-概述">1.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#111-语法树">1.1.1 语法树</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#112-案例美国covid-19新冠">1.1.2 案例：美国Covid-19新冠</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-select_expr">1.2 select_expr</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-all-distinct">1.3 ALL 、DISTINCT</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-where">1.4 WHERE</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#15-分区查询分区裁剪">1.5 分区查询、分区裁剪</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#16-group-by">1.6 GROUP BY</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#17-having">1.7 HAVING</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#18-limit">1.8 LIMIT</a><br/>
+<a href="#二select高阶查询">二、Select高阶查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-order-bycluster-bydistribute-by-sort-by">2.1 ORDER BY、CLUSTER BY、DISTRIBUTE BY + SORT BY</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#211-order-by">2.1.1 ORDER BY</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#212-cluster-by">2.1.2 CLUSTER BY</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#213-distribute-by-sort-by">2.1.3 DISTRIBUTE BY + SORT BY</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#214-总结">2.1.4 总结</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-union联合查询">2.2 Union联合查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-subqueries子查询">2.3 Subqueries子查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-from子句中子查询">2.3.1 ` from子句中子查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-where子句中子查询">2.3.2 where子句中子查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-ctecommon-table-expression">2.4 CTE(Common Table Expression)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-cte介绍">2.4.1 CTE介绍</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-cte案例">2.4.1 CTE案例</a><br/>
+<a href="#三join连接查询">三、Join连接查询</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-join连接概述">3.1 Join连接概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-案例数据准备">3.2 案例数据准备</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-hive-inner-join">3.3 Hive inner join</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-hive-left-join">3.4 Hive left join</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#35-hive-right-join">3.5 Hive right join</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#36-hive-full-outer-join">3.6 Hive full outer join</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#37-hive-left-semi-join">3.7 Hive left semi join</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#38-hive-cross-join">3.8 Hive cross join</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#39-hive-join使用注意事项">3.9 Hive join使用注意事项</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、Select基础查询
 ### 1.1 概述
 #### 1.1.1 语法树
