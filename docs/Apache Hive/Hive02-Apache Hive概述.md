@@ -1,21 +1,28 @@
 <nav>
-<a href="#一apache-hive概述">一、Apache Hive概述</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-hive介绍">1.1 Hive介绍</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-场景设计如何模拟实现hive的功能">1.2 场景设计：如何模拟实现Hive的功能</a><br/>
-<a href="#二hive系统架构和工作原理">二、Hive系统架构和工作原理</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hive系统架构">2.1 Hive系统架构</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-相关名词">2.2 相关名词</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-元数据配置方式">2.3 元数据配置方式</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-客户端">2.4 客户端</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-hive-clienthive-beeline-client">2.4.1 Hive Client、Hive Beeline Client</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-hiveserverhiveserver2服务">2.4.2 HiveServer、HiveServer2服务</a><br/>
-<a href="#三hive数据模型">三、Hive数据模型</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#一apache-hive概述">一、Apache Hive概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-hive介绍">1.1 Hive介绍</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-场景设计如何模拟实现hive的功能">1.2 场景设计：如何模拟实现Hive的功能</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#二hive系统架构和工作原理">二、Hive系统架构和工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hive系统架构">2.1 Hive系统架构</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-相关名词">2.2 相关名词</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-元数据配置方式">2.3 元数据配置方式</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-hive参数配置">2.4 Hive参数配置</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-第一代客户端hive-clihive-client">2.4.1 第一代客户端（Hive CLI，Hive Client）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-hive-beeline-client">2.4.2 Hive Beeline Client</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-hiveserverhiveserver2服务">2.4.3 HiveServer、HiveServer2服务</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-配置属性configuration-properties">2.5 配置属性（Configuration Properties）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#251-hive-sitexml配置文件">2.5.1 hive-site.xml配置文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#252-hiveconf命令行参数">2.5.2 hiveconf命令行参数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#253-set命令">2.5.3 set命令</a><br/>
+<a href="#254-服务器特定的配置文件">2.5.4 服务器特定的配置文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#255-概况总结">2.5.5 概况总结</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#三hive数据模型">三、Hive数据模型</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-databases">3.1 Databases</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-tables">3.2 Tables</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-partitions">3.3 Partitions</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-buckets">3.4 Buckets</a><br/>
-<a href="#四hive与传统数据库对比">四、Hive与传统数据库对比</a><br/>
-<a href="#参考引用">参考引用</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-tables">3.2 Tables</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-partitions">3.3 Partitions</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-buckets">3.4 Buckets</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#四hive与传统数据库对比">四、Hive与传统数据库对比</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#参考引用">参考引用</a><br/>
 </nav>
 
 ## 一、Apache Hive概述
@@ -125,12 +132,11 @@ Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数�
 提供更好的可管理性和安全性，需配置hive.metastore.uris参数并手动启动Metastore服务。<br>
 <img src="images/hive02_metastore远程模式.png" width="40%" height="40%" alt="">
 
-### 2.4 客户端
-#### 2.4.1 Hive Client、Hive Beeline Client、WebUI
-**第一代客户端 hive shell（已废弃）**：
-- 说明：通过hive shell来操作hive，但是至多只能存在一个hive shell，启动第二个会被阻塞，不支持并发操作。
-- 功能：提供交互式模式的Hive查询运行环境、启动Metastore服务
-- 路径：bin/hive =访问=> MetaStore Server =访问=>MySQL
+### 2.4 Hive参数配置
+#### 2.4.1 第一代客户端（Hive CLI，Hive Client）
+`$HIVE_HOME/bin/hive`是一个shellUtil,通常称之为hive的`第一代客户端`或者旧客户端。至多只能存在一个hive shell来操作hive，启动第二个会被阻塞，不支持并发操作。它的主要功能有两个：
++ 用于以`交互式`或`批处理模式`运行Hive查询，并且能够访问的是Hive metastore服务，而不是hiveserver2服务。
++ 用于hive相关服务的启动，比如metastore服务。<br>
 
 在远程模式下，必须首先启动Hive metastore服务才可以使用hive。因为`metastore`服务和`hive server`是两个单独的进程了。
 启动`metastore`服务后只有1个`RunJar进程`：
@@ -140,33 +146,59 @@ Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数�
 + `RunJar进程的运行机制`
   在启动Hive时，RunJar进程首先会加载Hive的所有依赖项，包括Hadoop和其他必需的库。<br>
   然后，它会启动Hive Server服务，开始监听来自客户端的查询请求。 <br>
-  在运行过程中，RunJar进程通过连接到Hive Metastore获取元数据信息。
+  在运行过程中，RunJar进程通过连接到Hive Metastore获取元数据信息。<br>
+  路径：bin/hive =访问=> MetaStore Server =访问=> MySQL<br>
+
+可以通过运行"hive -H" 或者 "hive --help"来查看命令行选项。
+```shell
+-e <quoted-query-string>        执行命令行-e参数后指定的sql语句 运行完退出。
+-f <filename>                  执行命令行-f参数后指定的sql文件 运行完退出。
+-H,--help                      打印帮助信息
+--hiveconf <property=value>   设置参数
+-S,--silent                     静默模式
+-v,--verbose                   详细模式，将执行sql回显到console
+--service service_name        启动hive的相关服务
 ```
+CLI客户端常用命令
+```shell
 # 启动Metastore服务(进程为RunJar)
 $HIVE_HOME/bin/hive --service metastore
-# 客户端
+
+# 客户端交互式模式
 $HIVE_HOME/bin/hive
+
+# 以批处理模式执行SQL命令
+$HIVE_HOME/bin/hive -e 'show databases'
+
+# 使用静默模式将数据从查询中转储到文件中
+$HIVE_HOME/bin/hive -S -e 'select * from itheima.student' > result.txt
+
+# 从客户端所在机器的本地磁盘加载文件
+echo "show databases;" > hive.sql
+$HIVE_HOME/bin/hive -f /root/hive.sql
+
+# 从其他文件系统加载sql文件执行
+echo "show databases;" > hive.sql
+$HADOOP_HOME/bin/hdfs dfs -put /home/hive/hive.sql /data/
+$HIVE_HOME/bin/hive -f hdfs://hadoop101:9000/data/hive.sql 
 ```
 
-**第二代客户端**：
+#### 2.4.2 Hive Beeline Client
+`$HIVE_HOME/bin/beeline`被称之为第二代客户端或者新客户端，是一个JDBC客户端，是官方强烈推荐使用的Hive命令行工具，和第一代客户端相比，性能加强安全性提高。Beeline在嵌入式模式和远程模式下均可工作。
+在`嵌入式模式`下，它运行嵌入式Hive(类似于Hive CLI)；`远程模式`下beeline通过Thrift连接到单独的HiveServer2服务上，这也是官方推荐在生产环境中使用的模式。
 - 工具：`$HIVE_HOME/bin/beeline`
 - 说明：通过jdbc协议访问hive，支持高并发。
 - 功能：在嵌入式模式和远程模式下均可工作。<br>
   ①嵌入式模式：运行嵌入式Hive，类似于第一代Hive Client。
   ②远程模式：beeline通过 Thrift 连接到单独的 HiveServer2 服务上。
 - 路径：bin/beeline =访问=> hiveServer2 =访问=> MetaStore Server =访问=> MySQL
+
 ```
 # 前提：Metastore服务已启动
 # 启动hiveserver2服务(也是一个独立的RunJar进程)
 $HIVE_HOME/bin/hive --service metastore
 
-# 启动客户端
-$HIVE_HOME/bin/beeline
-# 输入连接：!connect jdbc:hive2://hive:10000
-
-$HIVE_HOME/bin/beeline -u jdbc:hive2://hive:10000 -n hive
-```
-```
+# 启动客户端后输入：!connect jdbc:hive2://hive:10000
 hive@hive:~$ $HIVE_HOME/bin/beeline
 Beeline version 3.1.2 by Apache Hive
 beeline> !connect jdbc:hive2://hive:10000
@@ -176,29 +208,109 @@ Enter password for jdbc:hive2://hive:10000: ****
 Connected to: Apache Hive (version 3.1.2)
 Driver: Hive JDBC (version 3.1.2)
 Transaction isolation: TRANSACTION_REPEATABLE_READ
-0: jdbc:hive2://hive:10000> 
+0: jdbc:hive2://hive:10000>
+
+# 直接登录
+$HIVE_HOME/bin/beeline -u jdbc:hive2://hive:10000 -n hive
+
+# 批处理模式执行SQL命令
+$HIVE_HOME/bin/beeline -u "jdbc:hive2://hive:10000" -n hive --outputformat=dsv -e "select * from itheima.student" > ./result.csv
 ```
 
-**WebUI**
-+ 通过`HUE`/`Zeppelin`来对Hive表进行操作。
-  
-那么问题来了，HiveServer2是什么？HiveServer1哪里去了？
-
-#### 2.4.2 HiveServer、HiveServer2服务
+#### 2.4.3 HiveServer、HiveServer2服务
 HiveServer(RunJar进程)、`HiveServer2`(HS2、RunJar进程)是Hive自带的一项服务，允许客户端在不启动CLI的情况下对Hive中的数据进行操作，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
 
 + HiveServer不能处理多于一个客户端的并发请求。
 + 因此在Hive-0.11.0版本中重写了HiveServer代码得到了HiveServer2，进而解决了该问题，HiveServer已经被废弃。
++ HiveServer2 Web：http://localhost:10002/
 
 HiveServer2支持多客户端的并发和身份认证，旨在为开放API客户端如JDBC、ODBC提供更好的支持。<br>
 HS2 是作为复合服务运行的单个进程，其中包括`基于Thrift的Hive服务`(TCP 或 HTTP)和`用于Web UI的Jetty Web服务器`。<br>
 
 > 基于Thrift的Hive服务是HS2的核心，并负责为Hive查询提供服务(例如，来自 Beeline)。 <br>
 Thrift是用于构建跨平台服务的RPC框架，它的堆栈由 4 层组成： 服务器，传输，协议和处理器。<br>
-HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服务器用于 HTTP 模式。 
+HS2 将 TThreadPool Server(来自  Thrift)用于 TCP 模式，或将 Jetty  服务器用于 HTTP 模式。
 
-#### 2.4.3 使用JDBC协议连接SERVER（JavaAPI）
+### 2.5 配置属性（Configuration Properties）
+#### 2.5.1 hive-site.xml配置文件
+`$HIVE_HOME/conf/hive-site.xml`是Hive重要的配置文件之一，常用的配置如下：
+```xml
+<configuration>
+    <!-- 存储元数据mysql相关配置 -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value> jdbc:mysql://mysql:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>123456</value>
+    </property>
 
+    <!-- H2S运行绑定host/port、身份校验 -->
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>hive</value>
+    </property>
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+    </property>
+  
+    <!-- 远程模式部署 metastore 服务地址 -->
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://hive:9083</value>
+    </property>
+</configuration>
+
+```
+
+#### 2.5.2 hiveconf命令行参数
+hiveconf是一个命令行的参数，用于在使用Hive CLI或者Beeline CLI的时候指定配置参数。这种方式的配置在整个的`会话`session中有效，会话结束，失效。
+比如在启动hive服务的时候，为了更好的查看启动详情，可以通过hiveconf参数修改日志级别：
+```shell
+nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.root.logger=INFO,console > hivemetastore.out 2>&1 &
+```
+
+#### 2.5.3 set命令
+在Hive CLI或Beeline中使用`set命令`为set命令之后的所有SQL语句设置配置参数，这个也是`会话级别`的。
+这种方式也是用户日常开发中使用最多的一种配置参数方式。因为Hive倡导一种：`谁需要、谁配置、谁使用`的一种思想，避免你的属性修改影响其他用户的修改。
+#启用hive动态分区，需要在hive会话中设置两个参数：
+```sql
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+```
+
+#### 2.5.4 服务器特定的配置文件
+可以在 hivemetastore-site.xml 文件中设置特定的 Metastore 配置值，并在 hiveserver2-site.xml 文件中设置 HiveServer2 的特定配置值。
+- Hive Metastore 服务器会读取位于 `$HIVE_CONF_DIR` 或类路径中的 hive-site.xml 和 hivemetastore-site.xml 配置文件。
+- HiveServer2 会读取位于 $HIVE_CONF_DIR 或类路径中的 hive-site.xml 和 hiveserver2-site.xml 配置文件。<br>
+
+如果 HiveServer2 以嵌入式模式使用 Metastore，它还会加载 hivemetastore-site.xml 文件。
+
+#### 2.5.5 概况总结
+配置文件的优先顺序如下，后面的优先级越高：
+```
+hive-site.xml-> hivemetastore-site.xml-> hiveserver2-site.xml->' -hiveconf'命令行参数
+```
+从Hive 0.14.0开始，会从HiveConf.java类中直接生成配置模板文件hive-default.xml.template，它是当前版本配置变量及其默认值的可靠来源。
+hive-default.xml.template 位于安装根目录下的conf目录中，并且 hive-site.xml 也应在同一目录中创建。<br>
+从 Hive 0.14.0开始， 可以使用`SHOW CONF`命令显示有关配置变量的信息。<br>
+配置方式的优先级顺序，优先级依次递增：
+```
+set参数生命 > hiveconf命令行参数 > hive-site.xml配置文件。
+```
+即set参数声明覆盖命令行参数hiveconf，命令行参数覆盖配置文件hive-site.xml设定。
+日常的开发使用中，如果不是核心的需要全局修改的参数属性，建议使用set命令进行设置。
+另外，Hive也会读入Hadoop的配置，因为Hive是作为Hadoop的客户端启动的，Hive的配置会覆盖Hadoop的配置。
 
 ## 三、Hive数据模型
 数据模型：用来描述数据、组织数据和对数据进行操作，是对现实世界数据特征的描述。Hive的数据模型类似于RDBMS库表结构，包含数据库（Database）、表（Table）、分区表（Partition）和桶表（Bucket）四种数据类型，其模型如下图所示。<br>
