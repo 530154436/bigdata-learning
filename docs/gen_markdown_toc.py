@@ -7,13 +7,14 @@ import re
 
 
 def generate_toc(md_content):
-    code_block_pattern = re.compile(r'```[\s\S]*?```')
+    code_block_pattern = re.compile(r'```[\s\S\n]*?```')
     # Remove code blocks temporarily
     temp_content = re.sub(code_block_pattern, '', md_content)
 
     toc = []
     heading_marks = re.findall(r'^(#{1,6})', temp_content, re.MULTILINE)
-    headings = re.findall(r'^(#{1,6})\s+(.+)', temp_content, re.MULTILINE)
+    headings = re.findall(r'^(#{1,6})\s*(.+)', temp_content, re.MULTILINE)
+    # print(headings)
 
     mark2level = dict()
     for hm in heading_marks:

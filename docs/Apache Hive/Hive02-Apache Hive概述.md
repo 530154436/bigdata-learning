@@ -1,29 +1,30 @@
 <nav>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#一apache-hive概述">一、Apache Hive概述</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-hive介绍">1.1 Hive介绍</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-场景设计如何模拟实现hive的功能">1.2 场景设计：如何模拟实现Hive的功能</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#二hive系统架构和工作原理">二、Hive系统架构和工作原理</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hive系统架构">2.1 Hive系统架构</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-相关名词">2.2 相关名词</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-元数据配置方式">2.3 元数据配置方式</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-hive参数配置">2.4 Hive参数配置</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-第一代客户端hive-clihive-client">2.4.1 第一代客户端（Hive CLI，Hive Client）</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-hive-beeline-client">2.4.2 Hive Beeline Client</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-hiveserverhiveserver2服务">2.4.3 HiveServer、HiveServer2服务</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-配置属性configuration-properties">2.5 配置属性（Configuration Properties）</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#251-hive-sitexml配置文件">2.5.1 hive-site.xml配置文件</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#252-hiveconf命令行参数">2.5.2 hiveconf命令行参数</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#253-set命令">2.5.3 set命令</a><br/>
-<a href="#254-服务器特定的配置文件">2.5.4 服务器特定的配置文件</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#255-概况总结">2.5.5 概况总结</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#三hive数据模型">三、Hive数据模型</a><br/>
+<a href="#一apache-hive概述">一、Apache Hive概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-hive介绍">1.1 Hive介绍</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-场景设计如何模拟实现hive的功能">1.2 场景设计：如何模拟实现Hive的功能</a><br/>
+<a href="#二hive系统架构和工作原理">二、Hive系统架构和工作原理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hive系统架构">2.1 Hive系统架构</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-相关名词">2.2 相关名词</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-元数据配置方式">2.3 元数据配置方式</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-hive参数配置">2.4 Hive参数配置</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-第一代客户端hive-clihive-client">2.4.1 第一代客户端（Hive CLI，Hive Client）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-第二代客户端hive-beeline-client">2.4.2 第二代客户端（Hive Beeline Client）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-hiveserverhiveserver2">2.4.3 HiveServer、HiveServer2</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-配置属性configuration-properties">2.5 配置属性（Configuration Properties）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#251-hive-sitexml配置文件">2.5.1 hive-site.xml配置文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#252-hiveconf命令行参数">2.5.2 hiveconf命令行参数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#253-set命令">2.5.3 set命令</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#254-服务器特定的配置文件">2.5.4 服务器特定的配置文件</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#255-概况总结">2.5.5 概况总结</a><br/>
+<a href="#三hive数据模型">三、Hive数据模型</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-databases">3.1 Databases</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-tables">3.2 Tables</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-partitions">3.3 Partitions</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-buckets">3.4 Buckets</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#四hive与传统数据库对比">四、Hive与传统数据库对比</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#参考引用">参考引用</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-tables">3.2 Tables</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-partitions">3.3 Partitions</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-buckets">3.4 Buckets</a><br/>
+<a href="#四hive与传统数据库对比">四、Hive与传统数据库对比</a><br/>
+<a href="#参考引用">参考引用</a><br/>
 </nav>
+
 
 ## 一、Apache Hive概述
 
@@ -183,7 +184,7 @@ $HADOOP_HOME/bin/hdfs dfs -put /home/hive/hive.sql /data/
 $HIVE_HOME/bin/hive -f hdfs://hadoop101:9000/data/hive.sql 
 ```
 
-#### 2.4.2 Hive Beeline Client
+#### 2.4.2 第二代客户端（Hive Beeline Client）
 `$HIVE_HOME/bin/beeline`被称之为第二代客户端或者新客户端，是一个JDBC客户端，是官方强烈推荐使用的Hive命令行工具，和第一代客户端相比，性能加强安全性提高。Beeline在嵌入式模式和远程模式下均可工作。
 在`嵌入式模式`下，它运行嵌入式Hive(类似于Hive CLI)；`远程模式`下beeline通过Thrift连接到单独的HiveServer2服务上，这也是官方推荐在生产环境中使用的模式。
 - 工具：`$HIVE_HOME/bin/beeline`
@@ -217,7 +218,7 @@ $HIVE_HOME/bin/beeline -u jdbc:hive2://hive:10000 -n hive
 $HIVE_HOME/bin/beeline -u "jdbc:hive2://hive:10000" -n hive --outputformat=dsv -e "select * from itheima.student" > ./result.csv
 ```
 
-#### 2.4.3 HiveServer、HiveServer2服务
+#### 2.4.3 HiveServer、HiveServer2
 HiveServer(RunJar进程)、`HiveServer2`(HS2、RunJar进程)是Hive自带的一项服务，允许客户端在不启动CLI的情况下对Hive中的数据进行操作，且两个都允许远程客户端使用多种编程语言如java，python等向hive提交请求，取回结果。
 
 + HiveServer不能处理多于一个客户端的并发请求。
@@ -283,8 +284,8 @@ nohup $HIVE_HOME/bin/hive --service metastore --hiveconf hive.root.logger=INFO,c
 #### 2.5.3 set命令
 在Hive CLI或Beeline中使用`set命令`为set命令之后的所有SQL语句设置配置参数，这个也是`会话级别`的。
 这种方式也是用户日常开发中使用最多的一种配置参数方式。因为Hive倡导一种：`谁需要、谁配置、谁使用`的一种思想，避免你的属性修改影响其他用户的修改。
-#启用hive动态分区，需要在hive会话中设置两个参数：
 ```sql
+-- 启用hive动态分区，需要在hive会话中设置两个参数
 set hive.exec.dynamic.partition=true;
 set hive.exec.dynamic.partition.mode=nonstrict;
 ```
