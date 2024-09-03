@@ -818,11 +818,57 @@ string1,...,stringn json_tuple(string jsonStr,string k1,...,string kn)
 ```
 使用示例：
 ```sql
+-- 输入json字符串
+WITH t AS (
+    SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
+           '"email":["amy@only_for_json_udf_test.net"],' ||
+           '"owner":"amy"}' AS json
+)
+SELECT json_tuple(t.json, 'store', 'owner', 'email') FROM t
+;
 
+-- Lateral view与UDTF函数一起使用
+SELECT t.*, store, owner, email
+FROM (SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
+             '"email":["amy@only_for_json_udf_test.net"],' ||
+             '"owner":"amy"}' AS json) t
+LATERAL VIEW json_tuple(t.json, 'store', 'owner', 'email') b as store, owner, email;
+;
 ```
 与get_json_object函数类似均用于解析json字符串，但json_tuple 函数一次可以解析多个 json 字段。
+<img src="images/hive04_06.png" width="100%" height="100%" alt=""><br>
 
-#### 2.5 窗口函数（Window functions ）
+
+#### 2.5 窗口函数（Window functions）
+
+##### 2.5.1 概述
+窗口函数（Window functions）是一种SQL函数，非常适合于数据分析，因此也叫做`OLAP函数`。<br>
+其最大特点是：`输入值是从SELECT语句的结果集中的一行或多行的“窗口”中获取的。`<br>
+如果函数具有`OVER子句`，则它是窗口函数；如果它缺少OVER子句，则它是一个普通的聚合函数。
+窗口函数可以简单地解释为类似于聚合函数的计算函数，但是通过`GROUP BY`子句组合的常规聚合会隐藏正在聚合的各个行，最终输出一行，窗口函数聚合后还可以访问当中的各个行，并且可以将这些行中的某些属性添加到结果集中。
+```
+Function(arg1,..., argn) OVER ([PARTITION BY <...>] [ORDER BY <....>] [<window_expression>])
+
+Function(arg1,..., argn) 可以是下面分类中的任意一个
+  聚合函数：比如sum max avg等
+  排序函数：比如rank row_number等
+  分析函数：比如lead lag first_value等
+
+OVER [PARTITION BY <...>] 
+  类似于group by 用于指定分组，每个分组称为窗口；如果没有PARTITION BY 那么整张表的所有行就是一组。
+
+[ORDER BY <....>]  
+  用于指定每个分组内的数据排序规则，支持ASC、DESC
+
+[<window_expression>] 
+  用于指定每个窗口中操作的数据范围，默认是窗口中所有行
+```
+<img src="images/hive04_07.png" width="100%" height="100%" alt=""><br>
+<img src="images/hive04_08.png" width="100%" height="100%" alt=""><br>
+
+##### 2.5.2 案例：网站用户页面浏览次数分析
+
+
 #### 2.6 抽样函数（Sampling functions ）
 
 ## 参考引用

@@ -550,3 +550,19 @@ lateral view posexplode(array('A','B','C')) tf as pos,val;
 
 --json_tuple-------------
 
+-- 输入json字符串
+WITH t AS (
+    SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
+           '"email":["amy@only_for_json_udf_test.net"],' ||
+           '"owner":"amy"}' AS json
+)
+SELECT json_tuple(t.json, 'store', 'owner', 'email') FROM t
+;
+
+-- Lateral view与UDTF函数一起使用
+SELECT t.*, store, owner, email
+FROM (SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
+             '"email":["amy@only_for_json_udf_test.net"],' ||
+             '"owner":"amy"}' AS json) t
+LATERAL VIEW json_tuple(t.json, 'store', 'owner', 'email') b as store, owner, email;
+;
