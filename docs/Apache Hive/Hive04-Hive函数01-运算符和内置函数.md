@@ -866,13 +866,13 @@ select * from website_url_info;
 ##### 窗口聚合函数
 从Hive v2.2.0开始，支持DISTINCT与窗口函数中的聚合函数一起使用。 这里以sum（）函数为例，其他聚合函数使用类似。<br>
 
-| sum()函数+窗口函数                                                           | 说明            |
-|------------------------------------------------------------------------|---------------|
-| sum(...) over( )                                                       | 对表所有行求和       |
-| sum(...) over( order by ... )                                          | 连续累积求和        |
-| sum(...) over( partition by... )                                       | 同组内所有行求和      |
-| sum(...) over( partition by... order by ... )                          | 在每个分组内，连续累积求和 |
-| sum(...) over( partition by... order by ... range between ... and ...) | 在每个分组内，滑动窗口求和 |
+| sum()函数+窗口函数                                                          | 说明            |
+|-----------------------------------------------------------------------|---------------|
+| sum(...) over( )                                                      | 对表所有行求和       |
+| sum(...) over( order by ... )                                         | 连续累积求和        |
+| sum(...) over( partition by... )                                      | 同组内所有行求和      |
+| sum(...) over( partition by... order by ... )                         | 在每个分组内，连续累积求和 |
+| sum(...) over( partition by... order by ... rows between ... and ...) | 在每个分组内，滑动窗口求和 |
 
 ```sql
 --需求：求出网站总的pv数、所有用户所有访问加起来
