@@ -350,7 +350,7 @@ select mask_hash("abc123DEF");  -- 86fedeec79b2020...
 
 
 /**
-  Hive内置函数-
+  Hive内置函数-其他杂项函数
  */
 
 --hive调用java方法: java_method(class, method[, arg1[, arg2..]])
@@ -375,3 +375,107 @@ select crc32("allen");  -- 3771531426
 
 --MD5加密: md5(string/binary)
 select md5("allen");    -- a34c3d45b6...
+
+
+/**
+  Hive内置函数-内置聚合函数（基础、增强）
+ */
+-- 测试案例
+drop table student;
+create table student
+(
+    num  int,
+    name string,
+    sex  string,
+    age  int,
+    dept string
+)
+row format delimited
+fields terminated by ','
+;
+LOAD DATA LOCAL INPATH '/home/hive/students.txt' INTO TABLE student;
+SELECT * FROM student;
+
+
+select count(*) as cnt1, count(1) as cnt2 from itheima.student; --两个一样
+select `sex`, count(*) as cnt from student group by sex;
+select
+    count(*) as cnt
+    , count(distinct dept) AS dept_distict
+    , avg(age) as age_avg
+    , min(age) as age_min
+    , max(age) as age_max
+    , sum(age) as age_sum
+from student;
+
+--聚合参数不支持嵌套聚合函数
+select avg(count(*))  from student; --  Not yet supported place for UDAF 'count'
+
+--聚合参数针对null的处理方式
+select max(null), min(null), count(null);   -- null null 0
+select sum(null), avg(null);                -- 这两个不支持null UDFArgumentTypeException
+
+--场景5：聚合操作时针对null的处理，可以使用coalesce函数解决
+select
+    sum(coalesce(val1, 0))            -- 3
+    , sum(coalesce(val1, 0) + val2)   -- 10
+from (
+    select 1 AS val1, 2 AS val2
+    union all
+    select null AS val1, 2 AS val2
+    union all
+    select 2 AS val1, 3 AS val2
+) t;
+
+-- 聚集所有的性别
+select collect_set(sex) from student;   -- ["男","女"]
+select collect_list(sex) from student;  -- ["男","女","女"...]
+
+-- 计算百分位
+-- [17.0,17.21,18.0,18.0,18.0,18.0,19.0,20.0,21.95]
+SELECT percentile(CAST(age AS BIGINT), array(0, 0.01, 0.05, 0.1, 0.2,0.25,0.5,0.75,0.95))
+FROM  student;
+
+-- 18.571428571428573
+SELECT percentile_approx(CAST(age AS BIGINT), 0.5, 10000)
+FROM  student;
+
+------GROUPING SETS---------------
+--grouping_id表示这一组结果属于哪个分组集合，
+--根据grouping sets中的分组条件sex、dept，1代表sex、2代表dept
+SELECT
+     sex
+     , dept
+     , COUNT(DISTINCT num)  AS nums
+     , GROUPING__ID
+FROM student
+GROUP BY sex, dept
+    GROUPING SETS (sex, dept, (sex, dept))
+ORDER BY GROUPING__ID;
+
+-- <=等价于=>
+SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
+UNION ALL
+SELECT NULL as sex, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM student GROUP BY dept
+UNION ALL
+SELECT sex, dept, COUNT(DISTINCT num) AS nums, 3 AS GROUPING__ID FROM student GROUP BY sex, dept;
+
+------cube---------------
+SELECT
+    sex,
+    dept,
+    COUNT(DISTINCT num) AS nums,
+    GROUPING__ID
+FROM student
+GROUP BY sex, dept
+WITH CUBE
+ORDER BY GROUPING__ID;
+
+-- <=等价于=>
+SELECT NULL, NULL, COUNT(DISTINCT num) AS nums, 0 AS GROUPING__ID FROM student
+UNION ALL
+SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
+UNION ALL
+SELECT NULL, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM student GROUP BY dept
+UNION ALL
+SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;

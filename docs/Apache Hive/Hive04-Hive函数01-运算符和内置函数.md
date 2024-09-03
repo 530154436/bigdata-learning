@@ -182,8 +182,8 @@ Hive的函数很多，除了自己内置所支持的函数之外，还支持用�
   集合函数（Collection Functions）<br>
   `条件函数`（Conditional Functions）<br>
   类型转换函数（Type Conversion Functions）<br>
-  数值类型函数<br>
-  `条件函数`
+  数据脱敏函数（Data Masking Functions）<br>
+  其他杂项函数（Misc. Functions）<br>
 + `用户自定义函数`（UDF，user-defined function）根据函数的输入输出行数共分为三类：<br>
   `普通函数`（UDF，User-Defined-Function），一进一出<br>
   `聚合函数`（UDAF，User-Defined Aggregation Function），多进一出<br>
@@ -544,6 +544,172 @@ select crc32("allen");  -- 3771531426
 select md5("allen");    -- a34c3d45b6...
 ```
 
+### 2.3 内置聚合函数（Built-in UDAF）
+UDAF函数通常称为聚合函数，A所代表的单词就是Aggregation聚合的意思。最大的特点是多进一出，也就是`输入多行输出一行`。
+```sql
+-- 数据准备
+drop table student;
+create table student
+(
+    num  int,
+    name string,
+    sex  string,
+    age  int,
+    dept string
+)
+row format delimited
+fields terminated by ','
+;
+LOAD DATA LOCAL INPATH '/home/hive/students.txt' INTO TABLE student;
+SELECT * FROM student;
+```
+
+#### 2.3.1 基础聚合函数
+HQL提供了几种内置的UDAF聚合函数，例如`max`，`min`和`avg`等，这些我们把它称之为`基础的聚合函数`。
+通常情况下，聚合函数会与`GROUP BY`子句一起使用。 如果未指定GROUP BY子句，默认情况下，它会汇总所有行数据。 下面介绍常用的聚合函数：
++ count:统计检索到的总行数。
++ sum:求和
++ avg:求平均
++ min:最小值
++ max:最大值
++ percentile: 精确计算一个数据集的百分位数，可能会消耗大量的内存和计算资源。
++ percentile_approx: 近似计算一个数据集的百分位数。
++ collect_set(col) : 数据收集函数（去重）
++ collect_list(col): 数据收集函数（不去重）
+
+```sql
+-- count/avg/min/max/sum
+select count(*) as cnt1, count(1) as cnt2 from itheima.student; --两个一样
+select `sex`, count(*) as cnt from student group by sex;
+select
+  count(*) as cnt
+     , count(distinct dept) AS dept_distict
+     , avg(age) as age_avg
+     , min(age) as age_min
+     , max(age) as age_max
+     , sum(age) as age_sum
+from student;
+
+--聚合参数不支持嵌套聚合函数
+select avg(count(*))  from student; --  Not yet supported place for UDAF 'count'
+
+--聚合参数针对null的处理方式
+select max(null), min(null), count(null);   -- null null 0
+select sum(null), avg(null);                -- 这两个不支持null UDFArgumentTypeException
+
+--场景5：聚合操作时针对null的处理，可以使用coalesce函数解决
+select
+   sum(coalesce(val1, 0))            -- 3
+   , sum(coalesce(val1, 0) + val2)   -- 10
+from (
+   select 1 AS val1, 2 AS val2
+   union all
+   select null AS val1, 2 AS val2
+   union all
+   select 2 AS val1, 3 AS val2
+) t;
+
+-- 计算百分位
+-- [17.0,17.21,18.0,18.0,18.0,18.0,19.0,20.0,21.95]
+SELECT percentile(CAST(age AS BIGINT), array(0, 0.01, 0.05, 0.1, 0.2,0.25,0.5,0.75,0.95))
+FROM  student;
+
+-- 18.571428571428573
+SELECT percentile_approx(CAST(age AS BIGINT), 0.5, 10000)
+FROM  student;
+
+-- 聚集所有的性别
+select collect_set(sex) from student;   -- ["男","女"]
+select collect_list(sex) from student;  -- ["男","女","女"...]
+
+```
+#### 2.3.2 增强聚合函数
+
+增强聚合的`grouping_sets`、`cube`、`rollup`这几个函数主要适用于`OLAP多维数据分析模式`中，多维分析中的维指的分析问题时看待问题的维度、角度。
+
+##### Grouping sets
+`grouping sets`是一种将`多个group by`逻辑写在一个sql语句中的便利写法。等价于将不同维度的`GROUP BY`结果集进行`UNION ALL`。
+```sql
+--grouping_id表示这一组结果属于哪个分组集合，
+--根据grouping sets中的分组条件sex、dept，0代表sex+dept、1代表sex、2代表dept
+--统计不同部门和性别的人数
+SELECT
+     sex
+     , dept
+     , COUNT(DISTINCT num)  AS nums
+     , GROUPING__ID
+FROM student
+GROUP BY sex, dept
+    GROUPING SETS (sex, dept, (sex, dept))
+ORDER BY GROUPING__ID;
+
+-- <=等价于=>
+SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
+UNION ALL
+SELECT NULL as sex, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM student GROUP BY dept
+UNION ALL
+SELECT sex, dept, COUNT(DISTINCT num) AS nums, 3 AS GROUPING__ID FROM student GROUP BY sex, dept;
+```
+
+##### Cube
+`cube`的语法功能指的是：根据`GROUP BY`的维度的所有组合进行聚合。
+对于cube，如果有 $n$ 个维度,则所有组合的总个数是：$2^n$。比如Cube有a,b,c 3个维度，则所有组合情况是：`((a,b,c),(a,b),(b,c),(a,c),(a),(b),(c),())`。
+```sql
+SELECT
+    sex,
+    dept,
+    COUNT(DISTINCT num) AS nums,
+    GROUPING__ID
+FROM student
+GROUP BY sex, dept
+WITH CUBE
+ORDER BY GROUPING__ID;
+
+-- <=等价于=>
+SELECT NULL, NULL, COUNT(DISTINCT num) AS nums, 0 AS GROUPING__ID FROM student
+UNION ALL
+SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
+UNION ALL
+SELECT NULL, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM student GROUP BY dept
+UNION ALL
+SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;
+```
+
+
+4.3.2.4 Rollup
+cube的语法功能指的是：根据GROUP BY的维度的所有组合进行聚合。
+rollup是Cube的子集，以最左侧的维度为主，从该维度进行层级聚合。
+比如ROLLUP有a,b,c3个维度，则所有组合情况是：
+((a,b,c),(a,b),(a),())。
+--rollup-------------
+--比如，以month维度进行层级聚合：
+SELECT
+month,
+day,
+COUNT(DISTINCT cookieid) AS nums,
+GROUPING__ID
+FROM cookie_info
+GROUP BY month,day
+WITH ROLLUP
+ORDER BY GROUPING__ID;
+
+--把month和day调换顺序，则以day维度进行层级聚合：
+SELECT
+day,
+month,
+COUNT(DISTINCT cookieid) AS uv,
+GROUPING__ID
+FROM cookie_info
+GROUP BY day,month
+WITH ROLLUP
+ORDER BY GROUPING__ID;
+
+
+### 2.4 内置表生成函数（Built-in UDTF）
+
+
+
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
-[2] [Apache Hive - LanguageManual UDF](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF) <br>
+[2] [Apache Hive - Hive Documentation Home](https://cwiki.apache.org/confluence/display/Hive/) <br>
+[3] [Apache Hive - LanguageManual UDF](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF) <br>
