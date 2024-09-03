@@ -6,7 +6,7 @@
 #### 为什么不支持并发写入，不支持随机修改？
 
 #### yarn is running beyond physical memory limits
-在运行HiveSQL时遇到了``错误，排查yarn日志如下：
+在运行HiveSQL时遇到了错误，排查yarn日志如下：
 ```
 Container [pid=3730,containerID=container_1725006692302_0009_01_000003] is running 1723304448B beyond the 'VIRTUAL' memory limit.
 Current usage: 348.4 MB of 1 GB physical memory used; 3.7 GB of 2.1 GB virtual memory used. Killing container.

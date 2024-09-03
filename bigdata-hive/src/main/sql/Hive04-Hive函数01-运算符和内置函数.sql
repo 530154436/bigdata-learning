@@ -566,3 +566,54 @@ FROM (SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
              '"owner":"amy"}' AS json) t
 LATERAL VIEW json_tuple(t.json, 'store', 'owner', 'email') b as store, owner, email;
 ;
+
+
+/**
+  窗口函数
+ */
+---建表并且加载数据
+create table website_pv_info(
+    cookieid   string   comment "cookieid",
+    createtime string   comment "访问时间",
+    pv         int      comment "pv数（页面浏览数）"
+)
+COMMENT "website_pv_info.txt"
+row format delimited
+    fields terminated by ',';
+
+create table website_url_info(
+    cookieid   string   comment "cookieid",
+    createtime string   comment "访问时间",
+    url        string   comment "访问页面"
+)
+COMMENT "website_url_info.txt"
+row format delimited
+    fields terminated by ',';
+
+load data local inpath '/home/hive/data/website_pv_info.txt' into table website_pv_info;
+load data local inpath '/home/hive/data/website_url_info.txt' into table website_url_info;
+
+select * from website_pv_info;
+select * from website_url_info;
+
+-----窗口聚合函数的使用-----------
+
+--需求：求出网站总的pv数、所有用户所有访问加起来
+select cookieid,createtime,pv,sum(pv) over() as pv_total
+from website_pv_info;
+
+--需求：求出每个用户总pv数
+select cookieid,createtime,pv,sum(pv) over(partition by cookieid) as pv_total
+from website_pv_info;
+
+--需求：求出每个用户截止到当天，累积的总pv数
+select cookieid,createtime,pv,sum(pv) over(partition by cookieid order by createtime) as pv_total
+from website_pv_info;
+
+--需求：求出每个用户最近3天pv之和（包含当天在内）
+-- 指定的窗口包括当前行、当前行-1、当前行-2，总共3行。
+select cookieid,createtime,pv
+       , sum(pv) over(partition by cookieid order by createtime rows between 2 preceding and current row) as pv_total
+from website_pv_info;
+
+
