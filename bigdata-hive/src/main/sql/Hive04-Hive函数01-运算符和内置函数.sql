@@ -151,6 +151,20 @@ select regexp_extract('100-200', '(\\d+)-(\\d+)', 2);
 select parse_url('http://www.itcast.cn/path/p1.php?query=1', 'HOST');
 
 --json解析函数：get_json_object
+WITH t AS (
+    SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
+           '"email":["amy@only_for_json_udf_test.net"],' ||
+           '"owner":"amy"}' AS json
+)
+SELECT get_json_object(t.json, '$.owner') FROM t                -- amy
+UNION ALL
+SELECT get_json_object(t.json, '$.email[0]') FROM t             -- amy@only_for_json_udf_test.net
+UNION ALL
+SELECT get_json_object(t.json, '$.store.bicycle.price') FROM t  -- 19.95
+;
+SELECT get_json_object('[["123", "管理体系"]]', '$[0][0]');       -- 123
+
+
 --空格字符串函数：space(n) 返回指定个数空格
 select space(4);
 
@@ -498,3 +512,41 @@ UNION ALL
 SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
 UNION ALL
 SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;
+
+
+/**
+  Hive内置函数-内置表生成函数
+ */
+--explode-------------
+-- 输入array
+select explode(array('A','B','C'));
+select explode(split('A,B,C,D', ','));
+
+-- 输入Map
+select explode(map('A',10,'B',20,'C',30)) as (`key`, `value`);
+
+-- 报错：UDTF's are not supported outside the SELECT clause, nor nested in expressions
+select id, explode(split(chars, ','))
+from (select 'A,B,C,D' as chars, 1 as id) t;
+
+-- Lateral view与UDTF函数一起使用
+select
+    t.id
+    , tf.`col`
+from (select 'A,B,C,D' as chars, 1 as id) t
+lateral view explode(split(chars, ',')) tf as `col`;
+
+--posexplode-------------
+
+-- 输入array
+select posexplode(array('A','B','C'));
+select posexplode(array('A','B','C')) as (pos, val);
+
+-- Lateral view与UDTF函数一起使用
+select t.id, tf.*
+from (select 0 AS id) t
+lateral view posexplode(array('A','B','C')) tf as pos,val;
+
+
+--json_tuple-------------
+

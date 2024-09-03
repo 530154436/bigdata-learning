@@ -22,9 +22,13 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#cube">Cube</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#rollup">Rollup</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-内置表生成函数built-in-udtf">2.4 内置表生成函数（Built-in UDTF）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-explode">2.4.1 explode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-posexplode">2.4.2 posexplode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-json_tuple">2.4.3 json_tuple</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-窗口函数window-functions">2.5 窗口函数（Window functions ）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-抽样函数sampling-functions">2.6 抽样函数（Sampling functions ）</a><br/>
 <a href="#参考引用">参考引用</a><br/>
 </nav>
-
 
 ## 一、Hive内置运算符
 随着Hive版本的不断发展，在Hive SQL中支持的、内置的运算符也越来越多。可以使用下面的命令查看当下支持的运算符和函数，并且查看其详细的使用方式。
@@ -213,10 +217,10 @@ Hive的函数很多，除了自己内置所支持的函数之外，还支持用�
 + 去空格函数：trim
 + 左边去空格函数：ltrim
 + 右边去空格函数：rtrim
-+ 正则表达式替换函数：regexp_replace
-+ 正则表达式解析函数：regexp_extract
++ `正则表达式替换函数`：regexp_replace
++ `正则表达式解析函数`：regexp_extract
 + URL解析函数：parse_url
-+ json解析函数：get_json_object
++ `json解析函数`：get_json_object
 + 空格字符串函数：space
 + 重复字符串函数：repeat
 + 首字符ascii函数：ascii
@@ -269,6 +273,19 @@ select regexp_extract('100-200', '(\\d+)-(\\d+)', 2);
 select parse_url('http://www.itcast.cn/path/p1.php?query=1', 'HOST');
 
 --json解析函数：get_json_object
+WITH t AS (
+  SELECT '{"store":{"bicycle":{"price":19.95,"color":"red"}},' ||
+         '"email":["amy@only_for_json_udf_test.net"],' ||
+         '"owner":"amy"}' AS json
+)
+SELECT get_json_object(t.json, '$.owner') FROM t                -- amy
+UNION ALL
+SELECT get_json_object(t.json, '$.email[0]') FROM t             -- amy@only_for_json_udf_test.net
+UNION ALL
+SELECT get_json_object(t.json, '$.store.bicycle.price') FROM t  -- 19.95
+;
+SELECT get_json_object('[["123", "管理体系"]]', '$[0][0]');       -- 123
+  
 --空格字符串函数：space(n) 返回指定个数空格
 select space(4);
 
@@ -352,7 +369,6 @@ select date_add('2012-02-28',10);
 --日期减少函数: date_sub
 select date_sub('2012-01-1',10);
 ```
-
 
 #### 2.2.3 数学函数（Mathematical Functions）
 主要针对数值类型的数据进行数学计算，比如下面这些：
@@ -633,7 +649,11 @@ select collect_list(sex) from student;  -- ["男","女","女"...]
 ```
 #### 2.3.2 增强聚合函数
 
-增强聚合的`grouping_sets`、`cube`、`rollup`这几个函数主要适用于`OLAP多维数据分析模式`中，多维分析中的维指的分析问题时看待问题的维度、角度。
+增强聚合的`grouping_sets`、`cube`、`rollup`这几个函数主要适用于`OLAP多维数据分析模式`中，多维分析中的维指的分析问题时看待问题的维度、角度。下面介绍常用的函数：
++ Grouping sets: 一种将`多个group by`逻辑写在一个sql语句中的便利写法。
++ Cube: 根据`GROUP BY`的维度的所有组合进行聚合。
++ Rollup: Cube的子集，以最左侧的维度为主，从该维度进行`层级聚合`。
+
 
 ##### Grouping sets
 `grouping sets`是一种将`多个group by`逻辑写在一个sql语句中的便利写法。等价于将不同维度的`GROUP BY`结果集进行`UNION ALL`。
@@ -648,7 +668,7 @@ SELECT
      , GROUPING__ID
 FROM student
 GROUP BY sex, dept
-    GROUPING SETS (sex, dept, (sex, dept))
+GROUPING SETS (sex, dept, (sex, dept))
 ORDER BY GROUPING__ID;
 
 -- <=等价于=>
@@ -712,8 +732,98 @@ SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GRO
 
 ### 2.4 内置表生成函数（Built-in UDTF）
 `UDTF`函数通常把它叫做`表生成函数`，T所代表的单词是Table-Generating表生成的意思。最大的特点是一进多出，也就是`输入一行输出多行`。<br>
-之所以叫做表生成函数，原因在于这类型的函数作用返回的结果类似于表（多行数据），同时，UDTF函数也是我们接触比较少的函数，陌生。比如explode函数。
+之所以叫做表生成函数，原因在于这类型的函数作用返回的结果类似于表（多行数据）。常用的函数有：
++ explode：接受一个数组（或映射）作为输入，并将数组（映射）中的元素作为单独的行输出。<br>
++ posexplode：返回一个包含两列（pos, val）的行集，每个数组元素对应一行，行号从 0 开始。<br>
++ json_tuple：用于一个标准的JSON字符串中，按照输入的一组键(key1,key2,...)抽取各个键指定的字符串。
 
+
+`Lateral View`（侧视图）是一种特殊的语法，主要用于搭配UDTF类型功能的函数一起使用，用于解决UDTF函数的一些查询限制的问题。
+一般只要使用UDTF，就会固定搭配lateral view使用。
++ UDTF对每个输入行产生0或者多个输出行(拆分成多行); `不加lateral view的UDTF只能提取单个字段拆分,并不能塞回原来数据表中`.
++ 侧视图的原理是将UDTF的结果构建成一个类似于视图的表，然后将原表中的每一行和UDTF函数输出的每一行进行连接，`生成一张新的虚拟表`。
+```
+Syntax：
+lateralView: LATERAL VIEW udtf(expression) tableAlias AS columnAlias (',' columnAlias)*
+fromClause: FROM baseTable (lateralView)*
+```
+
+#### 2.4.1 explode
+`explode()` 接受一个数组（或映射）作为输入，并将数组（映射）中的元素作为单独的行输出。UDTFs（用户定义表生成函数）可以在 SELECT 表达式列表中使用，也可以作为 `LATERAL VIEW` 的一部分使用。
+文戏称之为“爆炸函数”，可以炸开数据。<br>
+函数原型：
+```
+T explode(ARRAY<T> a)<br>
+Tkey,Tvalue explode(MAP<Tkey,Tvalue> m)<br>
+```
+使用示例：
+```sql
+-- 输入array
+-- 输入array
+select explode(array('A','B','C'));
+select explode(split('A,B,C,D', ','));
+
+-- 输入Map
+select explode(map('A',10,'B',20,'C',30)) as (`key`, `value`);
+
+-- 报错：UDTF's are not supported outside the SELECT clause, nor nested in expressions
+select id, explode(split(chars, ','))
+from (select 'A,B,C,D' as chars, 1 as id) t;
+
+-- Lateral view与UDTF函数一起使用
+select
+    t.id
+    , tf.`col`
+from (select 'A,B,C,D' as chars, 1 as id) t
+lateral view explode(split(chars, ',')) tf as `col`;
+```
+<img src="images/hive04_05.png" width="100%" height="100%" alt=""><br>
+
+
+> 如果在select条件中，包含explode和其他字段，就会报错。错误信息为：
+org.apache.hadoop.hive.ql.parse.SemanticException:UDTF's are not supported outside the SELECT clause, nor nested in expressions
+那么如何理解这个错误呢？为什么在select的时候，explode的旁边不支持其他字段的同时出现？原因如下：<br>
+1、explode函数属于UDTF函数，即表生成函数；<br>
+2、explode函数执行返回的结果可以理解为一张虚拟的表，其数据来源于源表；<br>
+3、在select中只查询源表数据没有问题，只查询explode生成的虚拟表数据也没问题<br>
+4、但是不能在只查询源表的时候，既想返回源表字段又想返回explode生成的虚拟表字段<br>
+5、通俗点讲，有两张表，不能只查询一张表但是返回分别属于两张表的字段；<br>
+6、从SQL层面上来说应该对两张表进行关联查询<br>
+7、Hive专门提供了语法lateral View侧视图，专门用于搭配explode这样的UDTF函数，以满足上述需要。<br>
+
+#### 2.4.2 posexplode
+posexplode() 类似于 explode，但不仅返回数组的元素，还返回元素在原数组中的位置。<br>
+函数原型：
+```
+int,T posexplode(ARRAY<T> a)
+```
+使用示例：
+```sql
+-- 输入array
+select posexplode(array('A','B','C'));
+select posexplode(array('A','B','C')) as (pos, val);
+
+-- Lateral view与UDTF函数一起使用
+select t.id, tf.*
+from (select 0 AS id) t
+lateral view posexplode(array('A','B','C')) tf as pos,val;
+```
+
+#### 2.4.3 json_tuple
+`json_tuple()` 用于一个标准的JSON字符串中，按照输入的一组键(key1,key2,...)抽取各个键指定的字符串。
+
+函数原型：
+```
+string1,...,stringn json_tuple(string jsonStr,string k1,...,string kn)
+```
+使用示例：
+```sql
+
+```
+与get_json_object函数类似均用于解析json字符串，但json_tuple 函数一次可以解析多个 json 字段。
+
+#### 2.5 窗口函数（Window functions ）
+#### 2.6 抽样函数（Sampling functions ）
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>

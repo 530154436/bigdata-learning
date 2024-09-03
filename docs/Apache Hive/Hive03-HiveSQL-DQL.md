@@ -444,7 +444,7 @@ select * from q1;
 select * from s2;
 
 -- view
-create table v1 as
+create view v1 as
 with q1 as (
     select * from t_usa_covid19_p where state = 'Arizona'
 )
