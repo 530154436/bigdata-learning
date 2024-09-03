@@ -838,6 +838,8 @@ OVER [PARTITION BY <...>]
 #### 2.5.2 案例：网站用户页面浏览次数分析
 在网站访问中，经常使用cookie来标识不同的用户身份，通过cookie可以追踪不同用户的页面访问情况。在Hive中创建两张表表，把数据加载进去用于窗口分析。
 ```sql
+
+-- 数据样例：cookie1,2018-04-10,1
 create table website_pv_info(
     cookieid   string   comment "cookieid",
     createtime string   comment "访问时间",
@@ -847,6 +849,7 @@ COMMENT "website_pv_info.txt"
 row format delimited
     fields terminated by ',';
 
+-- 数据样例：cookie1,2018-04-10 10:00:02,url2
 create table website_url_info(
     cookieid   string   comment "cookieid",
     createtime string   comment "访问时间",
@@ -863,7 +866,7 @@ select * from website_pv_info;
 select * from website_url_info;
 ```
 
-##### 窗口聚合函数
+#### 2.5.3 窗口聚合函数
 从Hive v2.2.0开始，支持DISTINCT与窗口函数中的聚合函数一起使用。 这里以sum（）函数为例，其他聚合函数使用类似。<br>
 
 | sum()函数+窗口函数                                                          | 说明            |
@@ -896,6 +899,25 @@ from website_pv_info;
 <img src="images/hive04_09.png" width="100%" height="100%" alt=""><br>
 <img src="images/hive04_10.png" width="100%" height="100%" alt=""><br>
 
+#### 2.5.4 窗口表达式
+在`sum(...) over( partition by... order by ... )`语法完整的情况下，进行的累积聚合操作，默认累积聚合行为是：`从第一行聚合到当前行`。
+Window expression窗口表达式提供了一种`控制行范围`的能力，比如向前2行，向后3行。
+语法：
+```
+关键字是 rows between，包括下面这几个选项
+- preceding：往前
+- following：往后
+- current row：当前行
+- unbounded：边界
+- unbounded preceding 表示从前面的起点
+- unbounded following：表示到后面的终点
+```
+示例：
+
+
+
+#### 2.5.5 窗口聚合函数
+#### 2.5.6 窗口聚合函数
 
 ### 2.6 抽样函数（Sampling functions ）
 

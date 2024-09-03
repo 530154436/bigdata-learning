@@ -369,7 +369,7 @@ nc: connect to hadoop101 (172.18.0.2) port 9000 (tcp) failed: Connection refused
 hive@hive:~$ nc -zv 172.18.0.3 9000
 Connection to 172.18.0.3 9000 port [tcp/*] succeeded!
 ```
-TODO: 卡了好几天，实在搞不定...先放着，初步怀疑是docker的环境配置问题
+~~TODO: 卡了好几天，实在搞不定...先放着，初步怀疑是docker的环境配置问题~~在Windows上很正常，应该是Macos M2的问题。
 
 
 #### 2.x Zookeeper
