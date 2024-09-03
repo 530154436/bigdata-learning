@@ -650,10 +650,11 @@ SELECT NULL as sex, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM stu
 UNION ALL
 SELECT sex, dept, COUNT(DISTINCT num) AS nums, 3 AS GROUPING__ID FROM student GROUP BY sex, dept;
 ```
+<img src="images/hive04_02.png" width="100%" height="100%" alt=""><br>
 
 ##### Cube
 `cube`的语法功能指的是：根据`GROUP BY`的维度的所有组合进行聚合。
-对于cube，如果有 $n$ 个维度,则所有组合的总个数是：$2^n$。比如Cube有a,b,c 3个维度，则所有组合情况是：`((a,b,c),(a,b),(b,c),(a,c),(a),(b),(c),())`。
+对于cube，如果有 $n$ 个维度,则所有组合的总个数是： $2^n$ 。比如Cube有a,b,c 3个维度，则所有组合情况是：`((a,b,c),(a,b),(b,c),(a,c),(a),(b),(c),())`。
 ```sql
 SELECT
     sex,
@@ -674,39 +675,36 @@ SELECT NULL, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM student GR
 UNION ALL
 SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;
 ```
+<img src="images/hive04_03.png" width="100%" height="100%" alt=""><br>
 
-
-4.3.2.4 Rollup
-cube的语法功能指的是：根据GROUP BY的维度的所有组合进行聚合。
-rollup是Cube的子集，以最左侧的维度为主，从该维度进行层级聚合。
-比如ROLLUP有a,b,c3个维度，则所有组合情况是：
-((a,b,c),(a,b),(a),())。
---rollup-------------
---比如，以month维度进行层级聚合：
+##### Rollup
+cube的语法功能指的是：根据GROUP BY的维度的所有组合进行聚合。 rollup是Cube的子集，以最左侧的维度为主，从该维度进行`层级聚合`。
+比如ROLLUP有 a,b,c 3个维度，则所有组合情况是：`((a,b,c),(a,b),(a),())`。
+```sql
+--比如，以sex维度进行层级聚合：
 SELECT
-month,
-day,
-COUNT(DISTINCT cookieid) AS nums,
-GROUPING__ID
-FROM cookie_info
-GROUP BY month,day
+  sex,
+  dept,
+  COUNT(DISTINCT num) AS nums,
+  GROUPING__ID
+FROM student
+GROUP BY sex, dept
 WITH ROLLUP
 ORDER BY GROUPING__ID;
 
---把month和day调换顺序，则以day维度进行层级聚合：
-SELECT
-day,
-month,
-COUNT(DISTINCT cookieid) AS uv,
-GROUPING__ID
-FROM cookie_info
-GROUP BY day,month
-WITH ROLLUP
-ORDER BY GROUPING__ID;
+-- <=等价于=>
+SELECT NULL, NULL, COUNT(DISTINCT num) AS nums, 0 AS GROUPING__ID FROM student
+UNION ALL
+SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
+UNION ALL
+SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;
+```
+<img src="images/hive04_04.png" width="100%" height="100%" alt=""><br>
 
 
 ### 2.4 内置表生成函数（Built-in UDTF）
-
+`UDTF`函数通常把它叫做`表生成函数`，T所代表的单词是Table-Generating表生成的意思。最大的特点是一进多出，也就是`输入一行输出多行`。<br>
+之所以叫做表生成函数，原因在于这类型的函数作用返回的结果类似于表（多行数据），同时，UDTF函数也是我们接触比较少的函数，陌生。比如explode函数。
 
 
 ## 参考引用

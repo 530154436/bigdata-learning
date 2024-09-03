@@ -450,7 +450,7 @@ SELECT
      , GROUPING__ID
 FROM student
 GROUP BY sex, dept
-    GROUPING SETS (sex, dept, (sex, dept))
+GROUPING SETS (sex, dept, (sex, dept))
 ORDER BY GROUPING__ID;
 
 -- <=等价于=>
@@ -477,5 +477,24 @@ UNION ALL
 SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
 UNION ALL
 SELECT NULL, dept, COUNT(DISTINCT num) AS nums,2 AS GROUPING__ID FROM student GROUP BY dept
+UNION ALL
+SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;
+
+--rollup-------------
+--比如，以sex维度进行层级聚合：
+SELECT
+    sex,
+    dept,
+    COUNT(DISTINCT num) AS nums,
+    GROUPING__ID
+FROM student
+GROUP BY sex, dept
+WITH ROLLUP
+ORDER BY GROUPING__ID;
+
+-- <=等价于=>
+SELECT NULL, NULL, COUNT(DISTINCT num) AS nums, 0 AS GROUPING__ID FROM student
+UNION ALL
+SELECT sex, NULL, COUNT(DISTINCT num) AS nums,1 AS GROUPING__ID FROM student GROUP BY sex
 UNION ALL
 SELECT sex, dept, COUNT(DISTINCT num) AS nums,3 AS GROUPING__ID FROM student GROUP BY sex, dept;
