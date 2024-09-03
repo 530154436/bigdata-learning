@@ -15,8 +15,16 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#226-类型转换函数type-conversion-functions">2.2.6 类型转换函数（Type Conversion Functions）</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#227-数据脱敏函数data-masking-functions">2.2.7 数据脱敏函数（Data Masking Functions）</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#228-其他杂项函数misc-functions">2.2.8 其他杂项函数（Misc. Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-内置聚合函数built-in-udaf">2.3 内置聚合函数（Built-in UDAF）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-基础聚合函数">2.3.1 基础聚合函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-增强聚合函数">2.3.2 增强聚合函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#grouping-sets">Grouping sets</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#cube">Cube</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#rollup">Rollup</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-内置表生成函数built-in-udtf">2.4 内置表生成函数（Built-in UDTF）</a><br/>
 <a href="#参考引用">参考引用</a><br/>
 </nav>
+
 
 ## 一、Hive内置运算符
 随着Hive版本的不断发展，在Hive SQL中支持的、内置的运算符也越来越多。可以使用下面的命令查看当下支持的运算符和函数，并且查看其详细的使用方式。
