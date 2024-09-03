@@ -839,9 +839,9 @@ LATERAL VIEW json_tuple(t.json, 'store', 'owner', 'email') b as store, owner, em
 <img src="images/hive04_06.png" width="100%" height="100%" alt=""><br>
 
 
-#### 2.5 窗口函数（Window functions）
+### 2.5 窗口函数（Window functions）
 
-##### 2.5.1 概述
+#### 2.5.1 概述
 窗口函数（Window functions）是一种SQL函数，非常适合于数据分析，因此也叫做`OLAP函数`。<br>
 其最大特点是：`输入值是从SELECT语句的结果集中的一行或多行的“窗口”中获取的。`<br>
 如果函数具有`OVER子句`，则它是窗口函数；如果它缺少OVER子句，则它是一个普通的聚合函数。
@@ -863,13 +863,13 @@ OVER [PARTITION BY <...>]
 [<window_expression>] 
   用于指定每个窗口中操作的数据范围，默认是窗口中所有行
 ```
-<img src="images/hive04_07.png" width="100%" height="100%" alt=""><br>
-<img src="images/hive04_08.png" width="100%" height="100%" alt=""><br>
+<img src="images/hive04_07.png" width="80%" height="80%" alt=""><br>
+<img src="images/hive04_08.png" width="80%" height="80%" alt=""><br>
 
-##### 2.5.2 案例：网站用户页面浏览次数分析
+#### 2.5.2 案例：网站用户页面浏览次数分析
 
 
-#### 2.6 抽样函数（Sampling functions ）
+### 2.6 抽样函数（Sampling functions ）
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
