@@ -1,3 +1,23 @@
+<nav>
+<a href="#一hive内置运算符">一、Hive内置运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-关系运算符">1.1 关系运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-算术运算符">1.2 算术运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-逻辑运算符">1.3 逻辑运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-复杂数据类型运算符">1.4 复杂数据类型运算符</a><br/>
+<a href="#二hive函数">二、Hive函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-概述">2.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-内置函数">2.2 内置函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-字符串类型函数string-functions">2.2.1 字符串类型函数（String Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-日期函数date-functions">2.2.2 日期函数（Date Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#223-数学函数mathematical-functions">2.2.3 数学函数（Mathematical Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#224-集合函数collection-functions">2.2.4 集合函数（Collection Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#225-条件函数conditional-functions">2.2.5 条件函数（Conditional Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#226-类型转换函数type-conversion-functions">2.2.6 类型转换函数（Type Conversion Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#227-数据脱敏函数data-masking-functions">2.2.7 数据脱敏函数（Data Masking Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#228-其他杂项函数misc-functions">2.2.8 其他杂项函数（Misc. Functions）</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、Hive内置运算符
 随着Hive版本的不断发展，在Hive SQL中支持的、内置的运算符也越来越多。可以使用下面的命令查看当下支持的运算符和函数，并且查看其详细的使用方式。
 ```sql
@@ -113,11 +133,11 @@ select 1 from dual where 11 not in(22,33,44);
 ### 1.4 复杂数据类型运算符
 以下运算符提供了访问复杂数据类型中元素的机制。
 
-| 运算符        | 描述                                             |操作数|
-|------------|------------------------------------------------|-----|
-| **A[n]**   | A 是一个数组，n 是一个整数。返回数组 A 中第 n 个元素。第一个元素的索引为 0。   |(val1, val2, ...)|
-| **M[key]** | M 是一个映射（Map<K, V>），key 的类型为 K。返回映射中与 key 对应的值。 |(key1, value1, key2, value2, ...)|
-| **S.x**    | S 是一个结构体（struct）。返回结构体 S 中的 x 字段。              |(name1, val1, name2, val2, ...)|
+| 运算符        | 描述                             |操作数|
+|------------|--------------------------------|-----|
+| **A[n]**   | 返回数组 A 中第 n 个元素。第一个元素的索引为 0。   |(val1, val2, ...)|
+| **M[key]** | 返回映射 M（Map<K, V>） 中与 key 对应的值。 |(key1, value1, key2, value2, ...)|
+| **S.x**    | 返回结构体 S（named_struct） 中的 x 字段。 |(name1, val1, name2, val2, ...)|
 
 ```sql
 -- 数组
@@ -135,7 +155,7 @@ FROM (
  ) t;
 
 -- 结构体
-SELECT ns.location AS A, ns.founded
+SELECT ns.location, ns.founded
 FROM (
      SELECT
          named_struct('location', 'New York', 'founded', 1999, 'employees', 500) AS ns
@@ -160,9 +180,11 @@ Hive的函数很多，除了自己内置所支持的函数之外，还支持用�
   `日期类型函数`（Date Functions）<br>
   数学函数（Mathematical Functions）<br>
   集合函数（Collection Functions）<br>
+  `条件函数`（Conditional Functions）<br>
+  类型转换函数（Type Conversion Functions）<br>
   数值类型函数<br>
   `条件函数`
-+ `用户自定义函数`（UDF，user-defined function）根据函数的输入输出行数共分为三类：
++ `用户自定义函数`（UDF，user-defined function）根据函数的输入输出行数共分为三类：<br>
   `普通函数`（UDF，User-Defined-Function），一进一出<br>
   `聚合函数`（UDAF，User-Defined Aggregation Function），多进一出<br>
   `表生成函数`（UDTF，User-Defined Table-Generating Functions），一进多出<br>
@@ -362,12 +384,166 @@ select conv(17, 10, 16);    -- 0x11
 select abs(-3.9);   -- 3.9
 ```
 
-### 2.4 集合函数（Collection Functions）
-### 2.5 内置函数
-### 2.3 内置函数
-### 2.3 内置函数
+#### 2.2.4 集合函数（Collection Functions）
+主要针对集合这样的复杂数据类型进行操作，比如下面这些：
++ 集合元素size函数: size(Map<K.V>) size(Array<T>)
++ 取map集合keys函数: map_keys(Map<K.V>)
++ 取map集合values函数: map_values(Map<K.V>)
++ 判断数组是否包含指定元素: array_contains(Array<T>, value)
++ 数组排序函数:sort_array(Array<T>)
+```sql
+--集合元素size函数: size(Map<K.V>) size(Array<T>)
+select size(array(11,22,33));                               -- 3
+select size(map("id",10086,"name","zhangsan","age",18));    -- 3
+
+--取map集合keys函数: map_keys(Map<K.V>)
+select map_keys(map("id",10086,"name","zhangsan","age",18));    -- ["id","name","age"]
+
+--取map集合values函数: map_values(Map<K.V>)
+select map_values(map("id",10086,"name","zhangsan","age",18));  -- ["10086","zhangsan","18"]
+
+--判断数组是否包含指定元素: array_contains(Array<T>, value)
+select array_contains(array(11,22,33),11);  -- true
+select array_contains(array(11,22,33),66);  -- false
+
+--数组排序函数:sort_array(Array<T>)
+select sort_array(array(12,2,32));  -- [2,12,32]
+```
+
+#### 2.2.5 条件函数（Conditional Functions）
+主要用于条件判断、逻辑判断转换这样的场合，比如：
++ if条件判断: if(boolean testCondition, T valueTrue, T valueFalseOrNull)
++ 空判断函数: isnull( a )
++ 非空判断函数: isnotnull ( a )
++ 空值转换函数: nvl(T value, T default_value)
++ 非空查找函数: COALESCE(T v1, T v2, ...)
++ 条件转换函数: CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
++ nullif( a, b ): 如果a = b，则返回NULL；否则返回NULL。否则返回一个
++ assert_true: 如果'condition'不为真，则引发异常，否则返回null
+```sql
+
+--if条件判断: if(boolean testCondition, T valueTrue, T valueFalseOrNull)
+select if(1=2, 100, 200);   -- 200
+select `name`, if(sex ='男', 'M', 'W') from itheima.student limit 3;
+
+--空判断函数: isnull( a )
+select isnull("allen"); -- false
+select isnull(null);    -- true
+
+--非空判断函数: isnotnull ( a )
+select isnotnull("allen");  -- true
+select isnotnull(null);     -- false
+
+--空值转换函数: nvl(T value, T default_value)
+select nvl("allen","itcast");   -- allen
+select nvl(null,"itcast");      -- itcast
+
+--非空查找函数: COALESCE(T v1, T v2, ...)
+--返回参数中的第一个非空值；如果所有值都为NULL，那么返回NULL
+select COALESCE(null,11,22,33);     -- 11
+select COALESCE(null,null,null,33); -- 33
+select COALESCE(null,null,null);    -- null
+
+--条件转换函数:
+-- CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
+select case 100 when 50 then 'tom' when 100 then 'mary' else 'tim' end;     -- mary
+select
+    `name`
+    , case `sex`
+        when '男' then 'man'
+        when '女' then 'women'
+        else 'unknow'
+    end AS sex_en
+from itheima.student;
+
+--nullif( a, b ):
+-- 如果a = b，则返回NULL；否则返回NULL。否则返回一个
+select nullif(11, 11);  -- null
+select nullif(11, 12);  -- 11
+
+--assert_true(condition)：
+-- 如果'condition'不为真，则引发异常，否则返回null
+SELECT assert_true(11 >= 0);    -- NULL
+SELECT assert_true(-1 >= 0);    -- HiveException: ASSERT_TRUE(): assertion failed.
+```
+
+#### 2.2.6 类型转换函数（Type Conversion Functions）
+主要用于显式的数据类型转换，有下面两种函数：
++ 任意数据类型之间转换:cast
+```sql
+select cast(12.14 as bigint);   -- 12
+select cast(12.14 as string);   -- 12.14
+```
+
+#### 2.2.7 数据脱敏函数（Data Masking Functions）
+主要完成对数据脱敏转换功能，屏蔽原始数据，主要如下：
++ mask
++ mask_first_n(string str[, int n]
++ mask_last_n(string str[, int n])
++ mask_show_first_n(string str[, int n])
++ mask_show_last_n(string str[, int n])
++ mask_hash(string|char|varchar str)
+
+```sql
+--mask
+--将查询回的数据，大写字母转换为X，小写字母转换为x，数字转换为n。
+select mask("abc123DEF");               -- xxxnnnXXX
+select mask("abc123DEF",'-','.','^');   -- ...^^^---
+
+--mask_first_n(string str[, int n]
+--对前n个进行脱敏替换
+select mask_first_n("abc123DEF", 4);    -- xxxn23DEF
+
+--mask_last_n(string str[, int n])
+select mask_last_n("abc123DEF",4);      -- abc12nXXX
+
+--mask_show_first_n(string str[, int n])
+--除了前n个字符，其余进行掩码处理
+select mask_show_first_n("abc123DEF", 4);   -- abc1nnXXX
+
+--mask_show_last_n(string str[, int n])
+select mask_show_last_n("abc123DEF", 4);    -- xxxnn3DEF
+
+--mask_hash(string|char|varchar str)
+--返回字符串的hash编码。
+select mask_hash("abc123DEF");  -- 86fedeec79b2020...
+```
+
+#### 2.2.8 其他杂项函数（Misc. Functions）
++ hive调用java方法: java_method(class, method[, arg1[, arg2..]])
++ 反射函数: reflect(class, method[, arg1[, arg2..]])
++ 取哈希值函数:hash
++ current_user()、logged_in_user()、current_database()、version()
++ SHA-1加密: sha1(string/binary)
++ SHA-2家族算法加密：sha2(string/binary, int)  (SHA-224, SHA-256, SHA-384, SHA-512)
++ crc32加密:
++ MD5加密: md5(string/binary)
+
+```sql
+--hive调用java方法: java_method(class, method[, arg1[, arg2..]])
+select java_method("java.lang.Math", "max", 11, 22);    -- 22
+
+--反射函数: reflect(class, method[, arg1[, arg2..]])
+select reflect("java.lang.Math","max", 11, 22);   -- 22
+
+--取哈希值函数:hash
+select hash("allen");   -- 92905994
+
+--current_user()、logged_in_user()、current_database()、version()
+--SHA-1加密: sha1(string/binary)
+select sha1("allen");   -- a4aed34f4966dc8688b8e67046bf8b276626e284
+
+--SHA-2家族算法加密：sha2(string/binary, int)  (SHA-224, SHA-256, SHA-384, SHA-512)
+select sha2("allen",224);   -- 792eef8d0e63...
+select sha2("allen",512);   -- 43ecb6c48548...
+
+--crc32加密:
+select crc32("allen");  -- 3771531426
+
+--MD5加密: md5(string/binary)
+select md5("allen");    -- a34c3d45b6...
+```
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
-[2] [Apache Hive - LanguageManual UDF](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF) <br>
 [2] [Apache Hive - LanguageManual UDF](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF) <br>

@@ -244,3 +244,134 @@ select conv(17, 10, 16);    -- 0x11
 
 --绝对值函数: abs
 select abs(-3.9);   -- 3.9
+
+
+/**
+  Hive内置函数-集合函数（Collection Functions）
+ */
+--集合元素size函数: size(Map<K.V>) size(Array<T>)
+select size(array(11,22,33));                               -- 3
+select size(map("id",10086,"name","zhangsan","age",18));    -- 3
+
+--取map集合keys函数: map_keys(Map<K.V>)
+select map_keys(map("id",10086,"name","zhangsan","age",18));    -- ["id","name","age"]
+
+--取map集合values函数: map_values(Map<K.V>)
+select map_values(map("id",10086,"name","zhangsan","age",18));  -- ["10086","zhangsan","18"]
+
+--判断数组是否包含指定元素: array_contains(Array<T>, value)
+select array_contains(array(11,22,33),11);  -- true
+select array_contains(array(11,22,33),66);  -- false
+
+--数组排序函数:sort_array(Array<T>)
+select sort_array(array(12,2,32));  -- [2,12,32]
+
+
+/**
+  Hive内置函数-条件函数
+ */
+--if条件判断: if(boolean testCondition, T valueTrue, T valueFalseOrNull)
+select if(1=2, 100, 200);   -- 200
+select `name`, if(sex ='男', 'M', 'W') from itheima.student limit 3;
+
+--空判断函数: isnull( a )
+select isnull("allen"); -- false
+select isnull(null);    -- true
+
+--非空判断函数: isnotnull ( a )
+select isnotnull("allen");  -- true
+select isnotnull(null);     -- false
+
+--空值转换函数: nvl(T value, T default_value)
+select nvl("allen","itcast");   -- allen
+select nvl(null,"itcast");      -- itcast
+
+--非空查找函数: COALESCE(T v1, T v2, ...)
+--返回参数中的第一个非空值；如果所有值都为NULL，那么返回NULL
+select COALESCE(null,11,22,33);     -- 11
+select COALESCE(null,null,null,33); -- 33
+select COALESCE(null,null,null);    -- null
+
+--条件转换函数:
+-- CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
+select case 100 when 50 then 'tom' when 100 then 'mary' else 'tim' end;     -- mary
+select
+    `name`
+    , case `sex`
+        when '男' then 'man'
+        when '女' then 'women'
+        else 'unknow'
+    end AS sex_en
+from itheima.student;
+
+--nullif( a, b ):
+-- 如果a = b，则返回NULL；否则返回NULL。否则返回一个
+select nullif(11, 11);  -- null
+select nullif(11, 12);  -- 11
+
+--assert_true(condition)：
+-- 如果'condition'不为真，则引发异常，否则返回null
+SELECT assert_true(11 >= 0);    -- NULL
+SELECT assert_true(-1 >= 0);    -- HiveException: ASSERT_TRUE(): assertion failed.
+
+
+/**
+  Hive内置函数-类型转换函数
+ */
+select cast(12.14 as bigint);   -- 12
+select cast(12.14 as string);   -- 12.14
+
+
+/**
+  Hive内置函数-数据脱敏函数
+ */
+--mask
+--将查询回的数据，大写字母转换为X，小写字母转换为x，数字转换为n。
+select mask("abc123DEF");               -- xxxnnnXXX
+select mask("abc123DEF",'-','.','^');   -- ...^^^---
+
+--mask_first_n(string str[, int n]
+--对前n个进行脱敏替换
+select mask_first_n("abc123DEF", 4);    -- xxxn23DEF
+
+--mask_last_n(string str[, int n])
+select mask_last_n("abc123DEF",4);      -- abc12nXXX
+
+--mask_show_first_n(string str[, int n])
+--除了前n个字符，其余进行掩码处理
+select mask_show_first_n("abc123DEF", 4);   -- abc1nnXXX
+
+--mask_show_last_n(string str[, int n])
+select mask_show_last_n("abc123DEF", 4);    -- xxxnn3DEF
+
+--mask_hash(string|char|varchar str)
+--返回字符串的hash编码。
+select mask_hash("abc123DEF");  -- 86fedeec79b2020...
+
+
+/**
+  Hive内置函数-
+ */
+
+--hive调用java方法: java_method(class, method[, arg1[, arg2..]])
+select java_method("java.lang.Math", "max", 11, 22);    -- 22
+
+--反射函数: reflect(class, method[, arg1[, arg2..]])
+select reflect("java.lang.Math","max", 11, 22);   -- 22
+
+--取哈希值函数:hash
+select hash("allen");   -- 92905994
+
+--current_user()、logged_in_user()、current_database()、version()
+--SHA-1加密: sha1(string/binary)
+select sha1("allen");   -- a4aed34f4966dc8688b8e67046bf8b276626e284
+
+--SHA-2家族算法加密：sha2(string/binary, int)  (SHA-224, SHA-256, SHA-384, SHA-512)
+select sha2("allen",224);   -- 792eef8d0e63...
+select sha2("allen",512);   -- 43ecb6c48548...
+
+--crc32加密:
+select crc32("allen");  -- 3771531426
+
+--MD5加密: md5(string/binary)
+select md5("allen");    -- a34c3d45b6...
