@@ -1014,7 +1014,19 @@ WHERE cookieid = 'cookie1';
 + LAST_VALUE：取分组内排序后，截止到当前行，最后一个值
 
 ```sql
+SELECT cookieid,
+       createtime,
+       url,
+       ROW_NUMBER() OVER (PARTITION BY cookieid ORDER BY createtime)                               AS rn,
+       LAG(createtime, 1, '1970-01-01 00:00:00') OVER (PARTITION BY cookieid ORDER BY createtime)  AS LAG1,
+       LAG(createtime, 2) OVER (PARTITION BY cookieid ORDER BY createtime)                         AS LAG2,
 
+       LEAD(createtime, 1, '1970-01-01 00:00:00') OVER (PARTITION BY cookieid ORDER BY createtime) AS LEAD1,
+       LEAD(createtime, 2) OVER (PARTITION BY cookieid ORDER BY createtime)                        AS LEAD2,
+
+       FIRST_VALUE(url) OVER (PARTITION BY cookieid ORDER BY createtime)                           AS FIRST_VALUE,
+       LAST_VALUE(url) OVER (PARTITION BY cookieid ORDER BY createtime)                            AS LAST_VALUE
+FROM website_url_info;
 ```
 <img src="images/hive04_13.png" width="100%" height="100%" alt=""><br>
 
