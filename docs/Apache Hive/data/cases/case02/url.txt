@@ -1,0 +1,4 @@
+1	http://facebook.com/path/p1.php?query=1
+2	http://tongji.baidu.com/news/index.jsp?uuid=allen&age=18
+3	http://www.jdwz.com/index?source=baidu
+4	http://www.itcast.cn/index?source=alibaba
