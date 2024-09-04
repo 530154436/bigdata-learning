@@ -72,4 +72,5 @@ if __name__ == "__main__":
     # process_markdown_file("./Apache Hive/Hive03-HiveSQL-DDL常用操作.md")
     # process_markdown_file("./Apache Hive/Hive03-HiveSQL-DML.md")
     # process_markdown_file("./Apache Hive/Hive03-HiveSQL-DQL.md")
-    process_markdown_file("./Apache Hive/Hive04-Hive函数01-运算符和内置函数.md")
+    # process_markdown_file("./Apache Hive/Hive04-Hive函数01-运算符和内置函数.md")
+    process_markdown_file("./Apache Hive/Hive04-Hive函数02-用户自定义函数.md")

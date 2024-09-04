@@ -1,3 +1,19 @@
+<nav>
+<a href="#一hive数据类型">一、Hive数据类型</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-python-与-hive-数据类型映射">1.2 Python 与 Hive 数据类型映射</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#121-python-hive">1.2.1 Python → Hive</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#122-hive-python">1.2.2 Hive → Python</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#123-hive-java类型对应">1.2.3  Hive-Java类型对应</a><br/>
+<a href="#二用户自定义函数">二、用户自定义函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-udf">2.1 UDF</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-genericudf">2.2 GenericUDF</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-涉及知识点">2.2.1 涉及知识点</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-执行流程">2.2.2 执行流程</a><br/>
+<a href="#三案例1用户自定义udf">三、案例1：用户自定义UDF</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-集群部署和测试">3.1 集群部署和测试</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 ## 一、Hive数据类型
 1.  **数值类型**
     + ByteType : 表示 1 字节长的有符号整型，数值范围 : -128 到 127。
