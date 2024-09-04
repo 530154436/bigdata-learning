@@ -1,3 +1,41 @@
+<nav>
+<a href="#一hive内置运算符">一、Hive内置运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-关系运算符">1.1 关系运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-算术运算符">1.2 算术运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-逻辑运算符">1.3 逻辑运算符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-复杂数据类型运算符">1.4 复杂数据类型运算符</a><br/>
+<a href="#二hive函数">二、Hive函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-概述">2.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-内置函数">2.2 内置函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#221-字符串类型函数string-functions">2.2.1 字符串类型函数（String Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#222-日期函数date-functions">2.2.2 日期函数（Date Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#223-数学函数mathematical-functions">2.2.3 数学函数（Mathematical Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#224-集合函数collection-functions">2.2.4 集合函数（Collection Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#225-条件函数conditional-functions">2.2.5 条件函数（Conditional Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#226-类型转换函数type-conversion-functions">2.2.6 类型转换函数（Type Conversion Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#227-数据脱敏函数data-masking-functions">2.2.7 数据脱敏函数（Data Masking Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#228-其他杂项函数misc-functions">2.2.8 其他杂项函数（Misc. Functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-内置聚合函数built-in-udaf">2.3 内置聚合函数（Built-in UDAF）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-基础聚合函数">2.3.1 基础聚合函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-增强聚合函数">2.3.2 增强聚合函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#grouping-sets">Grouping sets</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#cube">Cube</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#rollup">Rollup</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-内置表生成函数built-in-udtf">2.4 内置表生成函数（Built-in UDTF）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-explode">2.4.1 explode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-posexplode">2.4.2 posexplode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-json_tuple">2.4.3 json_tuple</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#25-窗口函数window-functions">2.5 窗口函数（Window functions）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#251-概述">2.5.1 概述</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#252-案例网站用户页面浏览次数分析">2.5.2 案例：网站用户页面浏览次数分析</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#253-窗口聚合函数">2.5.3 窗口聚合函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#254-窗口表达式">2.5.4 窗口表达式</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#255-窗口排序函数">2.5.5 窗口排序函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#256-窗口分析函数">2.5.6 窗口分析函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#26-抽样函数sampling-functions">2.6 抽样函数（Sampling functions ）</a><br/>
+<a href="#参考引用">参考引用</a><br/>
+</nav>
+
 
 ## 一、Hive内置运算符
 随着Hive版本的不断发展，在Hive SQL中支持的、内置的运算符也越来越多。可以使用下面的命令查看当下支持的运算符和函数，并且查看其详细的使用方式。
