@@ -21,8 +21,6 @@
     <value>1440</value> 
   </property>
 
-  <!-- 指定 zookeeper 地址，配置 HA 时需要 -->
-
   <!-- hiveserver2配置 -->
   <property>
     <name>hadoop.proxyuser.hive.hosts</name>

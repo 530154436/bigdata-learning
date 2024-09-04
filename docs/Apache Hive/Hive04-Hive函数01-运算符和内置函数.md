@@ -913,13 +913,106 @@ Window expression窗口表达式提供了一种`控制行范围`的能力，比�
 - unbounded following：表示到后面的终点
 ```
 示例：
+```sql
+--第一行到当前行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between unbounded preceding and current row) as pv2
+from website_pv_info;
 
+--向前3行至当前行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between 3 preceding and current row) as pv4
+from website_pv_info;
 
+--向前3行 向后1行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between 3 preceding and 1 following) as pv5
+from website_pv_info;
 
-#### 2.5.5 窗口聚合函数
-#### 2.5.6 窗口聚合函数
+--当前行至最后一行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between current row and unbounded following) as pv6
+from website_pv_info;
+
+--第一行到最后一行 也就是分组内的所有行
+select cookieid,createtime,pv,
+       sum(pv) over(partition by cookieid order by createtime rows between unbounded preceding  and unbounded following) as pv6
+from website_pv_info;
+```
+<img src="images/hive04_11.png" width="100%" height="100%" alt=""><br>
+
+#### 2.5.5 窗口排序函数
+窗口排序函数用于`给每个分组内的数据打上排序的标号`，注意`窗口排序函数不支持窗口表达式`。常见的有4个函数：
+- row_number：在每个分组中，为每行分配一个从1开始的唯一序列号，递增，不考虑重复；
+- rank: 在每个分组中，为每行分配一个从1开始的序列号，考虑重复，挤占后续位置； 
+- dense_rank: 在每个分组中，为每行分配一个从1开始的序列号，考虑重复，不挤占后续位置；
+- ntile：将每个分组内的数据分为指定的若干个桶里（分为若干个部分），并且为每一个桶分配一个桶编号。<br>
+  如果不能平均分配，则优先分配较小编号的桶，并且各个桶中能放的行数最多相差1。
+
+```sql
+SELECT
+  cookieid,
+  createtime,
+  pv,
+  RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS `RANK`,
+  DENSE_RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS `DENSE_RANK`,
+  ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY pv DESC) AS `ROW_NUMBER`,
+
+  --需求：统计每个用户pv数最多的前3分之1天。
+  --理解：将数据根据cookieid分 根据pv倒序排序 排序之后分为3个部分 取第一部分
+  NTILE(3) OVER (PARTITION BY cookieid ORDER BY pv DESC) AS `NTILE`
+FROM website_pv_info
+WHERE cookieid = 'cookie1';
+```
+上述这三个函数用于分组TopN的场景非常适合。<br>
+<img src="images/hive04_12.png" width="100%" height="100%" alt=""><br>
+
+#### 2.5.6 窗口分析函数
++ LAG(col,n,DEFAULT)：用于统计窗口内往上第n行值<br>
+  第一个参数为列名，第二个参数为往上第n行（可选，默认为1），第三个参数为默认值（当往上第n行为NULL时候，取默认值，如不指定，则为NULL）
++ LEAD(col,n,DEFAULT)：用于统计窗口内往下第n行值<br>
+  第一个参数为列名，第二个参数为往下第n行（可选，默认为1），第三个参数为默认值（当往下第n行为NULL时候，取默认值，如不指定，则为NULL）。
++ FIRST_VALUE：取分组内排序后，截止到当前行，第一个值
++ LAST_VALUE：取分组内排序后，截止到当前行，最后一个值
+
+```sql
+
+```
+<img src="images/hive04_13.png" width="100%" height="100%" alt=""><br>
 
 ### 2.6 抽样函数（Sampling functions ）
+当数据量过大时，我们可能需要查找数据子集以加快数据处理速度分析和发现整个数据集中的模式和趋势。在HQL中，可以通过三种方式采样数据：
++ 随机采样（Random）<br>
+  使用rand()函数和LIMIT关键字来获取数据。 <br>
+  使用DISTRIBUTE和SORT关键字，可以确保数据也随机分布在mapper和reducer之间，使得底层执行有效率。<br>
+  ORDER BY 和rand()语句也可以达到相同的目的，但是表现不好，因为ORDER BY是全局排序，只会启动运行一个Reducer。<br>
++ 存储桶表采样（Bucket table）：这是一种特殊的采样方法，针对分桶表进行了优化。
++ 块采样（Block）：允许select随机获取n行数据，即数据大小或n个字节的数据；采样粒度是HDFS块大小。
+
+```sql
+-- 随机采样
+--需求：随机抽取2个学生的情况进行查看
+SELECT * FROM website_url_info SORT BY rand() LIMIT 2;
+SELECT * FROM website_url_info DISTRIBUTE BY rand() SORT BY rand() LIMIT 2;
+--使用order by+rand也可以实现同样的效果 但是效率不高 23s
+SELECT * FROM website_url_info ORDER BY rand() LIMIT 2;
+
+---block抽样
+--根据行数抽样
+SELECT * FROM website_url_info TABLESAMPLE(1 ROWS);
+--根据数据大小百分比抽样
+SELECT * FROM website_url_info TABLESAMPLE(50 PERCENT);
+--根据数据大小抽样
+--支持数据单位 b/B, k/K, m/M, g/G
+SELECT * FROM website_url_info TABLESAMPLE(1k);
+
+---bucket table抽样
+--根据整行数据进行抽样
+SELECT * FROM website_url_info TABLESAMPLE(BUCKET 1 OUT OF 2 ON rand());
+--根据分桶字段进行抽样 效率更高
+describe formatted website_url_info;
+SELECT * FROM website_url_info TABLESAMPLE(BUCKET 1 OUT OF 2 ON `createtime`);
+```
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>

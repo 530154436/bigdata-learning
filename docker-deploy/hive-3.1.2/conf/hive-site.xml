@@ -4,23 +4,20 @@
         <name>javax.jdo.option.ConnectionURL</name>
         <value> jdbc:mysql://mysql:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8</value>
     </property>
-
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>com.mysql.jdbc.Driver</value>
     </property>
-
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
         <value>hive</value>
     </property>
-
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>123456</value>
     </property>
 
-    <!-- H2S运行绑定host/port、身份校验 -->
+    <!-- H2S运行绑定host/port -->
     <property>
         <name>hive.server2.thrift.bind.host</name>
         <value>hive</value>
@@ -31,11 +28,7 @@
     </property>
     <property>
         <name>hive.server2.enable.doAs</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>hive.server2.authentication</name>
-        <value>none</value>
+        <value>false</value>
     </property>
 
     <!-- H2S web ui-->

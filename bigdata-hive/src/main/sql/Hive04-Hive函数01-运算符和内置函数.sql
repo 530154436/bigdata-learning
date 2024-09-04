@@ -642,3 +642,66 @@ from website_pv_info;
 select cookieid,createtime,pv,
        sum(pv) over(partition by cookieid order by createtime rows between unbounded preceding  and unbounded following) as pv6
 from website_pv_info;
+
+
+-----窗口排序函数-----------
+SELECT
+    cookieid,
+    createtime,
+    pv,
+    RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS `RANK`,
+    DENSE_RANK() OVER(PARTITION BY cookieid ORDER BY pv desc) AS `DENSE_RANK`,
+    ROW_NUMBER() OVER(PARTITION BY cookieid ORDER BY pv DESC) AS `ROW_NUMBER`,
+
+    --需求：统计每个用户pv数最多的前3分之1天。
+    --理解：将数据根据cookieid分 根据pv倒序排序 排序之后分为3个部分 取第一部分
+    NTILE(3) OVER (PARTITION BY cookieid ORDER BY pv DESC) AS `NTILE`
+FROM website_pv_info
+WHERE cookieid = 'cookie1';
+
+
+-----------窗口分析函数----------
+--LAG
+SELECT cookieid,
+       createtime,
+       url,
+       ROW_NUMBER() OVER (PARTITION BY cookieid ORDER BY createtime)                               AS rn,
+       LAG(createtime, 1, '1970-01-01 00:00:00') OVER (PARTITION BY cookieid ORDER BY createtime)  AS LAG1,
+       LAG(createtime, 2) OVER (PARTITION BY cookieid ORDER BY createtime)                         AS LAG2,
+
+       LEAD(createtime, 1, '1970-01-01 00:00:00') OVER (PARTITION BY cookieid ORDER BY createtime) AS LEAD1,
+       LEAD(createtime, 2) OVER (PARTITION BY cookieid ORDER BY createtime)                        AS LEAD2,
+
+       FIRST_VALUE(url) OVER (PARTITION BY cookieid ORDER BY createtime)                           AS FIRST_VALUE,
+       LAST_VALUE(url) OVER (PARTITION BY cookieid ORDER BY createtime)                            AS LAST_VALUE
+FROM website_url_info;
+
+
+-----------抽样函数----------
+--需求：随机抽取2个学生的情况进行查看
+SELECT * FROM website_url_info SORT BY rand() LIMIT 2;
+SELECT * FROM website_url_info DISTRIBUTE BY rand() SORT BY rand() LIMIT 2;
+
+--使用order by+rand也可以实现同样的效果 但是效率不高 23s
+SELECT * FROM website_url_info ORDER BY rand() LIMIT 2;
+
+
+---block抽样
+--根据行数抽样
+SELECT * FROM website_url_info TABLESAMPLE(1 ROWS);
+--根据数据大小百分比抽样
+SELECT * FROM website_url_info TABLESAMPLE(50 PERCENT);
+--根据数据大小抽样
+--支持数据单位 b/B, k/K, m/M, g/G
+SELECT * FROM website_url_info TABLESAMPLE(1k);
+
+
+---bucket table抽样
+--根据整行数据进行抽样
+SELECT * FROM website_url_info TABLESAMPLE(BUCKET 1 OUT OF 2 ON rand());
+
+--根据分桶字段进行抽样 效率更高
+describe formatted website_url_info;
+SELECT * FROM website_url_info TABLESAMPLE(BUCKET 1 OUT OF 2 ON `createtime`);
+
+
