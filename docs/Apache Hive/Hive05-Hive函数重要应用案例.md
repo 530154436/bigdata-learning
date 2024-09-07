@@ -25,6 +25,7 @@ create table singer(
 )
 row format delimited fields terminated by '||';
 
+-- $HADOOP_HOME/bin/hdfs dfs -put -d cases/ /data/
 load data local inpath '/home/hive/data/cases/case01/test01.txt' into table singer;
 select * from singer;
 ```
@@ -60,7 +61,15 @@ select * from apachelog;
 基于上面两种情况的测试发现，当数据中出现了多字节分隔符或者数据中的某个字段包含了分隔符，就会导致数据加载错位的问题。基于出现的问题， 需要通过特殊的方法来解决该问题，即使当数据中出现多字节分隔符等情况时，Hive也能正确的加载数据，实现列与数据的一一对应。
 
 #### 1.3.1 解决方案一：替换分隔符
-面对情况一，如果数据中的分隔符是多字节分隔符，可以使用程序提前将数据中的多字节分隔符替换为单字节分隔符，然后使用Hive加载，就可以实现正确加载对应的数据。
+面对情况一，如果数据中的分隔符是多字节分隔符，可以使用程序提前将数据中的`多字节分隔符替换为单字节分隔符`，然后使用Hive加载，就可以实现正确加载对应的数据。
 例如：原始数据中的分隔符为“||”
+```
+01||周杰伦||中国||台湾||男||七里香
+```
+可以在ETL阶段通过一个MapReduce程序，将“||”替换为单字节的分隔符“|”，示例程序如下：
+[ChangeSplitCharMR.java](https://github.com/530154436/bigdata-learning/blob/main/bigdata-hadoop/src/main/java/org/zcb/mr/ChangeSplitCharMR.java)
+
+
+
 
 

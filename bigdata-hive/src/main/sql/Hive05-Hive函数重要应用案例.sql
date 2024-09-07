@@ -36,3 +36,5 @@ row format delimited fields terminated by ' ';
 
 load data local inpath '/home/hive/data/cases/case01/apache_web_access.log' into table apachelog;
 select * from apachelog;
+
+
