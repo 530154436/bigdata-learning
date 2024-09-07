@@ -170,7 +170,7 @@ WITH SERDEPROPERTIES (
 load data local inpath '/home/hive/data/cases/case01/apache_web_access.log' into table apachelog;
 select * from apachelog;
 ```
-<img src="images/hive05_08.png" width="40%" height="40%" alt=""><br>
+<img src="images/hive05_08.png" width="100%" height="100%" alt=""><br>
 
 #### 1.3.3 解决方案三：自定义InputFormat
 Hive中也允许使用`自定义InputFormat`来解决以上问题，通过在自定义InputFormat，来自定义解析逻辑实现读取每一行的数据。<br>
