@@ -5,7 +5,7 @@ Hive中默认使用单字节分隔符来加载文本数据，例如逗号、制�
 `row format delimited fields terminated by ‘单字节分隔符’ `来指定文件中的分割符，确保正确将表中的每一列与文件中的每一列实现一一对应的关系。
 在实际工作中，我们遇到的数据往往不是非常规范化的数据，例如我们会遇到以下的两种情况
 + 情况一：每一行数据的分隔符是`多字节分隔符`，例如：”||”、“--”等<br>
-  <img src="images/hive05_01.png" width="50%" height="50%" alt=""><br>
+  <img src="images/hive05_01.png" width="30%" height="30%" alt=""><br>
 
 + 数据的字段中包含了分隔符，如下图中每列的分隔符为空格，但是数据中包含了分隔符，时间字段中也有空格<br>
   <img src="images/hive05_02.png" width="100%" height="100%" alt=""><br>
