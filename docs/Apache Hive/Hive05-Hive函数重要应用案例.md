@@ -1,3 +1,51 @@
+<nav>
+<a href="#一多字节分隔符">一、多字节分隔符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-应用场景">1.1 应用场景</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-问题和需求">1.2 问题和需求</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#121-情况一加载数据的分隔符为多字节分隔符">1.2.1 情况一：加载数据的分隔符为多字节分隔符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#122-情况二数据中包含了分隔符">1.2.2 情况二：数据中包含了分隔符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-解决方案">1.3 解决方案</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#131-解决方案一替换分隔符">1.3.1 解决方案一：替换分隔符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#132-解决方案二regexserde正则加载">1.3.2 解决方案二：RegexSerDe正则加载</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#regexserde解决多字节分隔符">RegexSerDe解决多字节分隔符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#regexserde解决数据中包含分割符">RegexSerDe解决数据中包含分割符</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#133-解决方案三自定义inputformat">1.3.3 解决方案三：自定义InputFormat</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-总结">1.4 总结</a><br/>
+<a href="#二url解析函数及侧视图">二、URL解析函数及侧视图</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-应用场景">2.1 应用场景</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-问题和需求">2.2 问题和需求</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-解决方案">2.3 解决方案</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#231-parse_url函数">2.3.1 parse_url函数</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#232-parse_url_tuple函数">2.3.2 parse_url_tuple函数</a><br/>
+<a href="#三行列转换应用与实现">三、行列转换应用与实现</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-应用场景">3.1 应用场景</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-行转列多行转多列">3.2 行转列：多行转多列</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-行转列多行转单列">3.3 行转列：多行转单列</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#34-列转行多列转多行">3.4 列转行：多列转多行</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#35-列转行单列转多行">3.5 列转行：单列转多行</a><br/>
+<a href="#四json数据处理">四、JSON数据处理</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#41-get_json_object">4.1 get_json_object</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#42-json_tuple">4.2 json_tuple</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#43-jsonserde">4.3 JSONSerde</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#44-总结">4.4 总结</a><br/>
+<a href="#五窗口函数应用实例">五、窗口函数应用实例</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#51-连续登陆用户">5.1 连续登陆用户</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#511-需求分析">5.1.1 需求分析</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#512-解决方案">5.1.2 解决方案</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#52-级联累加求和">5.2 级联累加求和</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#521-需求分析">5.2.1 需求分析</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#522-解决方案">5.2.2 解决方案</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#53-分组topn">5.3 分组TopN</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#521-需求分析">5.2.1 需求分析</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#522-解决方案">5.2.2 解决方案</a><br/>
+<a href="#六拉链表的设计与实现">六、拉链表的设计与实现</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#61-数据同步场景">6.1 数据同步场景</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#62-解决方案">6.2 解决方案</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#63-拉链表的设计与分析">6.3 拉链表的设计与分析</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#64-拉链表的实现">6.4 拉链表的实现</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#65-具体案例">6.5 具体案例</a><br/>
+</nav>
+
 
 ## 一、多字节分隔符
 ### 1.1 应用场景
@@ -648,3 +696,169 @@ select * from t where `rank` <= 2
 <img src="images/hive05_19.png" width="100%" height="100%" alt=""><br>
 
 ## 六、拉链表的设计与实现
+
+### 6.1 数据同步场景
+Hive在实际工作中主要用于构建离线数据仓库，定期的从各种数据源中同步采集数据到Hive中，经过分层转换提供数据应用。
+例如：每天都会有用户注册，产生新的用户信息，我们每天都需要将MySQL中的用户数据同步到Hive数据仓库中，在做用户分析时，需要对用户的信息做统计分析，如统计新增用户的个数、总用户个数、用户性别分布、地区分布、运营商分布等指标。<br>
+
+在实现数据仓库数据同步的过程中，我们必须保证Hive中的数据与MySQL中的数据是一致的，这样才能确保我们最终分析出来的结果是准确的，但是在实现同步的过程中，这里会面临一个问题：如果MySQL中的数据发生了修改，Hive中如何存储被修改的数据？<br>
+
+例如以下情况：
++ 2021-01-01：MySQL中有10条用户信息
+  <img src="images/hive05_20.png" width="60%" height="60%" alt=""><br>
++ 2021-01-02：Hive进行数据分析，将MySQL中的数据同步
+  <img src="images/hive05_21.png" width="60%" height="60%" alt=""><br>
++ 2021-01-02：MySQL中新增2条用户注册数据，并且有1条用户数据发生更新<br>
+  新增两条用户数据011和012、008的addr发生了更新，从gz更新为sh<br>
+  <img src="images/hive05_22.png" width="60%" height="60%" alt=""><br>
+
++ 2021-01-03：Hive需要对2号的数据进行同步更新处理
+
+问题：`新增的数据会直接加载到Hive表中，但是更新的数据如何存储在Hive表`中？
+
+### 6.2 解决方案
++ **方案一**：在Hive中用新的addr覆盖008的老的addr，直接更新<br>
+  优点：实现最简单，使用起来最方便<br>
+  缺点：没有历史状态，008的地址是1月2号在sh，但是1月2号之前是在gz的，如果要查询008的1月2号之前的addr就无法查询，也不能使用sh代替<br>
+
++ **方案二**：每次数据改变，根据日期构建一份全量的快照表，每天一张表<br>
+  2021-01-02：Hive中有一张表tb_user_2021-01-02<br>
+  2021-01-03：Hive中有一张表tb_user_2021-01-03<br>
+  优点：记录了所有数据在不同时间的状态<br>
+  缺点：冗余存储了很多没有发生变化的数据，导致存储的数据量过大 <br>
+
++ **方案三**：构建`拉链表`，`通过时间标记发生变化的数据的每种状态的时间周期`
+  <img src="images/hive05_23.png" width="60%" height="60%" alt=""><br>
+
+### 6.3 拉链表的设计与分析
+数仓`拉链表`或渐变维表（Slowly Changing Dimension, SCD）是一种用于处理维表中数据变化的技术，特别是在数据仓库中。维表通常用于存储描述性信息，如客户、产品、时间等，这些信息可能会随时间发生变化。拉链表提供了一种机制来跟踪这些变化，以便可以进行历史数据分析和报告。<br>
+拉链表解决了数据仓库中数据发生变化如何实现数据存储的问题，如果直接覆盖历史状态，会导致无法查询历史状态，如果将所有数据单独切片存储，会导致存储大量非更新数据的问题。
+拉链表的设计是`将更新的数据进行状态记录，没有发生更新的数据不进行状态存储`，用于存储所有数据在不同时间上的所有状态，通过时间进行标记每个状态的生命周期。查询时，根据需求可以获取指定时间范围状态的数据。<br>
+
+为了保证数仓拉链表能够正确地反映维度属性的历史变化情况，需要遵循以下几个设计原则：
+1. 每条记录都有一个起始时间和结束时间<br>
+   开始时间表示该属性值生效的起始日期。<br>
+   结束时间表示该属性值生效的截止日期，默认用`9999-12-31`等最大值来表示最新状态。<br>
+2. 每条记录都有一个唯一标识符<br>
+   用于区分不同的记录，通常情况下，唯一标识符可以是维度表中的主键或者是自动生成的序列号。
+3. **每个维度只有一个当前有效的记录**
+   为了保证数仓拉链表能够正确地反映维度属性的当前有效值，需要保证每个维度只有一个当前有效的记录。<br>
+   通常情况下，可以通过结束时间为N`9999-12-31`来判断某个维度是否为当前有效。
+4. 每次变化都需要插入新记录<br>
+   当某个维度属性发生变化时，需要插入一条新的拉链记录来记录该属性值的变化情况。<br>
+   同时，需要更新之前的拉链记录的结束时间为新纪录开始时间减1天。 
+
+> 要更新之前记录的结束时间为新记录开始时间减1天？<br>
+为了避免记录时间重叠，确保每一天只有一条有效的记录，从而准确地追踪属性的历史变化。<br>
+如果直接把旧记录的结束时间设为新记录的开始时间，那么在新记录生效的当天，有两条记录同时生效（旧记录的结束时间和新记录的开始时间是同一天）。
+
+### 6.4 拉链表的实现
+拉链表的实现过程一般分为三步：<br>
+1. 先增量采集所有新增数据【增加的数据和发生变化的数据】放入一张增量表。
+2. 创建一张临时表，用于将老的拉链表与增量表进行合并。 
+3. 最后将临时表的数据覆盖写入拉链表中。
+
+例如，当前MySQL中的数据：
+<img src="images/hive05_24.png" width="60%" height="60%" alt=""><br>
+
+当前Hive数据仓库中拉链表的数据：
+<img src="images/hive05_25.png" width="60%" height="60%" alt=""><br>
+
++ step1：增量采集变化数据，放入增量表中
+  <img src="images/hive05_26.png" width="60%" height="60%" alt=""><br>
+
++ step2：构建临时表，将Hive中的拉链表与临时表的数据进行合并
+  <img src="images/hive05_27.png" width="60%" height="60%" alt=""><br>
+
++ step3：将临时表的数据覆盖写入拉链表中
+  <img src="images/hive05_28.png" width="60%" height="60%" alt=""><br>
+
+### 6.5 具体案例
+
++ **创建拉链表，并加载全量数据**
+```sql
+create table dw_zipper(
+    userid    string,
+    phone     string,
+    nick      string,
+    gender    int,
+    addr      string,
+    starttime string,
+    endtime   string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case06/zipper.txt' into table dw_zipper;
+select userid,nick,addr,starttime,endtime from dw_zipper;
+
+-- 001	186xxxx1234	laoda	0	sh	2021-01-01	9999-12-31
+-- 002	186xxxx1235	laoer	1	bj	2021-01-01	9999-12-31
+-- 008	186xxxx1241	laoba	1	gz	2021-01-01	9999-12-31
+```
+
++ **创建ods层增量表**
+```sql
+create table if not exists ods_zipper_update(
+    userid    string,
+    phone     string,
+    nick      string,
+    gender    int,
+    addr      string,
+    starttime string,
+    endtime   string
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case06/update.txt' into table ods_zipper_update;
+select userid,nick,addr,starttime,endtime from ods_zipper_update;
+
+-- 008 186xxxx1241 laoba 1 sh  2021-01-02  9999-12-31
+-- 011 186xxxx1244 laoshi  1 jx  2021-01-02  9999-12-31
+-- 012 186xxxx1245 laoshi  0 zj  2021-01-02  9999-12-31
+```
++ **合并拉链表与增量表**
+```sql
+-- 合并数据-创建临时表
+create table if not exists tmp_zipper(
+    userid    string,
+    phone     string,
+    nick      string,
+    gender    int,
+    addr      string,
+    starttime string,
+    endtime   string
+) row format delimited fields terminated by '\t';
+
+-- 合并拉链表与增量表
+-- 合并拉链表与增量表
+insert overwrite table tmp_zipper
+-- 新数据
+select
+    userid,
+    phone,
+    nick,
+    gender,
+    addr,
+    starttime,
+    endtime
+from ods_zipper_update
+union all
+-- 拉链表的所有存量数据，并将需要更新数据的endTime更改为更新值的startTime-1
+select
+    a.userid,
+    a.phone,
+    a.nick,
+    a.gender,
+    a.addr,
+    a.starttime,
+    -- 如果这条数据没有更新或不是最新状态的数据，就保留原来的值，否则就改为新数据的开始时间-1(保证每个时间只有一条数据有效)
+    if(b.userid is null or a.endtime < '9999-12-31', a.endtime, date_sub(b.starttime, 1)) as endtime
+from dw_zipper a
+left join ods_zipper_update b on a.userid = b.userid
+;
+select * from tmp_zipper;
+```
++ 生成最新拉链表（覆盖）
+```sql
+insert overwrite table dw_zipper select * from tmp_zipper;
+select * from dw_zipper;
+```
+
+<img src="images/hive05_29.png" width="100%" height="100%" alt=""><br>

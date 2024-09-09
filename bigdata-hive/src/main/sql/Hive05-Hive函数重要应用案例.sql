@@ -349,3 +349,97 @@ with t as (
 )
 select * from t where `rank` <= 2
 ;
+
+
+/**
+  拉链表的设计与实现
+ */
+------------------------创建拉链表，并加载全量数据-----------------------
+create table dw_zipper(
+    userid    string,
+    phone     string,
+    nick      string,
+    gender    int,
+    addr      string,
+    starttime string,
+    endtime   string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case06/zipper.txt' into table dw_zipper;
+select userid,nick,addr,starttime,endtime from dw_zipper;
+
+-- 001	186xxxx1234	laoda	0	sh	2021-01-01	9999-12-31
+-- 002	186xxxx1235	laoer	1	bj	2021-01-01	9999-12-31
+-- 008	186xxxx1241	laoba	1	gz	2021-01-01	9999-12-31
+
+------------------------创建ods层增量表-----------------------
+create table if not exists ods_zipper_update(
+    userid    string,
+    phone     string,
+    nick      string,
+    gender    int,
+    addr      string,
+    starttime string,
+    endtime   string
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case06/update.txt' into table ods_zipper_update;
+select userid,nick,addr,starttime,endtime from ods_zipper_update;
+
+-- 008 186xxxx1241 laoba 1 sh  2021-01-02  9999-12-31
+-- 011 186xxxx1244 laoshi  1 jx  2021-01-02  9999-12-31
+-- 012 186xxxx1245 laoshi  0 zj  2021-01-02  9999-12-31
+
+
+------------------------合并拉链表与增量表-----------------------
+-- 合并数据-创建临时表
+create table if not exists tmp_zipper(
+    userid    string,
+    phone     string,
+    nick      string,
+    gender    int,
+    addr      string,
+    starttime string,
+    endtime   string
+) row format delimited fields terminated by '\t';
+
+-- 合并拉链表与增量表
+insert overwrite table tmp_zipper
+-- 新数据
+select
+    userid,
+    phone,
+    nick,
+    gender,
+    addr,
+    starttime,
+    endtime
+from ods_zipper_update
+union all
+-- 拉链表的所有存量数据，并将需要更新数据的endTime更改为更新值的startTime-1
+select
+    a.userid,
+    a.phone,
+    a.nick,
+    a.gender,
+    a.addr,
+    a.starttime,
+    -- 如果这条数据没有更新或不是最新状态的数据，就保留原来的值，否则就改为新数据的开始时间-1(保证每个时间只有一条数据有效)
+    if(b.userid is null or a.endtime < '9999-12-31', a.endtime, date_sub(b.starttime, 1)) as endtime
+from dw_zipper a
+left join ods_zipper_update b on a.userid = b.userid
+;
+select * from tmp_zipper;
+
+------------------------生成最新拉链表（覆盖）-----------------------
+insert overwrite table dw_zipper select * from tmp_zipper;
+select * from dw_zipper;
+
+
+
+
+
+
+
+
+
+
