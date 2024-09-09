@@ -429,9 +429,9 @@ c       d       6
 ```sql
 drop table if exists col2row2;
 create table if not exists col2row2(
-                                     col1 string,
-                                     col2 string,
-                                     col3 string
+  col1 string,
+  col2 string,
+  col3 string
 ) row format delimited fields terminated by '\t';
 load data local inpath '/home/hive/data/cases/case03/c2r2.txt' into table col2row2;
 select * from col2row2;
@@ -441,3 +441,134 @@ from col2row2
 lateral view explode(split(col3, ",")) lv as col31
 ;
 ```
+
+## 四、JSON数据处理
+Hive中为了实现JSON格式的数据解析，提供了两种解析JSON数据的方式，在实际工作场景下，可以根据不同数据，不同的需求来选择合适的方式对JSON格式数据进行处理。
+
++ 方式一：使用JSON函数进行处理<br>
+Hive中提供了两个专门用于解析JSON字符串的函数：get_json_object、json_tuple，这两个函数都可以实现将JSON数据中的每个字段独立解析出来，构建成表。
+
++ 方式二：使用Hive内置的`JSON Serde`加载数据<br>
+Hive中除了提供JSON的解析函数以外，还提供了一种专门用于加载JSON文件的Serde来实现对JSON文件中数据的解析，在创建表时指定Serde，加载文件到表中，会自动解析为对应的表格式。<br>
+
+
+案例数据（device.json）和建表语句：
+```
+{"device":"device_30","deviceType":"kafka","signal":98.0,"time":1616817201390}
+{"device":"device_40","deviceType":"route","signal":99.0,"time":1616817201887}
+
+create table tb_json_test1(
+    json string
+);
+load data local inpath '/home/hive/data/cases/case04/device.json' into table tb_json_test1;
+select * from tb_json_test1;
+```
+
+### 4.1 get_json_object
+```sql
+select
+    --获取设备名称
+    get_json_object(json, "$.device")     as device,
+    --获取设备类型
+    get_json_object(json, "$.deviceType") as deviceType,
+    --获取设备信号强度
+    get_json_object(json, "$.signal")     as signal,
+    --获取时间
+    get_json_object(json, "$.time")       as stime
+from tb_json_test1;
+```
+<img src="images/hive05_12.png" width="100%" height="100%" alt=""><br>
+
+### 4.2 json_tuple
+```sql
+-- 单独使用
+select json_tuple(json, "device", "deviceType", "signal", "time") as (device, deviceType, signal, stime)
+from tb_json_test1;
+
+-- 搭配侧视图
+select json,device,deviceType,signal,stime
+from tb_json_test1
+lateral view json_tuple(json,"device","deviceType","signal","time") b as device,deviceType,signal,stime;
+```
+<img src="images/hive05_13.png" width="100%" height="100%" alt=""><br>
+
+### 4.3 JSONSerde
+Hive中为了简化对于JSON文件的处理，内置了一种专门用于`解析JSON文件的Serde解析器`，在创建表时，只要指定使用JSONSerde解析表的文件，就会自动将JSON文件中的每一列进行解析。
+```sql
+create table tb_json_test2(
+    device     string,
+    deviceType string,
+    signal     double,
+    `time`     string
+)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS TEXTFILE;
+
+load data local inpath '/home/hive/data/cases/case04/device.json' into table tb_json_test2;
+select * from tb_json_test2;
+```
+<img src="images/hive05_12.png" width="100%" height="100%" alt=""><br>
+
+### 4.4 总结
+不论是Hive中的JSON函数还是自带的JSONSerde，都可以实现对于JSON数据的解析，工作中一般根据数据格式以及对应的需求来实现解析。如果数据中每一行只有个别字段是JSON格式字符串，就可以使用JSON函数来实现处理，但是如果数据加载的文件整体就是JSON文件，每一行数据就是一个JSON数据，那么建议直接使用JSONSerde来实现处理最为方便。
+
+## 五、窗口函数应用实例
+### 5.1 连续登陆用户
+#### 5.1.1 需求分析
+当前有一份用户登录数据如下所示，数据中有两个字段，分别是userId和loginTime。<br>
+
+<img src="images/hive05_15.png" width="60%" height="60%" alt=""><br>
+
++ userId表示唯一的用户ID，唯一标识一个用户
++ loginTime表示用户的登录日期
+
+现在需要对用户的登录次数进行统计，得到连续登陆N（N>=2）天的用户。<br>
+例如统计连续两天的登录的用户，需要返回A和C，因为A在22/23/24都登录了，所以肯定是连续两天登录，C在22和23号登录了，所以也是连续两天登录的。
+例如统计连续三天的登录的用户，只能返回A，因为只有A是连续三天登录的。
+
+```sql
+create table tb_login(
+    userid    string,
+    logintime string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case05/login.log' into table tb_login;
+select * from tb_login;
+```
+
+#### 5.1.2 解决方案
++ 分析<br>
+  当前数据中记录了每个用户每一次登陆的日期，一个用户在一天只有1条信息，我们可以基于用户的登陆信息，找到如下规律：<br>
+  连续两天登陆 ： 用户下次登陆时间 = 本次登陆以后的第二天<br>
+  连续三天登陆 ： 用户下下次登陆时间 = 本次登陆以后的第三天<br>
+  ...依次类推。
++ 具体实现<br>
+  我们可以对用户ID进行分区，按照登陆时间进行排序，通过lead函数计算出用户下次登陆时间，通过日期函数计算出登陆以后第二天的日期，如果相等即为连续两天登录。
+```sql
+-- 统计连续2天登录
+with t as (
+    select userid,
+           logintime,
+           date_add(logintime, 1) as nextday,
+           -- 用于统计窗口内基于当前行数据向下偏移取第n行值
+           lead(logintime, 1) over (partition by userid order by logintime) as nextlogin
+    from tb_login
+)
+-- select * from t
+select distinct userid from t where nextday=nextlogin
+;
+```
+<img src="images/hive05_14.png" width="100%" height="100%" alt=""><br>
+
+### 5.2 级联累加求和
+#### 5.2.1 需求分析
+需求：基于用户每个月的多次消费的记录进行分析，统计得到每个用户在每个月的消费总金额以及当前累计消费总金额。<br>
+<img src="images/hive05_16.png" width="60%" height="60%" alt=""><br>
+
+以用户A为例：<br>
+A在2021年1月份，共四次消费，分别消费5元、15元、8元、5元，所以本月共消费33元，累计消费33元。<br>
+A在2021年2月份，共两次消费，分别消费4元、6元，所以本月共消费10元，累计消费43元。<br>
+
+#### 5.2.2 解决方案
+
+

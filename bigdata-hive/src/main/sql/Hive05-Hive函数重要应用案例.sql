@@ -223,3 +223,78 @@ select col1, col2, lv.col31 AS col3
 from col2row2
 lateral view explode(split(col3, ",")) lv as col31
 ;
+
+
+/**
+  四、JSON数据处理
+ */
+------------------------4.1 get_json_object------------------------
+create table tb_json_test1(
+    json string
+);
+load data local inpath '/home/hive/data/cases/case04/device.json' into table tb_json_test1;
+select * from tb_json_test1;
+
+select
+    --获取设备名称
+    get_json_object(json, "$.device")     as device,
+    --获取设备类型
+    get_json_object(json, "$.deviceType") as deviceType,
+    --获取设备信号强度
+    get_json_object(json, "$.signal")     as signal,
+    --获取时间
+    get_json_object(json, "$.time")       as stime
+from tb_json_test1;
+
+------------------------4.2 json_tuple------------------------
+-- 单独使用
+select json_tuple(json, "device", "deviceType", "signal", "time") as (device, deviceType, signal, stime)
+from tb_json_test1;
+
+-- 搭配侧视图
+select json,device,deviceType,signal,stime
+from tb_json_test1
+lateral view json_tuple(json,"device","deviceType","signal","time") b as device,deviceType,signal,stime;
+
+------------------------4.3 JSONSerde------------------------
+create table tb_json_test2(
+    device     string,
+    deviceType string,
+    signal     double,
+    `time`     string
+)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS TEXTFILE;
+
+load data local inpath '/home/hive/data/cases/case04/device.json' into table tb_json_test2;
+select * from tb_json_test2;
+
+
+/**
+  五、窗口函数应用实例
+ */
+------------------------5.1 连续登陆用户-----------------------
+create table tb_login(
+    userid    string,
+    logintime string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case05/login.log' into table tb_login;
+select * from tb_login;
+
+-- 统计连续2天登录
+with t as (
+    select userid,
+           logintime,
+           date_add(logintime, 1) as nextday,
+           -- 用于统计窗口内基于当前行数据向下偏移取第n行值
+           lead(logintime, 1) over (partition by userid order by logintime) as nextlogin
+    from tb_login
+)
+-- select * from t
+select distinct userid from t where nextday=nextlogin
+;
+
+------------------------5.2 级联累加求和-----------------------
+
+

@@ -227,7 +227,10 @@ Hive的函数很多，除了自己内置所支持的函数之外，还支持用�
 + `正则表达式替换函数`：regexp_replace
 + `正则表达式解析函数`：regexp_extract
 + URL解析函数：parse_url
-+ `json解析函数`：get_json_object
++ `json解析函数`：<br>
+  get_json_object(json_txt, path) - Extract a json object from path<br>
+  第1个参数：指定要解析的JSON字符串<br>
+  第2个参数：指定要返回的字段，通过$.columnName的方式来指定path<br>
 + 空格字符串函数：space
 + 重复字符串函数：repeat
 + 首字符ascii函数：ascii
@@ -1017,7 +1020,7 @@ WHERE cookieid = 'cookie1';
 #### 2.5.6 窗口分析函数
 + LAG(col,n,DEFAULT)：用于统计窗口内往上第n行值<br>
   第一个参数为列名，第二个参数为往上第n行（可选，默认为1），第三个参数为默认值（当往上第n行为NULL时候，取默认值，如不指定，则为NULL）
-+ LEAD(col,n,DEFAULT)：用于统计窗口内往下第n行值<br>
++ LEAD(col,n,DEFAULT)：用于统计窗口内基于当前行数据向下偏移取第n行值<br>
   第一个参数为列名，第二个参数为往下第n行（可选，默认为1），第三个参数为默认值（当往下第n行为NULL时候，取默认值，如不指定，则为NULL）。
 + FIRST_VALUE：取分组内排序后，截止到当前行，第一个值
 + LAST_VALUE：取分组内排序后，截止到当前行，最后一个值
