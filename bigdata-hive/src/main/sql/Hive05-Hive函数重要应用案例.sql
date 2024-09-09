@@ -296,5 +296,56 @@ select distinct userid from t where nextday=nextlogin
 ;
 
 ------------------------5.2 级联累加求和-----------------------
+create table tb_money(
+    userid string,
+    mth    string,
+    money  int
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case05/money.tsv' into table tb_money;
+select * from tb_money;
 
+-- 1、统计得到每个用户每个月的消费总金额
+drop table if exists tb_money_mth;
+create table if not exists tb_money_mth
+as
+select userid, mth, sum(money) as money_mth
+from tb_money
+group by userid, mth
+;
+select * from tb_money_mth;
 
+-- 2、统计每个用户每个月累计总金额
+select
+    userid,
+    mth,
+    money_mth,
+    sum(money_mth) over(partition by userid order by mth) as total_money
+from tb_money_mth
+;
+
+------------------------5.3 分组TopN-----------------------
+create table tb_emp(
+    empno     string,
+    ename     string,
+    job       string,
+    managerid string,
+    hiredate  string,
+    salary    double,
+    bonus     double,
+    deptno    string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case05/emp.txt' into table tb_emp;
+select empno,ename,salary,deptno from tb_emp;
+
+-- 统计查询每个部门薪资最高的前两名员工的薪水
+with t as (
+    select empno,
+           ename,
+           salary,
+           deptno,
+           row_number() over (partition by deptno order by salary desc) as `rank`
+    from tb_emp
+)
+select * from t where `rank` <= 2
+;

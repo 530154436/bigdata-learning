@@ -523,7 +523,7 @@ select * from tb_json_test2;
 + loginTime表示用户的登录日期
 
 现在需要对用户的登录次数进行统计，得到连续登陆N（N>=2）天的用户。<br>
-例如统计连续两天的登录的用户，需要返回A和C，因为A在22/23/24都登录了，所以肯定是连续两天登录，C在22和23号登录了，所以也是连续两天登录的。
+例如统计连续两天的登录的用户，需要返回A和C，因为A在22/23/24都登录了，C在22和23号登录了。<br>
 例如统计连续三天的登录的用户，只能返回A，因为只有A是连续三天登录的。
 
 ```sql
@@ -541,9 +541,9 @@ select * from tb_login;
   当前数据中记录了每个用户每一次登陆的日期，一个用户在一天只有1条信息，我们可以基于用户的登陆信息，找到如下规律：<br>
   连续两天登陆 ： 用户下次登陆时间 = 本次登陆以后的第二天<br>
   连续三天登陆 ： 用户下下次登陆时间 = 本次登陆以后的第三天<br>
-  ...依次类推。
+  ...依次类推。<br>
+  => 对用户ID进行分区，按照登陆时间进行排序，通过lead函数计算出用户下次登陆时间，通过日期函数计算出登陆以后第二天的日期，如果相等即为连续两天登录。
 + 具体实现<br>
-  我们可以对用户ID进行分区，按照登陆时间进行排序，通过lead函数计算出用户下次登陆时间，通过日期函数计算出登陆以后第二天的日期，如果相等即为连续两天登录。
 ```sql
 -- 统计连续2天登录
 with t as (
@@ -569,6 +569,82 @@ select distinct userid from t where nextday=nextlogin
 A在2021年1月份，共四次消费，分别消费5元、15元、8元、5元，所以本月共消费33元，累计消费33元。<br>
 A在2021年2月份，共两次消费，分别消费4元、6元，所以本月共消费10元，累计消费43元。<br>
 
+```sql
+create table tb_money(
+    userid string,
+    mth    string,
+    money  int
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case05/money.tsv' into table tb_money;
+select * from tb_money;
+```
+
 #### 5.2.2 解决方案
++ 分析<br>
+  分组统计每个用户每个月的消费金额，然后使用窗口聚合函数实现累计
 
++ 具体实现<br>
+```sql
+-- 1、统计得到每个用户每个月的消费总金额
+drop table if exists tb_money_mth;
+create table if not exists tb_money_mth
+as
+select userid, mth, sum(money) as money_mth
+from tb_money
+group by userid, mth
+;
+select * from tb_money_mth;
 
+-- 2、统计每个用户每个月累计总金额
+select
+    userid,
+    mth,
+    money_mth,
+    sum(money_mth) over(partition by userid order by mth) as total_money
+from tb_money_mth
+;
+```
+<img src="images/hive05_17.png" width="100%" height="100%" alt=""><br>
+
+### 5.3 分组TopN
+#### 5.2.1 需求分析
+`分组TopN`指的是基于数据进行分组，从每个组内取TopN，不再基于全局取TopN。<br>
+`需求`：统计查询每个部门薪资最高的前两名员工的薪水。<br>
+<img src="images/hive05_18.png" width="60%" height="60%" alt=""><br>
+
+```sql
+create table tb_emp(
+    empno     string,
+    ename     string,
+    job       string,
+    managerid string,
+    hiredate  string,
+    salary    double,
+    bonus     double,
+    deptno    string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case05/emp.txt' into table tb_emp;
+select empno,ename,salary,deptno from tb_emp;
+```
+
+#### 5.2.2 解决方案
++ 分析<br>
+  使用窗口窗口排序函数row_number实现，按照部门分区，每个部门内部按照薪水降序排序
+
++ 具体实现<br>
+```sql
+with t as (
+  select empno,
+         ename,
+         salary,
+         deptno,
+         row_number() over (partition by deptno order by salary desc) as `rank`
+  from tb_emp
+)
+select * from t where `rank` <= 2
+;
+```
+<img src="images/hive05_19.png" width="100%" height="100%" alt=""><br>
+
+## 六、拉链表的设计与实现
