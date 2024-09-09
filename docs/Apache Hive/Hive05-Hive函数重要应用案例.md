@@ -10,7 +10,7 @@ Hive中默认使用单字节分隔符来加载文本数据，例如逗号、制�
 + 数据的字段中包含了分隔符，如下图中每列的分隔符为空格，但是数据中包含了分隔符，时间字段中也有空格<br>
   <img src="images/hive05_02.png" width="100%" height="100%" alt=""><br>
 
-### 1.2 问题
+### 1.2 问题和需求
 基于上述的两种特殊数据，如果使用正常的加载数据的方式将数据加载到表中，就会出以下两种错误。
 #### 1.2.1 情况一：加载数据的分隔符为多字节分隔符
 ```sql
@@ -213,3 +213,231 @@ select * from singer;
 ### 1.4 总结
 当数据文件中出现多字节分隔符或者数据中包含了分隔符时，会导致数据加载与实际表的字段不匹配的问题，基于这个问题我们提供了三种方案：`替换分隔符`、`正则加载`及`自定义InputFormat`来实现，其中替换分隔符无法解决数据中存在分隔符的问题，自定义InputFormat的开发成本较高，所以**整体推荐使用正则加载的方式来实现对于特殊数据的处理**。
 
+## 二、URL解析函数及侧视图
+### 2.1 应用场景
+业务需求中，我们经常需要对用户的访问、用户的来源进行分析，用于支持运营和决策。例如我们经常对用户访问的页面进行统计分析，分析热门受访页面的Top10，观察大部分用户最喜欢的访问最多的页面等：
+又或者我们需要分析不同搜索平台的用户来源分析，统计不同搜索平台中进入网站的用户个数，根据数据进行精准的引导和精准的广告投放等。<br>
+要想实现上面的受访分析、来源分析等业务，必须在实际处理数据的过程中，对用户访问的URL和用户的来源URL进行解析处理，获取用户的访问域名、访问页面、用户数据参数、来源域名、来源路径等信息。<br>
+
+> URL的基本组成部分：如 http://facebook.com/path/p1.php?query=1
+> ① 通信协议类型，一般也叫作Schema，常见的有http、https等；<br>
+> ② HOST：域名，一般为服务器的域名主机名或ip地址 <br>
+> ③ PATH：访问路径，由“/”隔开的字符串，表示的是主机上的目录或文件地址 <br>
+> ④ QUERY：查询参数，此项为可选项，可以给动态网页传递参数，用“&”隔开，每个参数的名和值用“=”隔开<br>
+
+### 2.2 问题和需求
+Hive中为了实现对URL的解析，专门提供了解析URL的函数`parse_url`和`parse_url_tuple`，为了更好的学习这两个函数的使用，下面在Hive中创建一张表，加载url数据来进行测试。
+```sql
+create table tb_url(
+    id  int,
+    url string
+) row format delimited fields terminated by '\t';
+
+load data local inpath '/home/hive/data/cases/case02/url.txt' into table tb_url;
+select * from tb_url;
+```
+<img src="images/hive05_09.png" width="100%" height="100%" alt=""><br>
+
+基于当前的数据，实现对URL进行分析，从URL中获取每个ID对应HOST、PATH以及QUERY。
+
+### 2.3 解决方案
+
+#### 2.3.1 parse_url函数
+`parse_url函数`是Hive中提供的最基本的url解析函数，可以根据指定的参数，从URL解析出对应的参数值进行返回，函数为普通的一对一函数类型。语法如下：
+```
+parse_url(url, partToExtract[, key]) - extracts a part from a URL
+Parts: HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, USERINFO key
+
+第一个参数：url：指定要解析的URL
+第二个参数：key：指定要解析的内容
+```
+实现需求：
+```sql
+select id,
+       url,
+       parse_url(url, "HOST")  as host,
+       parse_url(url, "PATH")  as path,
+       parse_url(url, "QUERY") as query
+from tb_url;
+```
+<img src="images/hive05_10.png" width="100%" height="100%" alt=""><br>
+
+使用parse_url函数每次只能解析一个参数，导致需要经过多个函数调用才能构建多列，开发角度较为麻烦、实现过程性能也相对较差，需要对同一列做多次计算处理，我们希望能实现调用一次函数，就可以将多个参数进行解析，得到多列结果。
+
+#### 2.3.2 parse_url_tuple函数
+
+parse_url_tuple函数是Hive中提供的基于parse_url的url解析函数，可以通过一次指定多个参数，从URL解析出多个参数的值进行返回多列，函数为特殊的一对多函数类型，即通常所说的`UDTF`函数类型。
+```
+parse_url_tuple(url, partname1, partname2, ..., partnameN) - extracts N (N>=1) parts from a URL.
+
+第一个参数：url：指定要解析的URL
+第二个参数：key1：指定要解析的内容1
+……
+第N个参数：keyN：指定要解析的内容N
+```
+通过parse_url_tuple实现了通过调用一个函数，就可以从URL中解析得到多个参数的值，但是当我们将原表的字段放在一起查询时，会出现以下问题：
+```sql
+-- SemanticException 3:59 AS clause has an invalid number of aliases. Error encountered near token 'path'
+select id,
+       url,
+       parse_url_tuple(url,"HOST","PATH","QUERY") as (host,path,query)
+from tb_url;
+```
+与`lateral view`结合使用：
+```sql
+select a.id       as id,
+       b.host     as host,
+       b.path     as path,
+       c.protocol as protocol,
+       c.query    as query
+from tb_url a
+lateral view parse_url_tuple(url, "HOST", "PATH") b as host, path
+lateral view parse_url_tuple(url, "PROTOCOL", "QUERY") c as protocol, query;
+```
+<img src="images/hive05_11.png" width="100%" height="100%" alt=""><br>
+
+## 三、行列转换应用与实现
+### 3.1 应用场景
+实际工作场景中经常需要实现对于Hive中的表进行行列转换操作，例如当前ADS层的数据表统计得到每个小时不同维度下的UV、PV、IP的个数，而现在为了构建可视化报表，得到每个小时的UV、PV的线图，观察访问趋势。
+在Hive中，我们可以通过函数来实现各种复杂的行列转换。
+
+### 3.2 行转列：多行转多列
++ 原始数据表（r2c1.txt）
+```
+col1 col2 col3
+a	  c	    1
+a	  d	    2
+a	  e	    3
+b	  c	    4
+b	  d 	5
+b	  e	    6
+```
++ 目标数据表
+```
+col1   c      d      e
+a      1      2      3
+b      4      5      6
+```
++ 具体实现
+```sql
+create table row2col1(
+    col1 string,
+    col2 string,
+    col3 int
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case03/r2c1.txt' into table row2col1;
+select * from row2col1;
+
+SELECT
+    col1 as col1
+    , max(case col2 when "c" then col3 else 0 end) AS c
+    , max(case col2 when "d" then col3 else 0 end) AS c
+    , max(case col2 when "e" then col3 else 0 end) AS c
+FROM row2col1
+GROUP BY col1
+;
+```
+
+### 3.3 行转列：多行转单列
++ 原始数据表（r2c2.txt）
+```
+col1 col2 col3
+a	  b	    1
+a	  b	    2
+a	  b	    3
+c	  d	    4
+c	  d	    5
+c	  d	    6
+```
++ 目标数据表
+```
+col1    col2    col3
+a       b       1,2,3
+c       d       4,5,6
+```
++ 具体实现
+```sql
+create table row2col2(
+    col1 string,
+    col2 string,
+    col3 int
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case03/r2c2.txt' into table row2col2;
+select * from row2col2;
+
+SELECT col1, col2, concat_ws(",", collect_list(cast(col3 as string)))
+FROM row2col2
+GROUP BY col1, col2
+;
+```
+
+### 3.4 列转行：多列转多行
++ 原始数据表（c2r1.txt）
+```
+col1   c      d      e
+a      1      2      3
+b      4      5      6
+```
++ 目标数据表
+```
+col1   col2    col3
+a      c       1
+a      d       2
+a      e       3
+b      c       4
+b      d       5
+b      e       6
+```
++ 具体实现
+```sql
+drop table if exists col2row1;
+create table if not exists col2row1(
+    col1 string,
+    c int,
+    d int,
+    e int
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case03/c2r1.txt' into table col2row1;
+select * from col2row1;
+
+SELECT col1, "c" AS col2, `c` AS col3 FROM col2row1
+UNION
+SELECT col1, "d" AS col2, `d` AS col3 FROM col2row1
+UNION
+SELECT col1, "e" AS col2, `e` AS col3 FROM col2row1
+;
+```
+
+### 3.5 列转行：单列转多行
++ 原始数据表（c2r2.txt）
+```
+col1    col2    col3
+a       b       1,2,3
+c       d       4,5,6
+```
++ 目标数据表
+```
+col1    col2    col3
+a       b       1
+a       b       2
+a       b       3
+c       d       4
+c       d       5
+c       d       6
+```
++ 具体实现
+```sql
+drop table if exists col2row2;
+create table if not exists col2row2(
+                                     col1 string,
+                                     col2 string,
+                                     col3 string
+) row format delimited fields terminated by '\t';
+load data local inpath '/home/hive/data/cases/case03/c2r2.txt' into table col2row2;
+select * from col2row2;
+
+select col1, col2, lv.col31 AS col3
+from col2row2
+lateral view explode(split(col3, ",")) lv as col31
+;
+```

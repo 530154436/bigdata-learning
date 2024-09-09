@@ -448,7 +448,10 @@ select sort_array(array(12,2,32));  -- [2,12,32]
 + 非空判断函数: isnotnull ( a )
 + 空值转换函数: nvl(T value, T default_value)
 + 非空查找函数: COALESCE(T v1, T v2, ...)
-+ 条件转换函数: CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
++ 条件转换函数: 用于实现对数据的判断，根据条件返回不同的结果，类似于Java中的switch case 功能<br>
+  CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END<br>
+  `语法一`：CASE WHEN 条件1 THEN VALUE1 ... WHEN 条件N THEN VALUEN ELSE 默认值 END<br>
+  `语法二`：CASE 列 WHEN V1 THEN VALUE1 ... WHEN VN THEN VALUEN ELSE 默认值 END<br>
 + nullif( a, b ): 如果a = b，则返回NULL；否则返回NULL。否则返回一个
 + assert_true: 如果'condition'不为真，则引发异常，否则返回null
 ```sql
@@ -477,7 +480,13 @@ select COALESCE(null,null,null);    -- null
 
 --条件转换函数:
 -- CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END
-select case 100 when 50 then 'tom' when 100 then 'mary' else 'tim' end;     -- mary
+select 
+    case 
+        when 50 > 100 then 'tom' 
+        when 100 = 100 then 'mary' 
+        else 'tim' 
+    end; -- mary
+ 
 select
     `name`
     , case `sex`
