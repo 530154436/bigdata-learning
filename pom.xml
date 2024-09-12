@@ -10,10 +10,11 @@
     <version>1.0</version>
     <modules>
         <module>base-java</module>
-        <module>base-scala</module>
-        <module>bigdata-spark</module>
         <module>bigdata-hadoop</module>
         <module>bigdata-hive</module>
+
+        <module>base-scala</module>
+        <module>bigdata-spark</module>
         <module>bigdata-flink</module>
     </modules>
 
