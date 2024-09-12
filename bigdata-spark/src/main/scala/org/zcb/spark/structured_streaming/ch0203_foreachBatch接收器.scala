@@ -2,7 +2,7 @@ package org.zcb.spark.structured_streaming
 
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.streaming.StreamingQuery
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, Dataset, Row}
 import org.zcb.spark.SparkGlobal
 import org.zcb.spark.streaming.ch01_2_套接字流_自定义数据源
 
@@ -40,7 +40,7 @@ object ch0203_foreachBatch接收器 {
         props.setProperty("password", "123456")
         val query: StreamingQuery = wordCount.writeStream
             .outputMode("complete")
-            .foreachBatch((df, batchId) => {  // 当前分区id, 当前批次id
+            .foreachBatch((df: Dataset[Row], batchId: Long) => {  // 当前分区id, 当前批次id
                 val file = Paths.get(Global.BASE_DIR, "data", "sink", "fileSink", s"$batchId").toAbsolutePath.toString
                 if (df.count() != 0) {
                     df.cache()

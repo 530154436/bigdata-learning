@@ -9,48 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bigdata-spark</artifactId>
-    <name>bigdata-spark</name>
-    <description>Spark学习</description>
+    <artifactId>base-java</artifactId>
 
     <dependencies>
-        <!-- 公共模块 -->
         <dependency>
-            <groupId>org.zcb</groupId>
-            <artifactId>base-scala</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!-- 查找spark依赖:https://mvnrepository.com/-->
-        <dependency>
-            <groupId>org.scala-lang.modules</groupId>
-            <artifactId>scala-xml_${scala.binary.version}</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-hive_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>4.3.0</version>
         </dependency>
     </dependencies>
 
     <build>
-        <!--打包所有依赖包到一个jar-->
         <!--打包所有依赖包到一个jar-->
         <plugins>
             <plugin>

@@ -10,8 +10,6 @@ object JsonUtil {
                 list.map {
                     case v: Int => JsNumber(v)
                     case v: Double => JsNumber(v)
-                    case v: Option[Double] => JsNumber(v.get)
-                    case v: Option[Int] => JsNumber(v.get)
                     case v: String => JsString(v)
                     case _ => JsNull
                 })
@@ -21,7 +19,7 @@ object JsonUtil {
     implicit val listListWrites: Writes[List[List[Any]]] = new Writes[List[List[Any]]] {
         def writes(list: List[List[Any]]): JsValue = {
             JsArray(list.map {
-                case v: List[_] => Json.toJson(v)(listWrites)
+                case v: List[Any] => Json.toJson(v)(listWrites)
                 case _ => JsNull
             })
         }
@@ -38,10 +36,8 @@ object JsonUtil {
                     key -> (value match {
                         case v: Int => JsNumber(v)
                         case v: Double => JsNumber(v)
-                        case v: Option[Double] => JsNumber(v.get)
-                        case v: Option[Int] => JsNumber(v.get)
                         case v: String => JsString(v)
-                        case v: List[List[_]] => Json.toJson(v)(listListWrites)
+                        case v: List[List[Any]] @unchecked => Json.toJson(v)(listListWrites)
                         case _ => JsNull
                     }): (String, JsValue)
             }.toSeq)

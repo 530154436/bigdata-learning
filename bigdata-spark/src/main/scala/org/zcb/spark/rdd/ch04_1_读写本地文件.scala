@@ -46,7 +46,7 @@ object ch04_1_读写本地文件 {
         val jSONObjects: RDD[Any] = lines.map(x => JsonMethods.parse(x))
         println("readFromJsonFile", lines.count())
         jSONObjects.foreach({
-            case Some(map: Map[String, Any]) => println(map)
+            case Some(map: Map[String, Any] @unchecked) => println(map)
             case None => println("Parsing failed")
             case other => println("Unknown data structure: " + other)
         })

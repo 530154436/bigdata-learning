@@ -9,22 +9,28 @@
     <packaging>pom</packaging>
     <version>1.0</version>
     <modules>
-        <module>bigdata-common</module>
+        <module>base-java</module>
+        <module>base-scala</module>
         <module>bigdata-spark</module>
         <module>bigdata-hadoop</module>
         <module>bigdata-hive</module>
+        <module>bigdata-flink</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+
+        <!-- 大数据存储框架 -->
         <hadoop.version>3.1.4</hadoop.version>
         <hive.version>3.1.2</hive.version>
         <hbase.version>2.2.3</hbase.version>
-        <kafka.version>2.4.1</kafka.version>
-        <scala.version>2.11.12</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
-        <spark.version>2.4.5</spark.version>
+
+        <!-- 大数据计算框架（离线/实时） -->
+        <scala.version>2.12.10</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <spark.version>3.0.1</spark.version>
+        <flink.version>1.13.2</flink.version>
     </properties>
 
     <dependencies>
