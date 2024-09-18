@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bigdata-spark</artifactId>
-    <name>bigdata-spark</name>
+    <artifactId>bigdata-spark-scala</artifactId>
+    <name>bigdata-spark-scala</name>
     <description>Spark学习</description>
 
     <dependencies>

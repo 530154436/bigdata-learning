@@ -2,9 +2,10 @@ package org.zcb.spark.rdd
 import org.apache.commons.io.FileUtils
 
 import java.nio.file.{Path, Paths}
-import org.json4s.jackson.JsonMethods
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.rdd.RDD
+import org.json4s.jackson.JsonMethods
+import org.json4s._
 import org.zcb.common.conf.Global
 import org.zcb.spark.SparkGlobal
 
@@ -42,14 +43,21 @@ object ch04_1_读写本地文件 {
      */
     def readFromJsonFile(sparkSession: SparkSession): Unit = {
         val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
-        val lines = sparkSession.sparkContext.textFile(file.toString)
-        val jSONObjects: RDD[Any] = lines.map(x => JsonMethods.parse(x))
+        val lines: RDD[String] = sparkSession.sparkContext.textFile(file.toString)
+
+        val jSONObjects: RDD[JValue] = lines.map(x => JsonMethods.parse(x))
+
         println("readFromJsonFile", lines.count())
-        jSONObjects.foreach({
-            case Some(map: Map[String, Any] @unchecked) => println(map)
-            case None => println("Parsing failed")
-            case other => println("Unknown data structure: " + other)
-        })
+        jSONObjects.foreach(x => println(x.toString, x.getClass)) // 打印原始 JValue
+        jSONObjects.foreach {
+            case jsonObj: JValue =>
+                // Json转任意指定类型必须指定隐式参数
+                implicit val formats: DefaultFormats.type = DefaultFormats
+                // 将 JValue 转换为 Map
+                val mapResult: Map[String, Any] = jsonObj.extract[Map[String, Any]]
+                println(mapResult)
+            case _ => println("Parsing failed")
+        }
     }
 
     def main(args: Array[String]): Unit = {

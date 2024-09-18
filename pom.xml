@@ -14,8 +14,8 @@
         <module>bigdata-hive</module>
 
         <module>base-scala</module>
-        <module>bigdata-spark</module>
-        <module>bigdata-flink</module>
+        <module>bigdata-spark-scala</module>
+        <module>bigdata-flink-scala</module>
     </modules>
 
     <properties>
