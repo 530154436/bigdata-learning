@@ -41,7 +41,7 @@ use itheima;
 ```
 ## 二、Hive DDL建表基础
 ### 2.1 原生数据类型案例
-文件[archer.txt](data/honor_of_kings/hero/archer.txt)中记录了手游《王者荣耀》射手的相关信息，其中字段之间分隔符为制表符\t,要求在Hive中建表映射成功该文件。<br>
+文件[archer.txt](../../data/hive/honor_of_kings/hero/archer.txt)中记录了手游《王者荣耀》射手的相关信息，其中字段之间分隔符为制表符\t,要求在Hive中建表映射成功该文件。<br>
 ```
 1	后羿	5986	1784	396	336	remotely	archer
 2	马可波罗	5584	200	362	344	remotely	archer
@@ -74,7 +74,7 @@ select * from t_archer;
 <img src="images/hive03_2_1_01.png" width="100%" height="100%" alt="">
 
 ### 2.2 复杂数据类型案例
-文件[hot_hero_skin_price.txt](data/honor_of_kings/hot_hero_skin_price.txt)中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
+文件[hot_hero_skin_price.txt](../../data/hive/honor_of_kings/hot_hero_skin_price.txt)中记录了手游《王者荣耀》热门英雄的相关皮肤价格信息，内容如下,要求在Hive中建表映射成功该文件。
 ```
 1,孙悟空,53,西部大镖客:288-大圣娶亲:888-全息碎片:0-至尊宝:888-地狱火:1688
 2,鲁班七号,54,木偶奇遇记:288-福禄兄弟:288-黑桃队长:60-电玩小子:2288-星空梦想:0
@@ -102,7 +102,7 @@ select * from t_hot_hero_skin_price;
 <img src="images/hive03_2_2_01.png" width="100%" height="100%" alt="">
 
 ### 2.3 默认分隔符案例
-文件[team_ace_player.txt](data/honor_of_kings/team_ace_player.txt)中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
+文件[team_ace_player.txt](../../data/hive/honor_of_kings/team_ace_player.txt)中记录了手游《王者荣耀》主要战队内最受欢迎的王牌选手信息，内容如下,要求在Hive中建表映射成功该文件。
 ```
 1成都AG超玩会一诺
 2重庆QGhappyHurt

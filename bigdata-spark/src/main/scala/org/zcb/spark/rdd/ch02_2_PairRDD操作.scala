@@ -108,7 +108,7 @@ object ch02_2_PairRDD操作 {
         }
 
         // 判断文件是否存在
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "output", "combineByKey.txt").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "output", "combineByKey.txt").toAbsolutePath
         if (file.toFile.exists()) {
             FileUtils.deleteDirectory(file.toFile)
         }

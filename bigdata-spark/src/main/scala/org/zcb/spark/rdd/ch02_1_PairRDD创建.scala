@@ -14,7 +14,7 @@ import org.zcb.spark.SparkGlobal
  */
 object ch02_1_PairRDD创建 {
     def createFromFile(sparkSession: SparkSession): Unit = {
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "wordcount", "word1.txt").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "wordcount", "word1.txt").toAbsolutePath
         val lines = sparkSession.sparkContext.textFile(file.toString)
         val pairRDD = lines.flatMap(line => line.split(" "))
             .map(word => (word, 1))

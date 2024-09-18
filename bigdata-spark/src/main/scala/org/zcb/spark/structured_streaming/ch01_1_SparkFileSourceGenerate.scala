@@ -9,7 +9,7 @@ import java.util.Date
 import scala.util.Random
 
 object ch01_1_SparkFileSourceGenerate {
-    val TEST_DATA_DIR: Path = Paths.get(Global.BASE_DIR, "data", "structuredStreaming", "fileSource")
+    val TEST_DATA_DIR: Path = Paths.get(Global.BASE_DIR, "data", "spark", "structuredStreaming", "fileSource")
     val ACTION_DEF = List("login", "logout", "purchase")
     val DISTRICT_DEF = List("fujian", "beijing", "shanghai", "guangzhou")
 

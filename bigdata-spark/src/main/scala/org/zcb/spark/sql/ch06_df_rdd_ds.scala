@@ -18,7 +18,7 @@ object ch06_df_rdd_ds {
      */
     def rdd_df(sparkSession: SparkSession): Unit = {
         // 从DataFrame到RDD的转换，需要调用DataFrame上的rdd方法。
-        val path1 = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
+        val path1 = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
         val peopleDF = sparkSession.read.json(path1.toString)
         val peopleRDD = peopleDF.rdd
         peopleRDD.foreach(println)
@@ -29,7 +29,7 @@ object ch06_df_rdd_ds {
      */
     def rdd_ds(sparkSession: SparkSession): Unit = {
         import sparkSession.implicits._
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.txt").toAbsolutePath
         val rdd = sparkSession.sparkContext
             .textFile(path.toString)
             .map(_.split(","))

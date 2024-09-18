@@ -19,7 +19,7 @@ object ch01_1_文件流 {
         ssc.sparkContext.setLogLevel("ERROR")
 
         // 监听本地目录:
-        val directory = Paths.get(Global.BASE_DIR, "data", "resources").toAbsolutePath
+        val directory = Paths.get(Global.BASE_DIR, "data", "spark", "resources").toAbsolutePath
         val lines: DStream[String]  = ssc.textFileStream(s"file:///${directory}")
 
         // 统计词频

@@ -31,7 +31,7 @@ file2.txt
 object ex01_求top值 {
     def main(args: Array[String]): Unit ={
         val topN: Int = 5
-        val directory: Path = Paths.get(Global.BASE_DIR, "data", "sparkrdd").toAbsolutePath
+        val directory: Path = Paths.get(Global.BASE_DIR, "data", "spark", "rdd").toAbsolutePath
 
         val sparkSession: SparkSession = SparkGlobal.getSparkSession(this.getClass.getName)
         val rdd = sparkSession.sparkContext.textFile(directory.toString, 2)

@@ -16,6 +16,7 @@ object DateUtils {
         val formatter = DateTimeFormatter.ofPattern(pattern)
         LocalDate.parse(dateStr, formatter)
     }
+
     def parseDateTime(dateTimeStr: String, pattern: String = "yyyy-MM-dd HH:mm:ss"): LocalDateTime = {
         val formatter = DateTimeFormatter.ofPattern(pattern)
         LocalDateTime.parse(dateTimeStr, formatter)
@@ -30,12 +31,14 @@ object DateUtils {
         val formatter = DateTimeFormatter.ofPattern(format)
         date.format(formatter)
     }
+
     def formatDateTime(dateTime: LocalDateTime, format: String = "yyyy-MM-dd HH:mm:ss"): String = {
         val formatter = DateTimeFormatter.ofPattern(format)
         dateTime.format(formatter)
     }
+
     def getDateStringByDayOfWeek(dateStr: String, pattern: String = "yyyy-MM-dd", verbose: Boolean = true): String = {
-        val date: LocalDate = parseDate(dateStr, pattern=pattern)
+        val date: LocalDate = parseDate(dateStr, pattern = pattern)
         val dayOfWeek: DayOfWeek = date.getDayOfWeek
         val expectedDate: String = dayOfWeek match {
             case DayOfWeek.MONDAY => formatDate(getDaysAgo(date, 3))
@@ -45,7 +48,7 @@ object DateUtils {
             case DayOfWeek.FRIDAY => formatDate(getDaysAgo(date, 90))
             case _ => formatDate(getDaysAgo(date, 3))
         }
-        if(verbose){
+        if (verbose) {
             System.out.println(s"当前日期: ${date},${dayOfWeek}, 倒推日期: ${expectedDate}")
         }
         expectedDate
@@ -62,21 +65,27 @@ object DateUtils {
     def getNow: LocalDate = {
         LocalDate.now()
     }
+
     def getDaysAfter(date: LocalDate, days: Long): LocalDate = {
         date.plusDays(days)
     }
+
     def getDaysAgoFromNow(days: Int): LocalDate = {
         LocalDate.now().minusDays(days)
     }
+
     def getDaysAfterCurrent(days: Long): LocalDate = {
         LocalDate.now().plusDays(days)
     }
+
     def getDaysAgo(date: LocalDate, days: Int): LocalDate = {
         date.minusDays(days)
     }
+
     def getDaysAgo(dateStr: String, days: Int): String = {
         formatDate(getDaysAgo(parseDate(dateStr), days))
     }
+
     def getDatesBetween(startDate: String, endDate: String, format: String = "yyyy-MM-dd"): List[String] = {
         val start = parseDate(startDate, format)
         val end = parseDate(endDate, format)
@@ -84,7 +93,7 @@ object DateUtils {
         var current = start
 
         while (!current.isAfter(end)) {
-            dates += formatDate(current, format=format)
+            dates += formatDate(current, format = format)
             current = current.plusDays(1)
         }
         dates.toList
@@ -99,12 +108,15 @@ object DateUtils {
     def convertToLocalDate(date: Date): LocalDate = {
         date.toInstant.atZone(ZoneId.systemDefault()).toLocalDate
     }
+
     def convertToLocalDateTime(date: Date): LocalDateTime = {
         date.toInstant.atZone(ZoneId.systemDefault()).toLocalDateTime
     }
+
     def convertToDate(localDate: LocalDate): Date = {
         Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant)
     }
+
     def convertToDate(localDateTime: LocalDateTime): Date = {
         Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant)
     }
@@ -140,7 +152,7 @@ object DateUtils {
         println(s"获取两个日期之间的所有日期: $dates")
 
         println(s"根据周一、二、三、四、五分别生成近3、7、15、30、90天前的日期")
-        for(dateStr <- Seq("2024-09-02", "2024-09-03", "2024-09-04", "2024-09-05", "2024-09-06")){
+        for (dateStr <- Seq("2024-09-02", "2024-09-03", "2024-09-04", "2024-09-05", "2024-09-06")) {
             getDateStringByDayOfWeek(dateStr)
         }
         println(s"""根据给定日期获取 n 天前的日期: 2024-09-02 ${getDaysAgo("2024-09-02", 1)}""")

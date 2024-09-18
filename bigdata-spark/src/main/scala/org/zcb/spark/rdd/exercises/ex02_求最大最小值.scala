@@ -14,7 +14,7 @@ import java.nio.file.{Path, Paths}
 object ex02_求最大最小值 {
     def main(args: Array[String]): Unit ={
         val topN: Int = 5
-        val directory: Path = Paths.get(Global.BASE_DIR, "data", "sparkrdd", "02").toAbsolutePath
+        val directory: Path = Paths.get(Global.BASE_DIR, "data", "spark", "rdd", "02").toAbsolutePath
 
         val sparkSession: SparkSession = SparkGlobal.getSparkSession(this.getClass.getName)
         val rdd = sparkSession.sparkContext.textFile(directory.toString, 2)

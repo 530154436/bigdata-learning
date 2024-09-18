@@ -38,7 +38,7 @@ class SecondarySortKey(val first: Int, val second: Int) extends Ordered[Secondar
 
 object ex04_二次排序 {
     def main(args: Array[String]): Unit ={
-        val directory: Path = Paths.get(Global.BASE_DIR, "data", "sparkrdd", "04").toAbsolutePath
+        val directory: Path = Paths.get(Global.BASE_DIR, "data", "spark", "rdd", "04").toAbsolutePath
 
         val sparkSession: SparkSession = SparkGlobal.getSparkSession(this.getClass.getName)
         val rdd = sparkSession.sparkContext.textFile(directory.toString, 2)

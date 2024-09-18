@@ -24,7 +24,7 @@ object ch0301_基本操作_直接执行sql {
             StructField("sex", StringType)
         ))
 
-        val file = Paths.get(Global.BASE_DIR, "data", "structuredStreaming").toAbsolutePath.toString
+        val file = Paths.get(Global.BASE_DIR, "data", "spark", "structuredStreaming").toAbsolutePath.toString
         val peopleDF: DataFrame = sparkSession
             .readStream
             .schema(schema)

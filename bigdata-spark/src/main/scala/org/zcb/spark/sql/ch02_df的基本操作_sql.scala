@@ -28,7 +28,7 @@ import java.nio.file.Paths
 object ch02_df的基本操作_sql {
 
     def basicOp(sparkSession: SparkSession): Unit = {
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath.toString
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath.toString
         val df = sparkSession.read.format("json").load(path)
 
         df.createOrReplaceTempView("tmp_v_people")

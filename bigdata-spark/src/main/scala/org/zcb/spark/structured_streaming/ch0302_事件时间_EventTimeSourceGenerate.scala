@@ -9,7 +9,7 @@ import java.util.Date
 import scala.util.Random
 
 object ch0302_事件时间_EventTimeSourceGenerate {
-    val TEST_DATA_DIR: Path = Paths.get(Global.BASE_DIR, "data", "structuredStreaming", "eventTime")
+    val TEST_DATA_DIR: Path = Paths.get(Global.BASE_DIR, "data", "spark", "structuredStreaming", "eventTime")
     val ACTION_DEF = List("login", "logout", "purchase")
     val DISTRICT_DEF = List("fujian", "beijing", "shanghai", "guangzhou")
 

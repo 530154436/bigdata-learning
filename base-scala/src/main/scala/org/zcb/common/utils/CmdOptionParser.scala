@@ -1,4 +1,4 @@
-package org.zcb.common.toolkitsDemo
+package org.zcb.common.utils
 
 import scopt.OptionParser
 
@@ -15,7 +15,6 @@ object CmdOptionParser {
      * 解析命令行参数
      */
     case class Config(input: String = "", output: String = "")
-
     val parser: OptionParser[Config] = new OptionParser[Config](this.getClass.getName) {
         head(this.getClass.getName)
         opt[String]('i', "input")
@@ -30,24 +29,27 @@ object CmdOptionParser {
           .text("output is an optional file property")
     }
 
-    /** *
-     * 业务流程
+    /**
+     * 正确解析配置后的的处理逻辑
+     * @param config 配置信息
      */
-    def process(config: Config): Unit = {
-        println(config)
+    private def process(config: Config): Unit = {
+        println(s"输入文件: ${config.input}")
+        println(s"输出文件: ${config.output}")
     }
 
-    /** *
-     * 主函数
+    /**
+     *
+     * 解析参数的入口方法
+     * @param args 入参
+     * @return
      */
-    def main(args: Array[String]): Unit = {
-
-        // 使用模式匹配(match)来处理解析结果:
-        // 如果解析成功，返回一个包含配置信息的 Some 对象，将其绑定到 config 变量中。
-        // 如果解析失败，返回一个 None 对象。
-        parser.parse(args, Config()) match {
-            case Some(config) => process(config)
-            case _ => throw new RuntimeException("params parse error.")
+    def parseArgs(args: Array[String]): Option[Config] = {
+        val config: Option[Config]  = parser.parse(args, Config())
+        config match {
+            case Some(config) => process(config) // 如果解析成功，调用 process 方法处理配置
+            case None => println("参数解析失败，请检查输入") // 解析失败的情况
         }
+        config
     }
 }

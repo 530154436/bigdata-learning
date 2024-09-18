@@ -27,7 +27,7 @@ object ch03_基本操作_强类型api {
             StructField("sex", StringType)
         ))
 
-        val file = Paths.get(Global.BASE_DIR, "data", "structuredStreaming").toAbsolutePath.toString
+        val file = Paths.get(Global.BASE_DIR, "data", "spark", "structuredStreaming").toAbsolutePath.toString
         val peopleDF: DataFrame = sparkSession
             .readStream
             .schema(schema)

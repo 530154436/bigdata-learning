@@ -23,12 +23,12 @@ object ch03_DStream输出到文本文件 {
             val previousCount = state.getOrElse(0)
             Some(currentCount + previousCount)
         }
-        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString)
+        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "spark", "checkpoint").toAbsolutePath.toString)
         val stateDStream: DStream[(String, Int)] = wordAndOne.updateStateByKey[Int](updateFunc(_, _))
         stateDStream.print()
 
         // 保存到文本文件(会保留每个批次的结果)
-        val directory = Paths.get(Global.BASE_DIR, "data", "sparkStreaming", "output").toAbsolutePath
+        val directory = Paths.get(Global.BASE_DIR, "data", "spark", "sparkStreaming", "output").toAbsolutePath
         stateDStream.saveAsTextFiles(s"file:///${directory}")
 
         ssc.start()

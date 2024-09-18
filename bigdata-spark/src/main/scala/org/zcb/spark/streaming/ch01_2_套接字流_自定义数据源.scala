@@ -24,7 +24,7 @@ object ch01_2_套接字流_自定义数据源 {
 
     def main(args: Array[String]): Unit ={
         val fileName = Paths
-            .get(Global.BASE_DIR, "data", "resources", "people.txt")
+            .get(Global.BASE_DIR, "data", "spark", "resources", "people.txt")
             .toAbsolutePath
             .toFile
         val millisecond = 3000

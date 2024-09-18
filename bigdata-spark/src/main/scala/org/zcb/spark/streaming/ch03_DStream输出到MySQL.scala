@@ -28,7 +28,7 @@ object ch03_DStream输出到MySQL {
             val previousCount = state.getOrElse(0)
             Some(currentCount + previousCount)
         }
-        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString)
+        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "spark", "checkpoint").toAbsolutePath.toString)
         val stateDStream: DStream[(String, Int)] = wordAndOne.updateStateByKey[Int](updateFunc(_, _))
         stateDStream.print()
 

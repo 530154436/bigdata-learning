@@ -19,8 +19,8 @@ UserID::MovieID::Rating::Timestamp
  */
 object ex05_聚合连接 {
     def main(args: Array[String]): Unit ={
-        val moviesPath: Path = Paths.get(Global.BASE_DIR, "data", "sparkrdd", "05", "movies.dat").toAbsolutePath
-        val ratingsPath: Path = Paths.get(Global.BASE_DIR, "data", "sparkrdd", "05", "ratings.dat").toAbsolutePath
+        val moviesPath: Path = Paths.get(Global.BASE_DIR, "data", "spark", "rdd", "05", "movies.dat").toAbsolutePath
+        val ratingsPath: Path = Paths.get(Global.BASE_DIR, "data", "spark", "rdd", "05", "ratings.dat").toAbsolutePath
 
         val sparkSession: SparkSession = SparkGlobal.getSparkSession(this.getClass.getName)
 

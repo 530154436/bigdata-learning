@@ -10,7 +10,7 @@ object HttpClientUtil {
         val method = new GetMethod(uri)
 
         // 设置请求头
-        if(headers!=null && headers.nonEmpty){
+        if (headers != null && headers.nonEmpty) {
             headers.get.foreach(x => method.setRequestHeader(x._1, x._2))
         }
 
@@ -20,7 +20,7 @@ object HttpClientUtil {
             val response = IOUtils.toString(responseBodyStream, "UTF-8")
             if (statusCode == HttpStatus.SC_OK) {
                 return response
-            }else{
+            } else {
                 println(s"状态码异常: $statusCode, ${response}")
             }
             null
@@ -40,7 +40,7 @@ object HttpClientUtil {
 
         // 设置请求头
         postMethod.setRequestHeader("Content-Type", "application/json")
-        if(headers!=null && headers.nonEmpty){
+        if (headers != null && headers.nonEmpty) {
             headers.get.foreach(x => postMethod.setRequestHeader(x._1, x._2))
         }
         //postMethod.getRequestHeaders.foreach(println)
@@ -51,7 +51,7 @@ object HttpClientUtil {
             if (statusCode == HttpStatus.SC_OK) {
                 val response = postMethod.getResponseBodyAsString()
                 return response
-            }else{
+            } else {
                 println(s"状态码异常: $statusCode, ${postMethod.getResponseBodyAsString}")
             }
             null

@@ -36,7 +36,7 @@ object ch02_updateStateByKey {
         }
 
         // invReduceFunc 需设置检查点目录，不然报错
-        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString)
+        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "spark", "checkpoint").toAbsolutePath.toString)
         val wordCount: DStream[(String, Int)] = wordAndOne.updateStateByKey[Int](updateFunc(_, _))
         wordCount.print()
 

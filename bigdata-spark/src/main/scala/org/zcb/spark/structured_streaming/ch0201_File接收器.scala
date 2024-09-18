@@ -38,8 +38,8 @@ object ch0201_File接收器 {
         }).toDF("原单词", "反转单词")
 
         // 启动流计算并输出结果
-        val checkpointDir = Paths.get(Global.BASE_DIR, "data", "sink", "fileCheckpoint").toAbsolutePath.toString
-        val parquetDir = Paths.get(Global.BASE_DIR, "data", "sink", "fileSink").toAbsolutePath.toString
+        val checkpointDir = Paths.get(Global.BASE_DIR, "data", "spark", "sink", "fileCheckpoint").toAbsolutePath.toString
+        val parquetDir = Paths.get(Global.BASE_DIR, "data", "spark", "sink", "fileSink").toAbsolutePath.toString
 
         val query: StreamingQuery = words
             .writeStream

@@ -18,7 +18,7 @@ import org.zcb.spark.SparkGlobal
 object ch04_1_读写本地文件 {
 
     def readFromTextFile(sparkSession: SparkSession): RDD[String] = {
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "wordcount", "word2.txt").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "wordcount", "word2.txt").toAbsolutePath
         val lines = sparkSession.sparkContext.textFile(file.toString)
         println("readFromFile", lines.count())
         lines.foreach(println)
@@ -27,7 +27,7 @@ object ch04_1_读写本地文件 {
 
     def writeToTextFile(sparkSession: SparkSession): Unit = {
         val textFile = readFromTextFile(sparkSession)
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "wordcount", "writeback.txt").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "wordcount", "writeback.txt").toAbsolutePath
         if (file.toFile.exists()) {
             FileUtils.deleteDirectory(file.toFile)
         }
@@ -41,7 +41,7 @@ object ch04_1_读写本地文件 {
      * JSON.parseFull(jsonString:String)函数，以一个JSON字符串作为输入并进行解析，如果解析成功则返回一个Some(map: Map[String, Any])，如果解析失败则返回None
      */
     def readFromJsonFile(sparkSession: SparkSession): Unit = {
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
         val lines = sparkSession.sparkContext.textFile(file.toString)
         val jSONObjects: RDD[Any] = lines.map(x => JsonMethods.parse(x))
         println("readFromJsonFile", lines.count())

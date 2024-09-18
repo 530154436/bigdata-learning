@@ -20,7 +20,7 @@ import java.nio.file.Paths
 object ch02_df的基本操作_dsl {
 
     def basicOp(sparkSession: SparkSession): Unit = {
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
 
         // 从JSON文件创建DataFrame
         val df = sparkSession.read.format("json").load(path.toString)

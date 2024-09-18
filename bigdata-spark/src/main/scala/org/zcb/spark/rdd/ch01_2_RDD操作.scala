@@ -95,7 +95,7 @@ class UsrIdPartitioner(numParts:Int) extends Partitioner{
 object ch01_2_RDD操作 {
     def map_reduce(sparkSession: SparkSession): Unit = {
         // 找出文本文件中单行文本所包含的单词数量的最大值
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "wordcount", "word1.txt").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "wordcount", "word1.txt").toAbsolutePath
         val lines = sparkSession.sparkContext.textFile(file.toString)
         val maxLength = lines.map(line => line.split(" ").length)
           .reduce((a, b) => if (a > b) a else b)
@@ -130,7 +130,7 @@ object ch01_2_RDD操作 {
         dataRP.partitions.foreach(println)
 
         // 判断文件是否存在
-        val file: Path = Paths.get(Global.BASE_DIR, "data", "output", "partition.txt").toAbsolutePath
+        val file: Path = Paths.get(Global.BASE_DIR, "data", "spark", "output", "partition.txt").toAbsolutePath
         if (file.toFile.exists()) {
             FileUtils.deleteDirectory(file.toFile)
         }

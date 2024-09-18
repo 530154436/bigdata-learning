@@ -41,7 +41,7 @@ object ch0203_foreachBatch接收器 {
         val query: StreamingQuery = wordCount.writeStream
             .outputMode("complete")
             .foreachBatch((df: Dataset[Row], batchId: Long) => {  // 当前分区id, 当前批次id
-                val file = Paths.get(Global.BASE_DIR, "data", "sink", "fileSink", s"$batchId").toAbsolutePath.toString
+                val file = Paths.get(Global.BASE_DIR, "data", "spark", "sink", "fileSink", s"$batchId").toAbsolutePath.toString
                 if (df.count() != 0) {
                     df.cache()
                     //df.write.json(s"$file")

@@ -21,27 +21,26 @@ import java.nio.file.Paths
 object ch01_df的创建和保存 {
 
     def read_save_parquet(sparkSession: SparkSession): Unit = {
-        val df = sparkSession.createDataFrame(
-            Array(("sparkRDD", 2), ("hadoop", 6), ("hadoop", 4), ("sparkRDD", 6)))
+        val df = sparkSession.createDataFrame(Array(("sparkRDD", 2), ("hadoop", 6), ("hadoop", 4), ("sparkRDD", 6)))
             .toDF("book", "amount")
-        val path = Paths.get(Global.BASE_DIR, "data", "output", "parquet")
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "output", "parquet")
 
         // 将DataFrame保存为Parquet文件
         df.write.format("parquet")
             .mode("overwrite")
             .option("compression", "snappy") // snappy压缩算法
             // .save("org.zcb.hadoop.hdfs://127.0.0.1:9000/spark/parquet")   // 存储到hdfs
-            .save(s"file://${path}") // 存储到文件系统
+            .save(s"file:///${path}") // 存储到文件系统
 
         // 读取Parquet文件
         val df_read = sparkSession.read
-            .parquet(s"file://${path}")
+            .parquet(s"file:///${path}")
         df_read.show()
     }
 
     def read_save_json(sparkSession: SparkSession): Unit = {
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
-        val otherPath = Paths.get(Global.BASE_DIR, "data", "resources", "otherPeople.json").toAbsolutePath
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
+        val otherPath = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "otherPeople.json").toAbsolutePath
 
         // 从JSON文件创建DataFrame
         val df = sparkSession.read.format("json").load(path.toString)
@@ -51,12 +50,12 @@ object ch01_df的创建和保存 {
         // 将DataFrame保存为JSON文件
         df.write.format("json")
             .mode("overwrite")
-            .save(s"file://${otherPath}")
+            .save(s"file:///${otherPath}")
     }
 
     def read_save_csv(sparkSession: SparkSession): Unit = {
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.csv").toAbsolutePath
-        val otherPath = Paths.get(Global.BASE_DIR, "data", "resources", "otherPeople.csv").toAbsolutePath
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.csv").toAbsolutePath
+        val otherPath = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "otherPeople.csv").toAbsolutePath
         val schema = "name STRING,age INT,job STRING"
 
         // 从CSV文件创建DataFrame
@@ -70,12 +69,12 @@ object ch01_df的创建和保存 {
         // 将DataFrame保存为JSON文件
         df.write.format("json")
             .mode("overwrite")
-            .save(s"file://${otherPath}")
+            .save(s"file:///${otherPath}")
     }
 
     def read_save_text(sparkSession: SparkSession): Unit = {
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "word.txt").toAbsolutePath
-        val otherPath = Paths.get(Global.BASE_DIR, "data", "resources", "otherWord").toAbsolutePath
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "word.txt").toAbsolutePath
+        val otherPath = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "otherWord").toAbsolutePath
 
         // 从文本文件创建DataFrame
         val df = sparkSession.read.format("text").load(path.toString)
@@ -86,9 +85,9 @@ object ch01_df的创建和保存 {
     }
 
     def main(args: Array[String]): Unit = {
-        // read_save_parquet(SparkGlobal.getSparkSession(this.getClass.getName))
-        // read_save_json(SparkGlobal.getSparkSession(this.getClass.getName))
-        // read_save_csv(SparkGlobal.getSparkSession(this.getClass.getName))
+         read_save_parquet(SparkGlobal.getSparkSession(this.getClass.getName))
+         read_save_json(SparkGlobal.getSparkSession(this.getClass.getName))
+         read_save_csv(SparkGlobal.getSparkSession(this.getClass.getName))
         read_save_text(SparkGlobal.getSparkSession(this.getClass.getName))
     }
 }

@@ -14,7 +14,7 @@ import scala.collection.mutable
 object qzd_智慧面板_专利资讯_df {
     def readFromCsvFile(sparkSession: SparkSession, fName: String): DataFrame = {
         val file: Path = Paths
-            .get(Global.BASE_DIR, "data", "smartPanel", fName)
+            .get(Global.BASE_DIR, "data", "spark", "smartPanel", fName)
             .toAbsolutePath
 
         // option("quote", "\"") 和 option("escape", "\"") 用于正确处理包含双引号的字段。

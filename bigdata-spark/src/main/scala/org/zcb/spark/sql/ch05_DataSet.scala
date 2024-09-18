@@ -20,7 +20,7 @@ object ch05_DataSet {
         val ds = sparkSession.createDataset(1 to 5)
         ds.show()
 
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.txt").toAbsolutePath
         val ds1 = sparkSession.createDataset(sparkSession.sparkContext.textFile(path.toString))
         ds1.show()
         // +-----------+
@@ -37,7 +37,7 @@ object ch05_DataSet {
         ds3.show()
 
         // 通过DataFrame转化生成DataSet
-        val path1 = Paths.get(Global.BASE_DIR, "data", "resources", "people.json").toAbsolutePath
+        val path1 = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
         val peopleDF = sparkSession.read.json(path1.toString)
         val ds4 = peopleDF.as[Person]
         ds4.show()

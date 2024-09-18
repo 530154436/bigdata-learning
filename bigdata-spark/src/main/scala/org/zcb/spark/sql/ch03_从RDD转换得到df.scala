@@ -19,7 +19,7 @@ object ch03_从RDD转换得到df {
         import sparkSession.implicits._
 
         // 利用反射机制推断RDD模式
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.txt").toAbsolutePath.toString
         val df = sparkSession.sparkContext.textFile(path)
             .map(_.split(","))
             .map(attributes => Person(attributes(0), attributes(1).trim.toLong))
@@ -37,7 +37,7 @@ object ch03_从RDD转换得到df {
         val schema = StructType(fields)
 
         // 每个Row对象都是rowRDD中的一行
-        val path = Paths.get(Global.BASE_DIR, "data", "resources", "people.txt").toAbsolutePath.toString
+        val path = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.txt").toAbsolutePath.toString
         val peopleRDD = sparkSession.sparkContext.textFile(path)
         val rowRDD = peopleRDD.map(_.split(","))
             .map(attributes => Row(attributes(0), attributes(1).trim.toLong))

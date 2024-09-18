@@ -41,7 +41,7 @@ object ch02_window {
         //    .reduceByKeyAndWindow(reduceFunc, windowDuration=Seconds(15), slideDuration=Seconds(10))
 
         // invReduceFunc 需设置检查点目录，不然报错
-        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "checkpoint").toAbsolutePath.toString)
+        ssc.checkpoint(Paths.get(Global.BASE_DIR, "data", "spark", "checkpoint").toAbsolutePath.toString)
         val wordCount: DStream[(String, Int)] = wordAndOne
             .reduceByKeyAndWindow(reduceFunc, (x: Int, y: Int) => x - y, Seconds(15), Seconds(10))
         wordCount.print()
