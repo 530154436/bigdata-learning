@@ -2,6 +2,7 @@ package org.zcb.spark.sql
 
 import org.zcb.common.conf.Global
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.col
 import org.zcb.spark.SparkGlobal
 
 import java.nio.file.Paths
@@ -39,7 +40,9 @@ object ch05_DataSet {
         // 通过DataFrame转化生成DataSet
         val path1 = Paths.get(Global.BASE_DIR, "data", "spark", "resources", "people.json").toAbsolutePath
         val peopleDF = sparkSession.read.json(path1.toString)
-        val ds4 = peopleDF.as[Person]
+        val ds4 = peopleDF
+            .withColumn("age", col("age").cast("int"))
+            .as[Person]
         ds4.show()
     }
 
