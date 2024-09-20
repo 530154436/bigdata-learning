@@ -65,7 +65,7 @@
     <name>yarn.scheduler.maximum-allocation-mb</name>
     <value>8192</value>
   </property>
-  <!-- 是否对容器强制执行虚拟内存限制 -->
+  <!-- 是否对容器强制执行虚拟内存限制，如果任务超出分配值，则直接将其杀掉，默认是true -->
   <property>
     <name>yarn.nodemanager.vmem-check-enabled</name>
     <value>false</value>
