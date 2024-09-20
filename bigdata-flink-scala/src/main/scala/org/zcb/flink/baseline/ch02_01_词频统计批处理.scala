@@ -10,7 +10,7 @@ import java.nio.file.Paths
  * 批处理-单词频次统计
  * 基本思路是：先逐行读入文件数据，然后将每行文字都拆分成单词，接着按照单词分组，统计每组数据的个数，就是对应单词的频次。
  */
-object ch02_01_BatchWordCount {
+object ch02_01_词频统计批处理 {
     val file: String = Paths.get(Global.BASE_DIR, "data", "flink", "input", "words.txt").toAbsolutePath.toString
 
     def main(args: Array[String]): Unit = {

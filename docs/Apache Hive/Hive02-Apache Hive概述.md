@@ -6,7 +6,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hive系统架构">2.1 Hive系统架构</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#22-相关名词">2.2 相关名词</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-元数据配置方式">2.3 元数据配置方式</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-hive参数配置">2.4 Hive参数配置</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-Hive组件参数配置">2.4 Hive组件参数配置</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#241-第一代客户端hive-clihive-client">2.4.1 第一代客户端（Hive CLI，Hive Client）</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#242-第二代客户端hive-beeline-client">2.4.2 第二代客户端（Hive Beeline Client）</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#243-hiveserverhiveserver2">2.4.3 HiveServer、HiveServer2</a><br/>
@@ -133,13 +133,13 @@ Metastore服务在独立的JVM中运行，不与HiveServer进程共享，元数�
 提供更好的可管理性和安全性，需配置hive.metastore.uris参数并手动启动Metastore服务。<br>
 <img src="images/hive02_metastore远程模式.png" width="40%" height="40%" alt="">
 
-### 2.4 Hive参数配置
+### 2.4 Hive组件参数配置
 #### 2.4.1 第一代客户端（Hive CLI，Hive Client）
 `$HIVE_HOME/bin/hive`是一个shellUtil,通常称之为hive的`第一代客户端`或者旧客户端。至多只能存在一个hive shell来操作hive，启动第二个会被阻塞，不支持并发操作。它的主要功能有两个：
 + 用于以`交互式`或`批处理模式`运行Hive查询，并且能够访问的是Hive metastore服务，而不是hiveserver2服务。
 + 用于hive相关服务的启动，比如metastore服务。<br>
 
-在远程模式下，必须首先启动Hive metastore服务才可以使用hive。因为`metastore`服务和`hive server`是两个单独的进程了。
+在远程模式下，必须首先启动Hive metastore服务才可以使用hive。因为`metastore`服务和`hive server`是两个单独的进程。<br>
 启动`metastore`服务后只有1个`RunJar进程`：
 + `RunJar进程的作用`<br>
   RunJar进程是Hive启动过程中的一个关键组件。它负责加载Hive的所有依赖项，并启动Hive Server服务。<br>
