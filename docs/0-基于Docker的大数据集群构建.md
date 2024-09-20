@@ -189,6 +189,10 @@ Web UI for HiveServer2：http://127.0.0.1:10002/<br>
 
 #### 1.5 Flink构建与部署
 
+Hadoop is not in the classpath/dependencies
+https://www.cnblogs.com/lshan/p/16469294.html
+https://blog.csdn.net/weixin_44378305/article/details/120827909
+
 
 ### 二、遇到的问题
 

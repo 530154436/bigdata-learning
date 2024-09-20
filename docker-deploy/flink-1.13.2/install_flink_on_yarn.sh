@@ -48,13 +48,14 @@ function configure_env(){
 	fi
 
 	# 在/etc/profile中追加（<<）环境变量
+	HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`
 	cat >> /etc/profile << EOF
 # Flink 1.13.2
 export FLINK_HOME=$INSTALL_DIR
 export PATH=\$FLINK_HOME/bin:\$PATH
 
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`
+export HADOOP_CLASSPATH=$HADOOP_CLASSPATH
 
 EOF
 
