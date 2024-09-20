@@ -193,6 +193,9 @@ Hadoop is not in the classpath/dependencies
 https://www.cnblogs.com/lshan/p/16469294.html
 https://blog.csdn.net/weixin_44378305/article/details/120827909
 
+java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs
+https://nightlies.apache.org/flink/flink-docs-release-1.13/zh/docs/deployment/filesystems/common/
+
 
 ### 二、遇到的问题
 

@@ -2,6 +2,9 @@
 
 FLINK_HOME=/usr/local/flink-1.13.2
 
+# 加载 /etc/profile 环境变量
+source /etc/profile
+
 # 跳过 SSH 主机验证，避免卡在主机验证阶段
 export FLINK_SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 

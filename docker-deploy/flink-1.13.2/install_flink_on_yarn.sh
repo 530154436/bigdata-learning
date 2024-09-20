@@ -88,8 +88,9 @@ parallelism.default: 1
 web.submit.enable: true
 
 # HistoryServer
-jobmanager.archive.fs.dir: hdfs://flink/completed-jobs/
-historyserver.archive.fs.dir: hdfs://flink/completed-jobs/
+fs.default-scheme: hdfs://hadoop101:9000/
+jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/jobmanager/
+historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/historyserver/
 historyserver.web.address: flink101
 historyserver.web.port: 8082
 
