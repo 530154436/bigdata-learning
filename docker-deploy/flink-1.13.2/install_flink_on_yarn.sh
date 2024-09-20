@@ -53,6 +53,9 @@ function configure_env(){
 export FLINK_HOME=$INSTALL_DIR
 export PATH=\$FLINK_HOME/bin:\$PATH
 
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`
+
 EOF
 
 	# 使环境变量生效
@@ -80,8 +83,6 @@ taskmanager.memory.process.size: 1728m
 taskmanager.numberOfTaskSlots: 8
 parallelism.default: 1
 
-env.hadoop.conf.dir: $HADOOP_HOME/etc/hadoop
-fs.hdfs.hadoopconf: $HADOOP_HOME/etc/hadoop
 # 是否启动web提交
 web.submit.enable: true
 
