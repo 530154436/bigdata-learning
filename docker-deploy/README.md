@@ -4,6 +4,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-hadoop构建和部署">1.2 Hadoop构建和部署</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#13-mysql构建与部署">1.3 MySQL构建与部署</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#14-hive构建与部署远程模式">1.4 Hive构建与部署(远程模式)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#15-flink构建与部署flink-on-yarn">1.5 Flink构建与部署（Flink on yarn）</a><br/>
 <a href="#二遇到的问题">二、遇到的问题</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-hadoop">2.1 Hadoop</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1ssh-connect-to-host-hadoop101-port-22-connection-refused">1）ssh: connect to host hadoop101 port 22: Connection refused</a><br/>
@@ -12,11 +13,15 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#23hive">2.3、Hive</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1nosuchmethoderror-xxxpreconditionscheckargument">1）NoSuchMethodError: xxx.Preconditions.checkArgument</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2main-warn-jdbchiveconnection-failed-to-connect-to-hive10000">2）[main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3main-javanetsocketexception-connection-refused">3）[main]: java.net.SocketException: Connection refused</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4main-javanetsocketexception-connection-resetrefused待定">4）[main]: java.net.SocketException: Connection reset/refused(待定)</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24flink">2.4、Flink</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1hadoop-is-not-in-the-classpathdependencies">1）Hadoop is not in the classpath/dependencies</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2javaioioexception-cannot-instantiate-file-system-for-uri-hdfsflinkcompleted-jobs">2）java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#2x-zookeeper">2.x Zookeeper</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1bind-for-00002181-failed-port-is-already-allocated">1）Bind for 0.0.0.0:2181 failed: port is already allocated</a><br/>
 <a href="#三参考引用">三、参考引用</a><br/>
 </nav>
-
 
 ### 一、基于Docker搭建大数据集群
 查看系统内核版本（Debian 11）：cat /proc/version
