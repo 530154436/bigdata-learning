@@ -33,30 +33,32 @@ Hadoop大数据平台安装包：各组件版本信息参考 [Cloudera CDP7.1.4]
 | MySQL  | 5.6.37  | [mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz](https://dev.mysql.com/downloads/mysql/5.6.html)<br>[mysql-connector-java-5.1.43-bin.jar](https://downloads.mysql.com/archives/c-j/) | /usr/local/mysql-5.6.37 |
 | Hadoop | 3.1.4   | [hadoop-3.1.4.tar.gz](https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz)                                                                            | /usr/local/hadoop-3.1.4 |
 | Hive   | 3.1.2   | [apache-hive-3.1.2-bin.tar.gz](https://archive.apache.org/dist/hive/)                                                                                                            | /usr/local/hive-3.1.2   |
+| Flink  | 3.1.2   | [flink-1.13.2-bin-scala_2.12.tgz](https://archive.apache.org/dist/flink/flink-1.13.2/flink-1.13.2-bin-scala_2.12.tgz)                                                            | /usr/local/flink-1.13.2 |
 
 `运行的服务列表`：
 
-| 容器名称      | 对应镜像                                     | 进程                                            |
-|:----------|:-----------------------------------------|:----------------------------------------------|
-| Hadoop101 | 15521147129/bigdata:hadoop-3.1.4         | NameNode、DataNode、ResourceManager、NodeManager |
-| Hadoop102 | 15521147129/bigdata:hadoop-3.1.4         | DataNode、NodeManager                          |
-| Hadoop103 | 15521147129/bigdata:hadoop-3.1.4         | SecondaryNameNode、DataNode                    |
-| mysql     | 15521147129/bigdata:mysql-5.6.37         | mysqld、mysqld_safe                            |
-| hive      | 15521147129/bigdata:hive-3.1.2           | RunJar                                        |
+| 容器名称      | 对应镜像                             | 进程                                            |
+|:----------|:---------------------------------|:----------------------------------------------|
+| Hadoop101 | 15521147129/bigdata:hadoop-3.1.4 | NameNode、DataNode、ResourceManager、NodeManager |
+| Hadoop102 | 15521147129/bigdata:hadoop-3.1.4 | DataNode、NodeManager                          |
+| Hadoop103 | 15521147129/bigdata:hadoop-3.1.4 | SecondaryNameNode、DataNode                    |
+| mysql     | 15521147129/bigdata:mysql-5.6.37 | mysqld、mysqld_safe                            |
+| hive      | 15521147129/bigdata:hive-3.1.2   | RunJar(Metastore)、RunJar(HiveServer2)         |
+| flink101  | 15521147129/bigdata:flink-1.13.2 | JobManager、TaskManager                        |
+| flink102  | 15521147129/bigdata:flink-1.13.2 | TaskManager                                   |
 
 
 `UI 列表`：
-Namenode: http://localhost:9870/dfshealth.html#tab-overview
-Datanode: http://localhost:9864/
-ResourceManager: http://localhost:8088/cluster
-NodeManager: http://localhost:8042/node
-HistoryServer: http://localhost:8188/applicationhistory
-HiveServer2: http://localhost:10002/
-Spark Master: http://localhost:8080/
-Spark Worker: http://localhost:8081/
-Spark Job WebUI: http://localhost:4040/ (当 Spark 任务在 spark-master 运行时才可访问)
-Presto WebUI: http://localhost:8090/
-Spark History Server：http://localhost:18080/
+
+| 组件     | 服务                   | 链接                         | 备注                                                                        |
+|:-------|:---------------------|:---------------------------|:--------------------------------------------------------------------------|
+| Hadoop | HDFS-Namenode        | http://localhost:9870/     | <img src="images/docker/hadoop_hdfs.png" width="20%" height="20%" alt=""> |
+| Hadoop | HDFS-Datanode        | http://localhost:9864/     |                                                                           |
+| Hadoop | Yarn-ResourceManager | http://localhost:8088/     | All Applications                                                          |
+| Hadoop | Yarn-NodeManager     | http://localhost:8042/node |                                                                           |
+| Hadoop | mapred-historyserver | http://localhost:19888/    |                                                                           |
+| Hive   | HiveServer2          | http://localhost:10002/    |                                                                           |
+
 
 #### 1.1 基础镜像构建
 Debian 11 (代号为 "Bullseye") 是 Debian 项目的最新稳定版本，发布于 2021 年。它继承了 Debian 一贯的稳定性和安全性，同时引入了一系列的新特性和软件包更新。Debian 11 提供了一个强大的平台，适合服务器、桌面和嵌入式系统等多种应用场景。
@@ -123,8 +125,9 @@ web管理界面：
 `Yarn界面`：http://localhost:8088/<br>
 <img src="images/docker/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
 
-`日志服务`：http://localhost:19888/<br>
+`Mapred日志服务`：http://localhost:19888/<br>
 <img src="images/docker/hadoop_job_history.png" width="80%" height="80%" alt=""><br>
+
 
 #### 1.3 MySQL构建与部署
 MySQL服务器启动后，会在内存中常驻`mysqld_safe`和`mysqld` 2个进程：
@@ -189,6 +192,8 @@ Web UI for HiveServer2：http://127.0.0.1:10002/<br>
 
 #### 1.5 Flink构建与部署
 
+由于`Hive`依赖`Hadoop`，因此 需要继承`Hadoop`的镜像
+
 Hadoop is not in the classpath/dependencies
 https://www.cnblogs.com/lshan/p/16469294.html
 https://blog.csdn.net/weixin_44378305/article/details/120827909
@@ -196,6 +201,13 @@ https://blog.csdn.net/weixin_44378305/article/details/120827909
 java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs
 https://nightlies.apache.org/flink/flink-docs-release-1.13/zh/docs/deployment/filesystems/common/
 
+
+
+hadoop@flink101:/tmp/flink-web-history-27e1a0c7-9a0f-4289-ba91-52a117029733$ jps
+1217 Jps
+777 TaskManagerRunner
+490 StandaloneSessionClusterEntrypoint
+1003 HistoryServer
 
 ### 二、遇到的问题
 
