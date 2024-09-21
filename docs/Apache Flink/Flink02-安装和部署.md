@@ -49,7 +49,7 @@ Yarn 模式是指客户端把 Flink 应用提交给 Yarn 的 ResourceManager, Ya
 ### 1.2.3 应用模式 Application Mode
 应用模式 (Application Mode) 是指为`每一个提交的应用单独启动一个 JobManager，也就是创建一个集群`。这个 JobManager 只为执行这一个应用而存在，执行结束之后 JobManager 也就关闭了。
 
-<img src="images/flink02/deploy_application_mode.png" width="35%" height="35%" alt=""><br>
+<img src="images/flink02/deploy_app_mode.png" width="35%" height="35%" alt=""><br>
 
 应用模式与单作业模式，都是提交作业之后才创建集群；单作业模式是通过`客户端`来提交的，客户端解析出的每个作业都对应一个集群；而在应用模式下，是直接由`JobManager`执行应用程序的，并且即使应用包含了多个作业，也只创建一个集群。
 
