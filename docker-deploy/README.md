@@ -25,7 +25,9 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 (gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, GNU ld (GNU Binutils) 2.42) 
 1 SMP Thu Jun 13 14:13:01 UTC 2024
 ```
-Hadoop大数据平台安装包：各组件版本信息参考 [Cloudera CDP7.1.4](https://docs.cloudera.com/cdp-private-cloud-base/7.1.4/runtime-release-notes/topics/rt-pvc-runtime-component-versions.html)
+
+`各组件版本信息`:<br>
+> 参考 [Cloudera CDP7.1.4](https://docs.cloudera.com/cdp-private-cloud-base/7.1.4/runtime-release-notes/topics/rt-pvc-runtime-component-versions.html)
 
 | 名称     | 版本      | 软件包名及下载地址                                                                                                                                                                        | 安装目录                    |
 |--------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
@@ -35,7 +37,7 @@ Hadoop大数据平台安装包：各组件版本信息参考 [Cloudera CDP7.1.4]
 | Hive   | 3.1.2   | [apache-hive-3.1.2-bin.tar.gz](https://archive.apache.org/dist/hive/)                                                                                                            | /usr/local/hive-3.1.2   |
 | Flink  | 3.1.2   | [flink-1.13.2-bin-scala_2.12.tgz](https://archive.apache.org/dist/flink/flink-1.13.2/flink-1.13.2-bin-scala_2.12.tgz)                                                            | /usr/local/flink-1.13.2 |
 
-`运行的服务列表`：
+`运行的服务列表`：<br>
 
 | 容器名称      | 对应镜像                             | 进程                                            |
 |:----------|:---------------------------------|:----------------------------------------------|
@@ -48,16 +50,18 @@ Hadoop大数据平台安装包：各组件版本信息参考 [Cloudera CDP7.1.4]
 | flink102  | 15521147129/bigdata:flink-1.13.2 | TaskManager                                   |
 
 
-`URL 列表`：
+`常用WebUI列表`：<br>
 
-| 组件     | 服务                   | 链接                         | 备注 | 页面示例                                                                                      |
-|:-------|:---------------------|:---------------------------|:---|:------------------------------------------------------------------------------------------|
-| Hadoop | HDFS-Namenode        | http://localhost:9870/     |    | <img src="images/docker/hadoop_hdfs_nn_nn.png" width="30%" height="30%" alt="">           |
-| Hadoop | HDFS-Datanode        | http://localhost:9864/     |    | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
-| Hadoop | Yarn-ResourceManager | http://localhost:8088/     |    | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
-| Hadoop | Yarn-NodeManager     | http://localhost:8042/node |    | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
-| Hadoop | mapred-historyserver | http://localhost:19888/    |    | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
-| Hive   | HiveServer2          | http://localhost:10002/    |    | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
+| 组件     | 服务                   | 链接                         | 备注      | 页面示例                                                                                      |
+|:-------|:---------------------|:---------------------------|:--------|:------------------------------------------------------------------------------------------|
+| Hadoop | HDFS-Namenode        | http://localhost:9870/     |         | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
+| Hadoop | HDFS-Datanode        | http://localhost:9864/     |         | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
+| Hadoop | Yarn-ResourceManager | http://localhost:8088/     |         | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
+| Hadoop | Yarn-NodeManager     | http://localhost:8042/node |         | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
+| Hadoop | mapred-historyserver | http://localhost:19888/    |         | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
+| Hive   | HiveServer2          | http://localhost:10002/    |         | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
+| Flink  | JobManager           | http://localhost:8081/     |         | <img src="images/docker/flink_job_manager.png" width="30%" height="30%" alt="">           |
+| Flink  | HistoryServer        | http://localhost:8082/     | 有报错，待解决 | <img src="images/docker/flink_historyserver.png" width="30%" height="30%" alt="">         |
 
 
 #### 1.1 基础镜像构建
@@ -81,13 +85,13 @@ docker inspect <network_id>
 #### 1.2 Hadoop构建和部署
 Hadoop各节点说明：
 
-| 节点类型                | 服务                                        | 角色                              |
-|:----------------------|:--------------------------------------------|:---------------------------------|
-| **NameNode**          | HDFS NameNode                               | 管理 HDFS 元数据                   |
-| **Secondary NameNode**| HDFS Secondary NameNode                     | 辅助 NameNode 合并元数据            |
-| **DataNode**          | HDFS DataNode<br>YARN NodeManager           | 存储数据块并执行数据处理任务           |
-| **ResourceManager**   | YARN ResourceManager                        | 管理集群资源和任务调度               |
-| **NodeManager**       | YARN NodeManager                            | 管理节点资源并运行任务               |
+| 节点类型                   | 服务                                | 角色                |
+|:-----------------------|:----------------------------------|:------------------|
+| **NameNode**           | HDFS NameNode                     | 管理 HDFS 元数据       |
+| **Secondary NameNode** | HDFS Secondary NameNode           | 辅助 NameNode 合并元数据 |
+| **DataNode**           | HDFS DataNode<br>YARN NodeManager | 存储数据块并执行数据处理任务    |
+| **ResourceManager**    | YARN ResourceManager              | 管理集群资源和任务调度       |
+| **NodeManager**        | YARN NodeManager                  | 管理节点资源并运行任务       |
 
 构建镜像：
 ```shell
@@ -190,24 +194,37 @@ netstat -anop|grep 10002
 Web UI for HiveServer2：http://127.0.0.1:10002/<br>
 <img src="images/docker/hivesever2_webui.png" width="80%" height="80%" alt=""><br>
 
-#### 1.5 Flink构建与部署
+#### 1.5 Flink构建与部署（Flink on yarn）
+Flink可以基于Yarn来运行任务，Yarn作为资源提供方，可以根据Flink任务资源需求动态的启动TaskManager来提供资源。Flink基于Yarn提交任务通常叫做`Flink On Yarn`，Yarn资源调度框架运行需要有Hadoop集群，Hadoop版本最低是2.8.5。因此 需要继承`Hadoop 3.1.4`的镜像。
 
-由于`Hive`依赖`Hadoop`，因此 需要继承`Hadoop`的镜像
+构建镜像：
+```shell
+docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:flink-1.13.2 -f flink-1.13.2/Dockerfile .
+```
 
-Hadoop is not in the classpath/dependencies
-https://www.cnblogs.com/lshan/p/16469294.html
-https://blog.csdn.net/weixin_44378305/article/details/120827909
+启动服务：
+```shell
+docker compose -f flink-1.13.2/docker-compose.yml up -d
+```
 
-java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs
-https://nightlies.apache.org/flink/flink-docs-release-1.13/zh/docs/deployment/filesystems/common/
-
-
-
-hadoop@flink101:/tmp/flink-web-history-27e1a0c7-9a0f-4289-ba91-52a117029733$ jps
+查看进程：
+```shell
+hadoop@flink101: $JAVA_HOME/bin/jps
 1217 Jps
 777 TaskManagerRunner
 490 StandaloneSessionClusterEntrypoint
 1003 HistoryServer
+
+hadoop@flink102:~$ $JAVA_HOME/bin/jps
+391 Jps
+282 TaskManagerRunner
+```
+
+Web UI for Flink：http://localhost:8081/#/overview<br>
+<img src="images/docker/flink_job_manager.png" width="80%" height="80%" alt=""><br>
+
+Web UI for Flink HistoryServer：http://localhost:8082/#/overview<br>
+<img src="images/docker/flink_historyserver.png" width="80%" height="80%" alt=""><br>
 
 ### 二、遇到的问题
 
@@ -339,6 +356,35 @@ Connection to 172.18.0.3 9000 port [tcp/*] succeeded!
 ```
 ~~TODO: 卡了好几天，实在搞不定...先放着，初步怀疑是docker的环境配置问题~~在Windows上很正常，应该是Macos M2的问题。
 
+#### 2.4、Flink
+##### 1）Hadoop is not in the classpath/dependencies
+```
+Caused by: org.apache.flink.core.fs.UnsupportedFileSystemSchemeException:
+Could not find a file system implementation for scheme 'hdfs'. 
+The scheme is not directly supported by Flink and no Hadoop file system to support this scheme could be loaded. 
+```
+原因： 在 Flink 1.11.0 版本之后,增加了很多重要新特性,其中就包括增加了对 Hadoop3.0.0 以及更高版本 Hadoop 的支持,不再提供“flink-shaded-hadoop-*”
+jar 包,而是通过配置环境变量完成与 YARN 集群的对接。　在将 Flink 任务部署至 YARN 集群之前,需要确认集群是否安装有 Hadoop,保证 Hadoop
+版本至少在 2.2 以上,并且集群中安装有 HDFS 服务。<br>
+
+解决方案：配置环境变量,增加环境变量配置如下:
+```
+sudo vim /etc/profile
+HADOOP_HOME=/usr/local/hadoop-3.1.4
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+export HADOOP_CLASSPATH=`hadoop classpath`  
+```
+其中，`hadoop classpath`是一句shell命令，用于获取配置的Hadoop类路径
+
+##### 2）java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs
+原因：hdfs路径配置不正确。<br>
+解决方案：修改 `conf/flink-conf.yaml`配置信息
+```
+fs.default-scheme: hdfs://hadoop101:9000/
+jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/jobmanager/
+historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/historyserver/
+```
 
 #### 2.x Zookeeper
 ##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated
@@ -353,3 +399,6 @@ Connection to 172.18.0.3 9000 port [tcp/*] succeeded!
 [4] [hive启动后只有一个runjar进程](https://blog.51cto.com/u_16213437/7337003)<br>
 [5] [知识分享 | mysql服务器启动后，为啥有mysqld_safe和mysqld 2个进程？](https://blog.csdn.net/db_murphy/article/details/120093120)<br>
 [6] [HIVE学习之路(三):HIVESERVER2的启动与使用](https://www.freesion.com/article/5239885737/)<br>
+[7] [剑指大数据——flink学习精要（scala版）](https://weread.qq.com/web/reader/c3f32e90813ab8449g01292dkc9f326d018c9f0f895fb5e4)<br>
+[8] [flink1.13+ 集成hadoop　遇到问题及解决方法](https://www.cnblogs.com/lshan/p/16469294.html)<br>
+[9] [Apache Flink 通用配置 ](https://nightlies.apache.org/flink/flink-docs-release-1.13/zh/docs/deployment/filesystems/common/)<br>
