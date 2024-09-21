@@ -40,7 +40,7 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 | MySQL  | 5.6.37  | [mysql-5.6.37-linux-glibc2.12-x86_64.tar.gz](https://dev.mysql.com/downloads/mysql/5.6.html)<br>[mysql-connector-java-5.1.43-bin.jar](https://downloads.mysql.com/archives/c-j/) | /usr/local/mysql-5.6.37 |
 | Hadoop | 3.1.4   | [hadoop-3.1.4.tar.gz](https://archive.apache.org/dist/hadoop/common/hadoop-3.1.4/hadoop-3.1.4.tar.gz)                                                                            | /usr/local/hadoop-3.1.4 |
 | Hive   | 3.1.2   | [apache-hive-3.1.2-bin.tar.gz](https://archive.apache.org/dist/hive/)                                                                                                            | /usr/local/hive-3.1.2   |
-| Flink  | 3.1.2   | [flink-1.13.2-bin-scala_2.12.tgz](https://archive.apache.org/dist/flink/flink-1.13.2/flink-1.13.2-bin-scala_2.12.tgz)                                                            | /usr/local/flink-1.13.2 |
+| Flink  | 1.13.2  | [flink-1.13.2-bin-scala_2.12.tgz](https://archive.apache.org/dist/flink/flink-1.13.2/flink-1.13.2-bin-scala_2.12.tgz)                                                            | /usr/local/flink-1.13.2 |
 
 `运行的服务列表`：<br>
 
@@ -58,7 +58,7 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 `常用WebUI列表`：<br>
 
 | 组件     | 服务                   | 链接                         | 备注      | 页面示例                                                                                      |
-|:-------|:---------------------------|:---------------------------|:--------------|:-------------------------------------|
+|:-------|:---------------------|:---------------------------|:--------|:------------------------------------------------------------------------------------------|
 | Hadoop | HDFS-Namenode        | http://localhost:9870/     |         | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
 | Hadoop | HDFS-Datanode        | http://localhost:9864/     |         | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
 | Hadoop | Yarn-ResourceManager | http://localhost:8088/     |         | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
