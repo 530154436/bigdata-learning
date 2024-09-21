@@ -48,16 +48,16 @@ Hadoop大数据平台安装包：各组件版本信息参考 [Cloudera CDP7.1.4]
 | flink102  | 15521147129/bigdata:flink-1.13.2 | TaskManager                                   |
 
 
-`UI 列表`：
+`URL 列表`：
 
-| 组件     | 服务                   | 链接                         | 备注                                                                        |
-|:-------|:---------------------|:---------------------------|:--------------------------------------------------------------------------|
-| Hadoop | HDFS-Namenode        | http://localhost:9870/     | <img src="images/docker/hadoop_hdfs.png" width="20%" height="20%" alt=""> |
-| Hadoop | HDFS-Datanode        | http://localhost:9864/     |                                                                           |
-| Hadoop | Yarn-ResourceManager | http://localhost:8088/     | All Applications                                                          |
-| Hadoop | Yarn-NodeManager     | http://localhost:8042/node |                                                                           |
-| Hadoop | mapred-historyserver | http://localhost:19888/    |                                                                           |
-| Hive   | HiveServer2          | http://localhost:10002/    |                                                                           |
+| 组件     | 服务                   | 链接                         | 备注 | 页面示例                                                                                      |
+|:-------|:---------------------|:---------------------------|:---|:------------------------------------------------------------------------------------------|
+| Hadoop | HDFS-Namenode        | http://localhost:9870/     |    | <img src="images/docker/hadoop_hdfs_nn_nn.png" width="30%" height="30%" alt="">           |
+| Hadoop | HDFS-Datanode        | http://localhost:9864/     |    | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
+| Hadoop | Yarn-ResourceManager | http://localhost:8088/     |    | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
+| Hadoop | Yarn-NodeManager     | http://localhost:8042/node |    | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
+| Hadoop | mapred-historyserver | http://localhost:19888/    |    | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
+| Hive   | HiveServer2          | http://localhost:10002/    |    | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
 
 
 #### 1.1 基础镜像构建
@@ -120,13 +120,13 @@ $HADOOP_HOME/bin/hdfs dfsadmin -report
 web管理界面：
 
 `HDFS界面`：http://localhost:9870/<br>
-<img src="images/docker/hadoop_hdfs.png" width="80%" height="80%" alt=""><br>
+<img src="images/docker/hadoop_hdfs_nn.png" width="80%" height="80%" alt=""><br>
 
 `Yarn界面`：http://localhost:8088/<br>
-<img src="images/docker/hadoop_yarn.png" width="80%" height="80%" alt=""><br>
+<img src="images/docker/hadoop_yarn_rm.png" width="80%" height="80%" alt=""><br>
 
 `Mapred日志服务`：http://localhost:19888/<br>
-<img src="images/docker/hadoop_job_history.png" width="80%" height="80%" alt=""><br>
+<img src="images/docker/hadoop_mapred_historyserver.png" width="80%" height="80%" alt=""><br>
 
 
 #### 1.3 MySQL构建与部署
