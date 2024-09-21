@@ -58,7 +58,7 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 `常用WebUI列表`：<br>
 
 | 组件     | 服务                   | 链接                         | 备注      | 页面示例                                                                                      |
-|:-------|:---------------------|:---------------------------|:--------|:------------------------------------------------------------------------------------------|
+|:-------|:---------------------------|:---------------------------|:--------------|:-------------------------------------|
 | Hadoop | HDFS-Namenode        | http://localhost:9870/     |         | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
 | Hadoop | HDFS-Datanode        | http://localhost:9864/     |         | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
 | Hadoop | Yarn-ResourceManager | http://localhost:8088/     |         | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
