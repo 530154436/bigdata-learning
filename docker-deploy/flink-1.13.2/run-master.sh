@@ -10,8 +10,10 @@ export FLINK_SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nu
 
 echo "[INFO] Flink JobManager 启动中..."
 
-$HADOOP_HOME/bin/hdfs dfs -mkdir -p /flink/historyserver/
-$HADOOP_HOME/bin/hdfs dfs -mkdir -p /flink/jobmanager/
+$HADOOP_HOME/bin/hdfs dfs -mkdir -p /flink/completed-jobs
+$HADOOP_HOME/bin/hdfs dfs -mkdir -p /flink/checkpoints
+$HADOOP_HOME/bin/hdfs dfs -mkdir -p /flink/savepoints
+$HADOOP_HOME/bin/hdfs dfs -mkdir -p /flink/tmp
 
 # 配置主机名-ip映射关系
 bash -c /dockerentry/run-getent-hosts.sh

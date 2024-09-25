@@ -82,24 +82,24 @@ yarn_web=hadoop102:8888
 # 解压缩
 # ---------------------------------------------------------------------------
 function decompress(){
-	if [ -e ${INSTALL_DIR} ]; then
-		echo "安装目录(${INSTALL_DIR})已存在."
-		# rm -r ${INSTALL_DIR}
-		return
-	fi
+  if [ -e ${INSTALL_DIR} ]; then
+    echo "安装目录(${INSTALL_DIR})已存在."
+    # rm -r ${INSTALL_DIR}
+    return
+  fi
 
-	# 解压缩
-	mkdir ${INSTALL_DIR}
-	tar -zxvf ${GZ_FILE} -C ${INSTALL_DIR}
+  # 解压缩
+  mkdir ${INSTALL_DIR}
+  tar -zxvf ${GZ_FILE} -C ${INSTALL_DIR}
 
-	# 获取解压后的目录名称
-	TEMP=`ls ${INSTALL_DIR}`
-	
-	# 将解压后目录的所有内容移动到安装目录
-	mv ${INSTALL_DIR}/${TEMP}/* ${INSTALL_DIR}
-	sudo rm -r ${INSTALL_DIR}/${TEMP}
-	echo "${GZ_FILE} 解压缩完成"
-	echo "安装目录: ${INSTALL_DIR}"
+  # 获取解压后的目录名称
+  TEMP=`ls ${INSTALL_DIR}`
+  
+  # 将解压后目录的所有内容移动到安装目录
+  mv ${INSTALL_DIR}/${TEMP}/* ${INSTALL_DIR}
+  sudo rm -r ${INSTALL_DIR}/${TEMP}
+  echo "${GZ_FILE} 解压缩完成"
+  echo "安装目录: ${INSTALL_DIR}"
 }
 
 
@@ -108,16 +108,16 @@ function decompress(){
 # ---------------------------------------------------------------------------
 function configure_env(){
 
-	# 判断环境变量是否存在
-	envstr=`sed -n "/HADOOP_HOME=/p" /etc/profile`
-	if [ ! -z "$envstr" ]; then 
-		echo "Hadoop环境变量已经配置"
-		echo "$envstr"
-		return
-	fi
+  # 判断环境变量是否存在
+  envstr=`sed -n "/HADOOP_HOME=/p" /etc/profile`
+  if [ ! -z "$envstr" ]; then 
+    echo "Hadoop环境变量已经配置"
+    echo "$envstr"
+    return
+  fi
 
-	# 在/etc/profile中追加（<<）环境变量
-	cat >> /etc/profile << EOF
+  # 在/etc/profile中追加（<<）环境变量
+  cat >> /etc/profile << EOF
 # Hadoop 3.1.1
 export HADOOP_HOME=$INSTALL_DIR
 export LD_LIBRARY_PATH=\$HADOOP_HOME/lib/native
@@ -125,10 +125,10 @@ export PATH=\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin:\$PATH
 
 EOF
 
-	# 使环境变量生效
-	source /etc/profile
-	echo "Hadoop环境变量配置完成."
-	echo "HADOOP_HOME=$HADOOP_HOME"
+  # 使环境变量生效
+  source /etc/profile
+  echo "Hadoop环境变量配置完成."
+  echo "HADOOP_HOME=$HADOOP_HOME"
 }
 
 
@@ -136,11 +136,11 @@ EOF
 # 配置 etc/hadoop/hadoop-env.sh 
 # ---------------------------------------------------------------------------
 function configure_hadoop_env(){
-	if [ ! -e ${INSTALL_DIR}/etc/hadoop/hadoop-env.sh.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/hadoop-env.sh $INSTALL_DIR/etc/hadoop/hadoop-env.sh.bkp
-	fi
-	# sed 's|.*export HADOOP_PID_DIR=.*|export HADOOP_PID_DIR='$BASE_DIR'|g' $INSTALL_DIR/etc/hadoop/hadoop-env.sh.bkp | \
-	# sed 's|.*export JAVA_HOME=.*|export JAVA_HOME='$JAVA_HOME'|g' > $INSTALL_DIR/etc/hadoop/hadoop-env.sh
+  if [ ! -e ${INSTALL_DIR}/etc/hadoop/hadoop-env.sh.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/hadoop-env.sh $INSTALL_DIR/etc/hadoop/hadoop-env.sh.bkp
+  fi
+  # sed 's|.*export HADOOP_PID_DIR=.*|export HADOOP_PID_DIR='$BASE_DIR'|g' $INSTALL_DIR/etc/hadoop/hadoop-env.sh.bkp | \
+  # sed 's|.*export JAVA_HOME=.*|export JAVA_HOME='$JAVA_HOME'|g' > $INSTALL_DIR/etc/hadoop/hadoop-env.sh
 
 # 覆盖文件 etc/hadoop/hadoop-env.sh
 cat > $INSTALL_DIR/etc/hadoop/hadoop-env.sh << EOF
@@ -159,7 +159,7 @@ export JAVA_HOME=$JAVA_HOME
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/hadoop-env.sh 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/hadoop-env.sh 配置完成."
 }
 
 
@@ -167,9 +167,9 @@ EOF
 # 配置 etc/hadoop/mapred-env.sh
 # ---------------------------------------------------------------------------
 function configure_mapred_env(){
-	if [ ! -e $INSTALL_DIR/etc/hadoop/mapred-env.sh.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/mapred-env.sh $INSTALL_DIR/etc/hadoop/mapred-env.sh.bkp
-	fi
+  if [ ! -e $INSTALL_DIR/etc/hadoop/mapred-env.sh.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/mapred-env.sh $INSTALL_DIR/etc/hadoop/mapred-env.sh.bkp
+  fi
 
 # 覆盖文件 etc/hadoop/mapred-env.sh 
 cat > $INSTALL_DIR/etc/hadoop/mapred-env.sh << EOF
@@ -177,7 +177,7 @@ export HADOOP_MAPRED_PID_DIR=$BASE_DIR
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/mapred-env.sh 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/mapred-env.sh 配置完成."
 }
 
 
@@ -185,9 +185,9 @@ EOF
 # 配置 core-site.xml
 # ---------------------------------------------------------------------------
 function configure_core_site(){
-	if [ ! -e ${INSTALL_DIR}/etc/hadoop/core-site.xml.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/core-site.xml $INSTALL_DIR/etc/hadoop/core-site.xml.bkp
-	fi
+  if [ ! -e ${INSTALL_DIR}/etc/hadoop/core-site.xml.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/core-site.xml $INSTALL_DIR/etc/hadoop/core-site.xml.bkp
+  fi
 
 # 覆盖文件 etc/hadoop/core-site.xml
 # cat > test.txt << EOF
@@ -230,7 +230,7 @@ cat > $INSTALL_DIR/etc/hadoop/core-site.xml << EOF
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/core-site.xml 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/core-site.xml 配置完成."
 }
 
 
@@ -239,9 +239,9 @@ EOF
 # 配置 hdfs-site.xml 
 # ---------------------------------------------------------------------------
 function configure_hdfs_site(){
-	if [ ! -e ${INSTALL_DIR}/etc/hadoop/hdfs-site.xml.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/hdfs-site.xml $INSTALL_DIR/etc/hadoop/hdfs-site.xml.bkp
-	fi
+  if [ ! -e ${INSTALL_DIR}/etc/hadoop/hdfs-site.xml.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/hdfs-site.xml $INSTALL_DIR/etc/hadoop/hdfs-site.xml.bkp
+  fi
 
 # 覆盖文件 etc/hadoop/hdfs-site.xml
 # cat > test.txt << EOF
@@ -303,7 +303,7 @@ cat > $INSTALL_DIR/etc/hadoop/hdfs-site.xml << EOF
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/hdfs-site.xml 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/hdfs-site.xml 配置完成."
 }
 
 
@@ -312,9 +312,9 @@ EOF
 # 配置 mapred-site.xml 
 # ---------------------------------------------------------------------------
 function configure_mapred_site(){
-	if [ ! -e ${INSTALL_DIR}/etc/hadoop/mapred-site.xml.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/mapred-site.xml $INSTALL_DIR/etc/hadoop/mapred-site.xml.bkp
-	fi
+  if [ ! -e ${INSTALL_DIR}/etc/hadoop/mapred-site.xml.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/mapred-site.xml $INSTALL_DIR/etc/hadoop/mapred-site.xml.bkp
+  fi
 
 # 覆盖文件 etc/hadoop/mapred-site.xml
 cat > $INSTALL_DIR/etc/hadoop/mapred-site.xml << EOF
@@ -360,7 +360,7 @@ cat > $INSTALL_DIR/etc/hadoop/mapred-site.xml << EOF
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/mapred-site.xml 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/mapred-site.xml 配置完成."
 }
 
 
@@ -368,9 +368,9 @@ EOF
 # 配置 yarn-site.xml
 # ---------------------------------------------------------------------------
 function configure_yarn_site(){
-	if [ ! -e ${INSTALL_DIR}/etc/hadoop/yarn-site.xml.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/yarn-site.xml $INSTALL_DIR/etc/hadoop/yarn-site.xml.bkp
-	fi
+  if [ ! -e ${INSTALL_DIR}/etc/hadoop/yarn-site.xml.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/yarn-site.xml $INSTALL_DIR/etc/hadoop/yarn-site.xml.bkp
+  fi
 
 # 覆盖文件 etc/hadoop/yarn-site.xml
 cat > $INSTALL_DIR/etc/hadoop/yarn-site.xml << EOF
@@ -462,7 +462,7 @@ cat > $INSTALL_DIR/etc/hadoop/yarn-site.xml << EOF
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/yarn-site.xml 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/yarn-site.xml 配置完成."
 }
 
 
@@ -470,9 +470,9 @@ EOF
 # 配置 workers (slaves)
 # ---------------------------------------------------------------------------
 function configure_workers(){
-	if [ ! -e ${INSTALL_DIR}/etc/hadoop/workers.bkp ]; then
-		mv $INSTALL_DIR/etc/hadoop/workers $INSTALL_DIR/etc/hadoop/workers.bkp
-	fi
+  if [ ! -e ${INSTALL_DIR}/etc/hadoop/workers.bkp ]; then
+    mv $INSTALL_DIR/etc/hadoop/workers $INSTALL_DIR/etc/hadoop/workers.bkp
+  fi
 
 cat > $INSTALL_DIR/etc/hadoop/workers << EOF
 hadoop101
@@ -481,7 +481,7 @@ hadoop103
 
 EOF
 
-	echo "$INSTALL_DIR/etc/hadoop/workers 配置完成."
+  echo "$INSTALL_DIR/etc/hadoop/workers 配置完成."
 }
 
 
@@ -489,68 +489,68 @@ EOF
 # 主流程
 # ---------------------------------------------------------------------------
 if [ ! -e ${GZ_FILE} ]; then
-	echo "安装包(${GZ_FILE})不存在!"
-	return
+  echo "安装包(${GZ_FILE})不存在!"
+  return
 fi
 
 
 # 检查是否安装MySQL
 if ! command -v hdfs; then
 
-	# 解压缩
-	decompress
+  # 解压缩
+  decompress
 
-	# 配置环境变量
-	configure_env
-	configure_hadoop_env
-	configure_mapred_env
+  # 配置环境变量
+  configure_env
+  configure_hadoop_env
+  configure_mapred_env
 
-	# 配置文件
-	configure_core_site
-	configure_hdfs_site
-	configure_mapred_site
-	configure_yarn_site
-	configure_workers
+  # 配置文件
+  configure_core_site
+  configure_hdfs_site
+  configure_mapred_site
+  configure_yarn_site
+  configure_workers
 
-	# 创建 Hadoop 的数据存储目录和日志存储目录
-	if [ ! -e $BASE_DIR ]; then
-		mkdir -p $BASE_DIR
-	fi
-	if [ ! -e $DATA_DIR ]; then
-		mkdir -p $DATA_DIR
-	fi
-	if [ ! -e $LOGS_DIR ]; then
-		mkdir -p $LOGS_DIR
-	fi
+  # 创建 Hadoop 的数据存储目录和日志存储目录
+  if [ ! -e $BASE_DIR ]; then
+    mkdir -p $BASE_DIR
+  fi
+  if [ ! -e $DATA_DIR ]; then
+    mkdir -p $DATA_DIR
+  fi
+  if [ ! -e $LOGS_DIR ]; then
+    mkdir -p $LOGS_DIR
+  fi
   if [ ! -e $TEMP_DIR ]; then
     mkdir -p $TEMP_DIR
   fi
-	if [ ! -e $DATA_DIR/hadoop ]; then
-		mkdir -p $DATA_DIR/hadoop
-	fi
-	if [ ! -e $DATA_DIR/hadoop/namenode ]; then
-		mkdir -p $DATA_DIR/hadoop/namenode
-	fi
-	if [ ! -e $DATA_DIR/hadoop/datanode ]; then
-		mkdir -p $DATA_DIR/hadoop/datanode
-	fi
-	if [ ! -e $DATA_DIR/hadoop/data ]; then
-		mkdir -p $DATA_DIR/hadoop/data
-	fi
-	if [ ! -e $DATA_DIR/hadoop/data/tmp ]; then
-		mkdir -p $DATA_DIR/hadoop/data/tmp
-	fi
-	if [ ! -e $LOGS_DIR/yarn ]; then
-		mkdir -p $LOGS_DIR/yarn
-	fi
+  if [ ! -e $DATA_DIR/hadoop ]; then
+    mkdir -p $DATA_DIR/hadoop
+  fi
+  if [ ! -e $DATA_DIR/hadoop/namenode ]; then
+    mkdir -p $DATA_DIR/hadoop/namenode
+  fi
+  if [ ! -e $DATA_DIR/hadoop/datanode ]; then
+    mkdir -p $DATA_DIR/hadoop/datanode
+  fi
+  if [ ! -e $DATA_DIR/hadoop/data ]; then
+    mkdir -p $DATA_DIR/hadoop/data
+  fi
+  if [ ! -e $DATA_DIR/hadoop/data/tmp ]; then
+    mkdir -p $DATA_DIR/hadoop/data/tmp
+  fi
+  if [ ! -e $LOGS_DIR/yarn ]; then
+    mkdir -p $LOGS_DIR/yarn
+  fi
 
-	# 修改文件夹的权限
-	chown -R $USER_GROUP:$USER_NAME $BASE_DIR
-	chown -R $USER_GROUP:$USER_NAME $INSTALL_DIR
+  # 修改文件夹的权限
+  chown -R $USER_GROUP:$USER_NAME $BASE_DIR
+  chown -R $USER_GROUP:$USER_NAME $INSTALL_DIR
 
-	echo "Hadoop安装完成!"
+  echo "Hadoop安装完成!"
 else
-	echo "Hadoop已安装!"
+  echo "Hadoop已安装!"
 fi
 
 

@@ -81,18 +81,25 @@ jobmanager.rpc.address: flink101
 jobmanager.rpc.port: 6123
 jobmanager.memory.process.size: 1600m
 taskmanager.memory.process.size: 1728m
-taskmanager.numberOfTaskSlots: 8
+taskmanager.numberOfTaskSlots: 4
 parallelism.default: 1
+
+fs.default-scheme: hdfs://hadoop101:9000/
+# io.tmp.dirs: hdfs://hadoop101:9000/flink/tmp
 
 # 是否启动web提交
 web.submit.enable: true
 
 # HistoryServer
-fs.default-scheme: hdfs://hadoop101:9000/
-jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/jobmanager/
-historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/historyserver/
+jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
 historyserver.web.address: flink101
 historyserver.web.port: 8082
+
+# state
+state.backend: filesystem
+state.checkpoints.dir: hdfs://hadoop101:9000/flink/checkpoints
+state.savepoints.dir: hdfs://hadoop101:9000/flink/savepoints
 
 EOF
 
