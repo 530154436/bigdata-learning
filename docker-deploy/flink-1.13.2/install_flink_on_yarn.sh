@@ -77,7 +77,7 @@ function configure_flink_conf(){
 # 覆盖文件 conf/flink-conf.yaml
 cat > $INSTALL_DIR/conf/flink-conf.yaml << EOF
 # Common
-jobmanager.rpc.address: flink101
+jobmanager.rpc.address: hadoop101
 jobmanager.rpc.port: 6123
 jobmanager.memory.process.size: 1600m
 taskmanager.memory.process.size: 1728m
@@ -85,7 +85,7 @@ taskmanager.numberOfTaskSlots: 4
 parallelism.default: 1
 
 fs.default-scheme: hdfs://hadoop101:9000/
-# io.tmp.dirs: hdfs://hadoop101:9000/flink/tmp
+# io.tmp.dirs: /tmp
 
 # 是否启动web提交
 web.submit.enable: true
@@ -93,7 +93,7 @@ web.submit.enable: true
 # HistoryServer
 jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
 historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
-historyserver.web.address: flink101
+historyserver.web.address: hadoop101
 historyserver.web.port: 8082
 
 # state
@@ -115,8 +115,8 @@ function configure_workers(){
 	fi
 
 cat > $INSTALL_DIR/conf/workers << EOF
-flink101
-flink102
+hadoop101
+hadoop102
 
 EOF
 
@@ -133,7 +133,7 @@ function configure_masters(){
 	fi
 
 cat > $INSTALL_DIR/conf/masters << EOF
-flink101:8081
+hadoop101:8081
 
 EOF
 

@@ -5,32 +5,68 @@ networks:
 
 services:
   flink101:
+    platform: linux/amd64
     image: 15521147129/bigdata:flink-1.13.2
-    hostname: flink101
+    hostname: hadoop101
     container_name: flink101
     user: hadoop
-    command: /bin/bash -c "/dockerentry/run-master.sh"
+    command: /bin/bash -c "/dockerentry/run.sh"
     restart: no
     # restart: always
     ports:
+      - 9000:9000
+      - 10020:10020
+      - 19888:19888
+      - 8032:8032
+      - 8041:8042
+      - 8030:8030
+      - 8031:8031
+      - 8088:8088
+      - 9870:9870
+      - 9864:9864
+      - 9866:9866
+      - 9867:9867
+      - 19:22
       - 6123:6123
       - 8081:8081
       - 8082:8082
     environment:
-      - PREREQUISITE_SERVERS=hadoop101-8088
-      - TZ=Asia/Shanghai
+      TZ: Asia/Shanghai
     tty: true
 
   flink102:
+    platform: linux/amd64
     image: 15521147129/bigdata:flink-1.13.2
-    hostname: flink102
+    hostname: hadoop102
     container_name: flink102
     user: hadoop
     command: /bin/bash -c "/dockerentry/run-workers.sh"
     restart: no
+    # restart: always
     ports:
-      - 6121:6123
+      - 8888:8888
+      - 8042:8042
+      - 19866:9866
+      - 20:22
     environment:
-      - PREREQUISITE_SERVERS=hadoop101-8088
-      - TZ=Asia/Shanghai
+      TZ: Asia/Shanghai
+    #      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
+    tty: true
+
+  flink103:
+    platform: linux/amd64
+    image: 15521147129/bigdata:flink-1.13.2
+    hostname: hadoop103
+    container_name: flink103
+    user: hadoop
+    command: /bin/bash -c "/dockerentry/run-workers.sh"
+    restart: no
+    # restart: always
+    ports:
+      - 9868:9868
+      - 29866:9866
+      - 8043:8042
+      - 21:22
+    environment:
+      TZ: Asia/Shanghai
     tty: true

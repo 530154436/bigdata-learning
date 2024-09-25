@@ -13,11 +13,15 @@ RUN rm /usr/local/CDP7.1.4/flink-1.13.2-bin-scala_2.12.tgz
 # 启动脚本
 COPY flink-1.13.2/run-master.sh /dockerentry/run-master.sh
 RUN chmod a+x /dockerentry/run-master.sh
+
 COPY flink-1.13.2/run-workers.sh /dockerentry/run-workers.sh
 RUN chmod a+x /dockerentry/run-workers.sh
+
 COPY flink-1.13.2/run-getent-hosts.sh /dockerentry/run-getent-hosts.sh
 RUN chmod a+x /dockerentry/run-getent-hosts.sh
 
+COPY flink-1.13.2/run.sh /dockerentry/run.sh
+RUN chmod a+x /dockerentry/run.sh
 
 # 设置工作目录为 hadoop 用户的home目录
 USER hadoop
