@@ -1,0 +1,35 @@
+networks:
+  default:
+    name: hadoop-docker-bridge
+    external: true
+
+services:
+  flink101:
+    platform: linux/amd64
+    image: 15521147129/bigdata:flink-1.13.2
+    hostname: flink101
+    container_name: flink101
+    user: hadoop
+    command: /bin/bash -c "/dockerentry/run-master.sh"
+    restart: no
+    # restart: always
+    ports:
+      - 6123:6123
+      - 8081:8081
+      - 8082:8082
+    environment:
+      - PREREQUISITE_SERVERS=hadoop101-8088
+      - TZ=Asia/Shanghai
+    tty: true
+
+  flink102:
+    platform: linux/amd64
+    image: 15521147129/bigdata:flink-1.13.2
+    hostname: flink102
+    container_name: flink102
+    user: hadoop
+    command: /bin/bash -c "/dockerentry/run-workers.sh"
+    restart: no
+    environment:
+      TZ: Asia/Shanghai
+    tty: true

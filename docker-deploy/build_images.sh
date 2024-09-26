@@ -28,6 +28,11 @@ docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:hive
 docker compose -f hive-3.1.2/docker-compose.yml up -d
 docker push 15521147129/bigdata:hive-3.1.2
 
+# flink
+docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:flink-1.13.2 -f flink-1.13.2/Dockerfile .
+docker compose -f flink-1.13.2/docker-compose.yml up -d
+docker push 15521147129/bigdata:flink-1.13.2
+
 # flink on yarn
 docker build --progress=plain --platform=linux/amd64 -t 15521147129/bigdata:flink-on-yarn-1.13.2 -f flink-on-yarn-1.13.2/Dockerfile .
 docker compose -f flink-on-yarn-1.13.2/docker-compose.yml up -d

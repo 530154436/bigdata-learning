@@ -8,7 +8,7 @@ services:
     platform: linux/amd64
     image: 15521147129/bigdata:flink-on-yarn-1.13.2
     hostname: hadoop101
-    container_name: flink101
+    container_name: flink-on-yarn-101
     user: hadoop
     command: /bin/bash -c "/dockerentry/run-master.sh"
     restart: no
@@ -38,7 +38,7 @@ services:
     platform: linux/amd64
     image: 15521147129/bigdata:flink-on-yarn-1.13.2
     hostname: hadoop102
-    container_name: flink102
+    container_name: flink-on-yarn-102
     user: hadoop
     command: /bin/bash -c "/dockerentry/run-workers.sh"
     restart: no
@@ -57,7 +57,7 @@ services:
     platform: linux/amd64
     image: 15521147129/bigdata:flink-on-yarn-1.13.2
     hostname: hadoop103
-    container_name: flink103
+    container_name: flink-on-yarn-103
     user: hadoop
     command: /bin/bash -c "/dockerentry/run-workers.sh"
     restart: no

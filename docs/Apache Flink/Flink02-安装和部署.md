@@ -145,7 +145,44 @@ $FLINK_HOME/bin/yarn-session.sh -nm test
 ### 3.2 会话模式部署
 ### 3.3 会话模式部署
 
-### 四、参考引用
+## 四、遇到的问题
+### 1）Hadoop is not in the classpath/dependencies
+```
+Caused by: org.apache.flink.core.fs.UnsupportedFileSystemSchemeException:
+Could not find a file system implementation for scheme 'hdfs'. 
+The scheme is not directly supported by Flink and no Hadoop file system to support this scheme could be loaded. 
+```
+原因： 在 Flink 1.11.0 版本之后,增加了很多重要新特性,其中就包括增加了对 Hadoop3.0.0 以及更高版本 Hadoop 的支持,不再提供“flink-shaded-hadoop-*”
+jar 包,而是通过配置环境变量完成与 YARN 集群的对接。　在将 Flink 任务部署至 YARN 集群之前,需要确认集群是否安装有 Hadoop,保证 Hadoop
+版本至少在 2.2 以上,并且集群中安装有 HDFS 服务。<br>
+
+解决方案：配置环境变量,增加环境变量配置如下:
+```
+sudo vim /etc/profile
+HADOOP_HOME=/usr/local/hadoop-3.1.4
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+export HADOOP_CLASSPATH=`hadoop classpath`  
+```
+其中，`hadoop classpath`是一句shell命令，用于获取配置的Hadoop类路径
+
+### 2）java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs
+原因：hdfs路径配置不正确。<br>
+解决方案：修改 `conf/flink-conf.yaml`配置信息
+```
+jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+```
+
+### 3）
+原因：hdfs路径配置不正确。<br>
+解决方案：修改 `conf/flink-conf.yaml`配置信息
+```
+jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+```
+
+### 五、参考引用
 [1] [剑指大数据——flink学习精要（scala版）](https://weread.qq.com/web/reader/c3f32e90813ab8449g01292dkc9f326d018c9f0f895fb5e4)<br>
 [2] [Docker下安装zookeeper（单机 & 集群）](https://www.cnblogs.com/LUA123/p/11428113.html)<br>
 [3] [Flink -3- 一文详解安装部署以及使用和调优（standalone 模式 | yarn 模式）](https://blog.csdn.net/qq_41694906/article/details/140610459)<br>

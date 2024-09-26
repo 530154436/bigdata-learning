@@ -15,9 +15,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2main-warn-jdbchiveconnection-failed-to-connect-to-hive10000">2）[main]: WARN jdbc.HiveConnection: Failed to connect to hive:10000</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3main-javanetsocketexception-connection-refused">3）[main]: java.net.SocketException: Connection refused</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4main-javanetsocketexception-connection-resetrefused待定">4）[main]: java.net.SocketException: Connection reset/refused(待定)</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#24flink">2.4、Flink</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1hadoop-is-not-in-the-classpathdependencies">1）Hadoop is not in the classpath/dependencies</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2javaioioexception-cannot-instantiate-file-system-for-uri-hdfsflinkcompleted-jobs">2）java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#2x-zookeeper">2.x Zookeeper</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1bind-for-00002181-failed-port-is-already-allocated">1）Bind for 0.0.0.0:2181 failed: port is already allocated</a><br/>
 <a href="#三参考引用">三、参考引用</a><br/>
@@ -224,6 +221,7 @@ hadoop@flink102:~$ $JAVA_HOME/bin/jps
 391 Jps
 282 TaskManagerRunner
 ```
+> 详见参考：[Flink02-安装和部署.md](https://github.com/530154436/bigdata-learning/blob/main/docs/Apache%20Flink/Flink02-%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2.md)
 
 Web UI for Flink：http://localhost:8081/#/overview<br>
 <img src="images/docker/flink_job_manager.png" width="80%" height="80%" alt=""><br>
@@ -360,36 +358,6 @@ hive@hive:~$ nc -zv 172.18.0.3 9000
 Connection to 172.18.0.3 9000 port [tcp/*] succeeded!
 ```
 ~~TODO: 卡了好几天，实在搞不定...先放着，初步怀疑是docker的环境配置问题~~在Windows上很正常，应该是Macos M2的问题。
-
-#### 2.4、Flink
-##### 1）Hadoop is not in the classpath/dependencies
-```
-Caused by: org.apache.flink.core.fs.UnsupportedFileSystemSchemeException:
-Could not find a file system implementation for scheme 'hdfs'. 
-The scheme is not directly supported by Flink and no Hadoop file system to support this scheme could be loaded. 
-```
-原因： 在 Flink 1.11.0 版本之后,增加了很多重要新特性,其中就包括增加了对 Hadoop3.0.0 以及更高版本 Hadoop 的支持,不再提供“flink-shaded-hadoop-*”
-jar 包,而是通过配置环境变量完成与 YARN 集群的对接。　在将 Flink 任务部署至 YARN 集群之前,需要确认集群是否安装有 Hadoop,保证 Hadoop
-版本至少在 2.2 以上,并且集群中安装有 HDFS 服务。<br>
-
-解决方案：配置环境变量,增加环境变量配置如下:
-```
-sudo vim /etc/profile
-HADOOP_HOME=/usr/local/hadoop-3.1.4
-export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
-export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
-export HADOOP_CLASSPATH=`hadoop classpath`  
-```
-其中，`hadoop classpath`是一句shell命令，用于获取配置的Hadoop类路径
-
-##### 2）java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs
-原因：hdfs路径配置不正确。<br>
-解决方案：修改 `conf/flink-conf.yaml`配置信息
-```
-fs.default-scheme: hdfs://hadoop101:9000/
-jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/jobmanager/
-historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/historyserver/
-```
 
 #### 2.x Zookeeper
 ##### 1）Bind for 0.0.0.0:2181 failed: port is already allocated
