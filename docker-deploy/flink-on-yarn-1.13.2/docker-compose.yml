@@ -4,13 +4,13 @@ networks:
     external: true
 
 services:
-  flink101:
+  flink-on-yarn-101:
     platform: linux/amd64
-    image: 15521147129/bigdata:flink-1.13.2
+    image: 15521147129/bigdata:flink-on-yarn-1.13.2
     hostname: hadoop101
     container_name: flink101
     user: hadoop
-    command: /bin/bash -c "/dockerentry/run.sh"
+    command: /bin/bash -c "/dockerentry/run-master.sh"
     restart: no
     # restart: always
     ports:
@@ -34,9 +34,9 @@ services:
       TZ: Asia/Shanghai
     tty: true
 
-  flink102:
+  flink-on-yarn-102:
     platform: linux/amd64
-    image: 15521147129/bigdata:flink-1.13.2
+    image: 15521147129/bigdata:flink-on-yarn-1.13.2
     hostname: hadoop102
     container_name: flink102
     user: hadoop
@@ -53,9 +53,9 @@ services:
     #      - PREREQUISITE_SERVERS=hadoop101-9870:hadoop103-9868
     tty: true
 
-  flink103:
+  flink-on-yarn-103:
     platform: linux/amd64
-    image: 15521147129/bigdata:flink-1.13.2
+    image: 15521147129/bigdata:flink-on-yarn-1.13.2
     hostname: hadoop103
     container_name: flink103
     user: hadoop

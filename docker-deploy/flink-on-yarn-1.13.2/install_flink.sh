@@ -84,7 +84,7 @@ taskmanager.memory.process.size: 1728m
 taskmanager.numberOfTaskSlots: 4
 parallelism.default: 1
 
-fs.default-scheme: hdfs://hadoop101:9000/
+# fs.default-scheme: hdfs://hadoop101:9000/
 # io.tmp.dirs: /tmp
 
 # 是否启动web提交
