@@ -1,3 +1,24 @@
+<nav>
+<a href="#一flink-安装">一、Flink 安装</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#11-flink-安装方式">1.1 Flink 安装方式</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12-flink集群安装与配置">1.2 Flink集群安装与配置</a><br/>
+<a href="#二flink-部署模式">二、Flink 部署模式</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#21-会话模式session-mode">2.1 会话模式（Session Mode）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#122-单作业模式-per-job-mode">1.2.2 单作业模式 Per-Job Mode</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#123-应用模式-application-mode">1.2.3 应用模式 Application Mode</a><br/>
+<a href="#三flink-部署模式flink-on-yarn">三、Flink 部署模式（Flink on Yarn）</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#31-会话模式部署">3.1 会话模式部署</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#311-启动集群">3.1.1 启动集群</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#312-提交作业">3.1.2 提交作业</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#32-单作业模式部署">3.2 单作业模式部署</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#33-应用模式部署">3.3 应用模式部署</a><br/>
+<a href="#四遇到的问题">四、遇到的问题</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1hadoop-is-not-in-the-classpathdependencies">1）Hadoop is not in the classpath/dependencies</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2javaioioexception-cannot-instantiate-file-system-for-uri-hdfsflinkcompleted-jobs">2）java.io.IOException: Cannot instantiate file system for URI: hdfs://flink/completed-jobs</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3file-does-not-exist-tmpapplication_xxx">3）File does not exist: /tmp/application_xxx</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#五参考引用">五、参考引用</a><br/>
+</nav>
+
 ## 一、Flink 安装
 
 ### 1.1 Flink 安装方式
@@ -143,12 +164,18 @@ Flink可以基于Yarn来运行任务，Yarn作为资源提供方，可以根据F
 （2）如果JobManager进程异常退出，则Yarn ResourceManager会重新调度JobManager到其他机器<br>
 （3）如果TaskManager进程异常退出，JobManager会收到消息并重新向Yarn ResourceManager 申请资源，重新启动TaskManager<br>
 
+**前置工作**： socket模拟产生数据流（在hadoop103）
+```shell
+nc -l -p 7777
+```
+
 ### 3.1 会话模式部署
+YARN的会话模需要首先申请一个`YARN会话`(YARN session)来启动Flink集群。 具体步骤如下所示。<br>
+YARN Session实际上是一个YARN的Application，并且有唯一的Application ID。
 
 <img src="images/flink02/flink_on_yarn_session_mode.png" width="80%" height="80%" alt=""><br>
 
 #### 3.1.1 启动集群
-YARN的会话模需要首先申请一个`YARN会话`(YARN session)来启动Flink集群。 具体步骤如下所示。<br>
 (1) 启动Hadoop集群，包括HDFS和YARN。<br>
 (2) 执行脚本命令向YARN集群申请资源，开启一个YARN会话，启动Flink集群。
 ```shell
@@ -172,14 +199,6 @@ YARN Session启动后会生成JobManager的地址（http://hadoop103:45995）及
 <img src="images/flink02/flink_on_yarn_session_mode_02.png" width="100%" height="100%" alt=""><br>
 
 #### 3.1.2 提交作业
-需先监听`JobManager`所在服务器本地端口（即hadoop103），否则报错：java.net.ConnectException: Connection refused (Connection refused)
-```shell
-# windows
-nc -L -p 7777
-# linux
-nc -l -p 7777
-```
-
 (1) 通过Web UI提交作业。<br>
 (2) 通过命令行提交作业。<br>
 ① 构建jar包并上传到flink101服务器。<br>
@@ -192,11 +211,54 @@ $FLINK_HOME/bin/flink run -c org.zcb.flink.baseline.ch02_03_StreamUnbounded /tmp
 ③ 任务提交成功后，可在YARN的Web UI界面查看运行情况。<br>
 <img src="images/flink02/flink_on_yarn_session_mode_03.png" width="100%" height="100%" alt=""><br>
 
+### 3.2 单作业模式部署
+在YARN环境中，因为有了外部平台作资源调度，所以可以直接向YARN提交一个单独的作业，从而启动一个Flink集群。<br>
+<img src="images/flink02/flink_on_yarn_per_job_mode.png" width="80%" height="80%" alt=""><br>
 
-如图3-14所示，从图中可以看到我们创建的YARN Session实际上是一个YARN的Application，并且有唯一的Application ID。
+(1) 执行命令提交作业。
+```shell
+$FLINK_HOME/bin/flink run -t yarn-per-job -c org.zcb.flink.baseline.ch02_03_StreamUnbounded /tmp/target/bigdata-flink-scala-1.0-shaded.jar
+# -c,--class <classname>  具有程序入口的类, 即该类下有 main() 方法, 只需要指定类名即可
+# -m,--jobmanager <arg>   指定JobManager的地址
+# -t,--target <arg>	设置应用程序的部署目标，相当于 execution.target 配置选项
+#    run action 可以使用: “remote”, “local”, “kubernetes-session”, “yarn-per-job”, “yarn-session”
+#    run-application action 可以使用: “kubernetes-application”, “yarn-application”.
+```
+(2) 在YARN的ResourceManager界面查看执行情况。<br>
+<img src="images/flink02/flink_on_yarn_per_job_mode_01.png" width="100%" height="100%" alt=""><br>
+<img src="images/flink02/flink_on_yarn_per_job_mode_02.png" width="100%" height="100%" alt=""><br>
 
-### 3.2 会话模式部署
-### 3.3 会话模式部署
+(3) 可以使用命令行查看或取消作业，命令如下：<br>
+```shell
+$FLINK_HOME/bin/flink list -t yarn-per-job -Dyarn.application.id=application_1727322223306_0008
+$FLINK_HOME/bin/flink cancel -t yarn-per-job -Dyarn.application.id=application_1727322223306_0008 6275f85e2354bc0e5698d7ffddb6d158
+```
+<img src="images/flink02/flink_on_yarn_per_job_mode_03.png" width="100%" height="100%" alt=""><br>
+<img src="images/flink02/flink_on_yarn_per_job_mode_04.png" width="100%" height="100%" alt=""><br>
+
+### 3.3 应用模式部署
+与单作业模式类似，直接执行flink run-application命令即可。<br>
+(1) 执行命令提交作业。<br>
+```shell
+source /etc/profile
+
+# 本地jar包提交
+$FLINK_HOME/bin/flink run-application -t yarn-application -c org.zcb.flink.baseline.ch02_03_StreamUnbounded /tmp/target/bigdata-flink-scala-1.0-shaded.jar
+
+# hdfs提交
+# 这种方式下jar可以预先上传到HDFS，而不需要单独发送到集群，这就使得作业提交更加轻量了。
+$HADOOP_HOME/bin/hdfs dfs -mkdir /tmp/target
+$HADOOP_HOME/bin/hdfs dfs -put -f /tmp/target/bigdata-flink-scala-1.0-shaded.jar /tmp/target/
+$FLINK_HOME/bin/flink run-application -t yarn-application -c org.zcb.flink.baseline.ch02_03_StreamUnbounded hdfs://tmp/target/bigdata-flink-scala-1.0-shaded.jar
+```
+<img src="images/flink02/flink_on_yarn_application_mode_01.png" width="100%" height="100%" alt=""><br>
+<img src="images/flink02/flink_on_yarn_application_mode_02.png" width="100%" height="100%" alt=""><br>
+
+(2) 在命令行中查看或取消作业。
+```shell
+$FLINK_HOME/bin/flink list -t yarn-application -Dyarn.application.id=application_1727322223306_0010
+$FLINK_HOME/bin/flink cancel -t yarn-application -Dyarn.application.id=application_1727322223306_0010 0af24ab3aacb40ddd414b636c57fde10
+```
 
 ## 四、遇到的问题
 ### 1）Hadoop is not in the classpath/dependencies

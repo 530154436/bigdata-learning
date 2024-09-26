@@ -79,9 +79,9 @@ cat > $INSTALL_DIR/conf/flink-conf.yaml << EOF
 # Common
 jobmanager.rpc.address: flink101
 jobmanager.rpc.port: 6123
-jobmanager.memory.process.size: 1600m
-taskmanager.memory.process.size: 1728m
-taskmanager.numberOfTaskSlots: 4
+jobmanager.memory.process.size: 2048m
+taskmanager.memory.process.size: 4096m
+taskmanager.numberOfTaskSlots: 1
 parallelism.default: 1
 
 # fs.default-scheme: hdfs://hadoop101:9000/

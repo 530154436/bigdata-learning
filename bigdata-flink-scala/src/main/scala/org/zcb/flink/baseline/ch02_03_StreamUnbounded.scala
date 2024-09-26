@@ -17,7 +17,7 @@ import java.nio.file.Paths
  */
 object ch02_03_StreamUnbounded {
     val file: String = Paths.get(Global.BASE_DIR, "data", "flink", "input", "words.txt").toAbsolutePath.toString
-    private val hostName: String = "localhost"
+    private val hostName: String = "hadoop103"
     private val port: Int = 7777
 
     def main(args: Array[String]): Unit = {
