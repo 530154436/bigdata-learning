@@ -1,7 +1,7 @@
 package org.zcb.flink.baseline
 
 import org.apache.flink.api.scala.createTypeInformation
-import org.apache.flink.streaming.api.scala.{DataStream, KeyedStream, StreamExecutionEnvironment}
+import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.zcb.common.conf.Global
 
 import java.nio.file.Paths
@@ -15,7 +15,7 @@ import java.nio.file.Paths
  *  windows：nc -L -p 7777
  *  linux：nc -l -p 7777
  */
-object ch02_03_词频统计无界流 {
+object ch02_03_StreamUnbounded {
     val file: String = Paths.get(Global.BASE_DIR, "data", "flink", "input", "words.txt").toAbsolutePath.toString
     private val hostName: String = "localhost"
     private val port: Int = 7777

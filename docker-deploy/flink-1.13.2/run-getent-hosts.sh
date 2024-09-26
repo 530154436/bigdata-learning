@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义主机名数组
-HOSTNAMES=("hadoop101" "hadoop102" "hadoop103")
+HOSTNAMES=("hadoop101" "hadoop102" "hadoop103" "flink101" "flink102")
 
 # 遍历每个主机名
 for HOSTNAME in "${HOSTNAMES[@]}"; do

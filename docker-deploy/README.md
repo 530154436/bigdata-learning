@@ -41,29 +41,30 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 
 `运行的服务列表`：<br>
 
-| 容器名称      | 对应镜像                             | 进程                                            |
-|:----------|:---------------------------------|:----------------------------------------------|
-| Hadoop101 | 15521147129/bigdata:hadoop-3.1.4 | NameNode、DataNode、ResourceManager、NodeManager |
-| Hadoop102 | 15521147129/bigdata:hadoop-3.1.4 | DataNode、NodeManager                          |
-| Hadoop103 | 15521147129/bigdata:hadoop-3.1.4 | SecondaryNameNode、DataNode                    |
-| mysql     | 15521147129/bigdata:mysql-5.6.37 | mysqld、mysqld_safe                            |
-| hive      | 15521147129/bigdata:hive-3.1.2   | RunJar(Metastore)、RunJar(HiveServer2)         |
-| flink101  | 15521147129/bigdata:flink-1.13.2 | JobManager、TaskManager                        |
-| flink102  | 15521147129/bigdata:flink-1.13.2 | TaskManager                                   |
+| 容器名称          | 对应镜像                                     | 进程                                            |
+|:--------------|:-----------------------------------------|:----------------------------------------------|
+| Hadoop101     | 15521147129/bigdata:hadoop-3.1.4         | NameNode、DataNode、ResourceManager、NodeManager |
+| Hadoop102     | 15521147129/bigdata:hadoop-3.1.4         | DataNode、NodeManager                          |
+| Hadoop103     | 15521147129/bigdata:hadoop-3.1.4         | SecondaryNameNode、DataNode                    |
+| mysql         | 15521147129/bigdata:mysql-5.6.37         | mysqld、mysqld_safe                            |
+| hive          | 15521147129/bigdata:hive-3.1.2           | RunJar(Metastore)、RunJar(HiveServer2)         |
+| flink101      | 15521147129/bigdata:flink-1.13.2         | JobManager、TaskManager                        |
+| flink102      | 15521147129/bigdata:flink-1.13.2         | TaskManager                                   |
+| Flink on Yarn | 15521147129/bigdata:flink-on-yarn-1.13.2 | 包含hdfs/yarn/flink相关的所有进程，方便测试                 |
 
 
 `常用WebUI列表`：<br>
 
-| 组件     | 服务                   | 链接                         | 备注      | 页面示例                                                                                      |
-|:-------|:---------------------|:---------------------------|:--------|:------------------------------------------------------------------------------------------|
-| Hadoop | HDFS-Namenode        | http://localhost:9870/     |         | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
-| Hadoop | HDFS-Datanode        | http://localhost:9864/     |         | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
-| Hadoop | Yarn-ResourceManager | http://localhost:8088/     |         | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
-| Hadoop | Yarn-NodeManager     | http://localhost:8042/node |         | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
-| Hadoop | mapred-historyserver | http://localhost:19888/    |         | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
-| Hive   | HiveServer2          | http://localhost:10002/    |         | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
-| Flink  | JobManager           | http://localhost:8081/     |         | <img src="images/docker/flink_job_manager.png" width="30%" height="30%" alt="">           |
-| Flink  | HistoryServer        | http://localhost:8082/     | 有报错，待解决 | <img src="images/docker/flink_historyserver.png" width="30%" height="30%" alt="">         |
+| 组件      | 服务                   | 链接                         | 备注      | 页面示例                                                                                      |
+|:--------|:---------------------|:---------------------------|:--------|:------------------------------------------------------------------------------------------|
+| Hadoop  | HDFS-Namenode        | http://localhost:9870/     |         | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
+| Hadoop  | HDFS-Datanode        | http://localhost:9864/     |         | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
+| Hadoop  | Yarn-ResourceManager | http://localhost:8088/     |         | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
+| Hadoop  | Yarn-NodeManager     | http://localhost:8042/node |         | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
+| Hadoop  | mapred-historyserver | http://localhost:19888/    |         | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
+| Hive    | HiveServer2          | http://localhost:10002/    |         | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
+| Flink   | JobManager           | http://localhost:8081/     |         | <img src="images/docker/flink_job_manager.png" width="30%" height="30%" alt="">           |
+| Flink   | HistoryServer        | http://localhost:8082/     | 有报错，待解决 | <img src="images/docker/flink_historyserver.png" width="30%" height="30%" alt="">         |
 
 
 #### 1.1 基础镜像构建
@@ -222,6 +223,7 @@ hadoop@flink102:~$ $JAVA_HOME/bin/jps
 282 TaskManagerRunner
 ```
 > 详见参考：[Flink02-安装和部署.md](https://github.com/530154436/bigdata-learning/blob/main/docs/Apache%20Flink/Flink02-%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2.md)
+> 注意：为方便测试，
 
 Web UI for Flink：http://localhost:8081/#/overview<br>
 <img src="images/docker/flink_job_manager.png" width="80%" height="80%" alt=""><br>

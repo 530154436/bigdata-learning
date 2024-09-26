@@ -35,16 +35,22 @@ jobmanager.memory.process.size: 1600m   # JobManager进程可使用到的全部�
 taskmanager.memory.process.size: 1728m  # TaskManager进程可使用到的全部内存，默认1600MB。
 taskmanager.numberOfTaskSlots: 4        # 每个TaskManager能够分配的slots数量，默认为1，一般由CPU数量决定。
 parallelism.default: 1                  # Flink任务执行的默认并行度
+# fs.default-scheme: hdfs://hadoop101:9000/
+# io.tmp.dirs: /tmp
 
 # 是否启动web提交
 web.submit.enable: true
 
 # HistoryServer
-fs.default-scheme: hdfs://hadoop101:9000/
-jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/jobmanager/
-historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/historyserver/
+jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
 historyserver.web.address: flink101
 historyserver.web.port: 8082
+
+# state
+state.backend: filesystem
+state.checkpoints.dir: hdfs://hadoop101:9000/flink/checkpoints
+state.savepoints.dir: hdfs://hadoop101:9000/flink/savepoints
 ```
 + 配置集群文件-$FLINK_HOME/conf/masters
 ```
@@ -65,7 +71,18 @@ $FLINK_HOME/bin/start-cluster.sh
 # 启动历史服务器
 $FLINK_HOME/bin/historyserver.sh start
 ```
++ 查看进程：
+```shell
+hadoop@flink101: $JAVA_HOME/bin/jps
+1217 Jps
+777 TaskManagerRunner
+490 StandaloneSessionClusterEntrypoint
+1003 HistoryServer
 
+hadoop@flink102:~$ $JAVA_HOME/bin/jps
+391 Jps
+282 TaskManagerRunner
+```
 ## 二、Flink 部署模式
 
 不同应用场景对集群资源分配和占用的方式有不同的需求。 Flink为各种场景提供了不同的部署模式，主要有以下3种：
@@ -125,22 +142,58 @@ Flink可以基于Yarn来运行任务，Yarn作为资源提供方，可以根据F
 （1）JobManager进程和TaskManager进程都由Yarn NodeManager 监控<br>
 （2）如果JobManager进程异常退出，则Yarn ResourceManager会重新调度JobManager到其他机器<br>
 （3）如果TaskManager进程异常退出，JobManager会收到消息并重新向Yarn ResourceManager 申请资源，重新启动TaskManager<br>
+
 ### 3.1 会话模式部署
 
 <img src="images/flink02/flink_on_yarn_session_mode.png" width="80%" height="80%" alt=""><br>
 
+#### 3.1.1 启动集群
 YARN的会话模需要首先申请一个`YARN会话`(YARN session)来启动Flink集群。 具体步骤如下所示。<br>
 (1) 启动Hadoop集群，包括HDFS和YARN。<br>
 (2) 执行脚本命令向YARN集群申请资源，开启一个YARN会话，启动Flink集群。
 ```shell
-$FLINK_HOME/bin/yarn-session.sh -nm test
+# 启动集群
+$FLINK_HOME/bin/yarn-session.sh -nm test -d
 # -d：分离模式，如果你不想让Flink YARN客户端一直在前台运行，可以使用这个参数，即使关掉当前对话窗口，YARN session也可以在后台运行。
 # -jm(--jobManagerMemory)：配置JobManager所需内存，默认单位为MB。
 # -nm(--name)：配置在YARN UI界面上显示的任务名。
 # -qu(--queue)：指定YARN队列名。
 # -tm(--taskManager)：配置每个TaskManager所用内存。
+
+# 恢复会话窗口
+$FLINK_HOME/bin/yarn-session.sh -id application_1727322223306_0004
+
+# 关闭yar任务（关闭会话）
+$HADOOP_HOME/bin/yarn application -kill application_1727322223306_0004
+```
+YARN Session启动后会生成JobManager的地址（http://hadoop103:45995）及一个YARN application ID（application_1727322223306_0004）。<br>
+
+<img src="images/flink02/flink_on_yarn_session_mode_01.png" width="100%" height="100%" alt=""><br>
+<img src="images/flink02/flink_on_yarn_session_mode_02.png" width="100%" height="100%" alt=""><br>
+
+#### 3.1.2 提交作业
+需先监听`JobManager`所在服务器本地端口（即hadoop103），否则报错：java.net.ConnectException: Connection refused (Connection refused)
+```shell
+# windows
+nc -L -p 7777
+# linux
+nc -l -p 7777
 ```
 
+(1) 通过Web UI提交作业。<br>
+(2) 通过命令行提交作业。<br>
+① 构建jar包并上传到flink101服务器。<br>
+② 执行以下命令，将该任务提交到已经开启的YARN Session中运行。<br>
+```shell
+$FLINK_HOME/bin/flink run -c org.zcb.flink.baseline.ch02_03_StreamUnbounded /tmp/target/bigdata-flink-scala-1.0-shaded.jar --jobmanager hadoop103:45995
+# -c,--class <classname>  具有程序入口的类, 即该类下有 main() 方法, 只需要指定类名即可
+# -m,--jobmanager <arg>   指定JobManager的地址
+```
+③ 任务提交成功后，可在YARN的Web UI界面查看运行情况。<br>
+<img src="images/flink02/flink_on_yarn_session_mode_03.png" width="100%" height="100%" alt=""><br>
+
+
+如图3-14所示，从图中可以看到我们创建的YARN Session实际上是一个YARN的Application，并且有唯一的Application ID。
 
 ### 3.2 会话模式部署
 ### 3.3 会话模式部署
@@ -174,12 +227,25 @@ jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
 historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
 ```
 
-### 3）
-原因：hdfs路径配置不正确。<br>
-解决方案：修改 `conf/flink-conf.yaml`配置信息
+### 3）File does not exist: /tmp/application_xxx
+Flink on Yarn 启动回话模式：
+```shell
+$FLINK_HOME/bin/yarn-session.sh -nm test
 ```
-jobmanager.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
-historyserver.archive.fs.dir: hdfs://hadoop101:9000/flink/completed-jobs/
+报错：
+```
+org.apache.flink.client.deployment.ClusterDeploymentException: Couldn't deploy Yarn session cluster
+at org.apache.flink.yarn.YarnClusterDescriptor.deploySessionCluster(YarnClusterDescriptor.java:382)
+....
+Caused by: java.io.FileNotFoundException: File does not exist: /tmp/application_1594196612035_0008-flink-conf.yaml3951184480005887817.tmp
+at org.apache.hadoop.hdfs.DistributedFileSystem$27.doCall(DistributedFileSystem.java:1444)
+...
+```
+原因：Flink配置不正确。<br>
+解决方案：注释`conf/flink-conf.yaml`的这两项配置信息`fs.default-scheme`、`io.tmp.dirs`
+```
+# fs.default-scheme: hdfs://hadoop101:9000/
+# io.tmp.dirs: /tmp
 ```
 
 ### 五、参考引用
