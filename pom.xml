@@ -16,6 +16,7 @@
         <module>base-scala</module>
         <module>bigdata-spark-scala</module>
         <module>bigdata-flink-scala</module>
+        <module>bigdata-flink-java</module>
     </modules>
 
     <properties>
