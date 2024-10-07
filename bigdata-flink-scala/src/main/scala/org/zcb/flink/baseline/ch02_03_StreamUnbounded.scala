@@ -2,9 +2,6 @@ package org.zcb.flink.baseline
 
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.zcb.common.conf.Global
-
-import java.nio.file.Paths
 
 
 /**
@@ -16,11 +13,10 @@ import java.nio.file.Paths
  *  linux：nc -l -p 7777
  */
 object ch02_03_StreamUnbounded {
-    val file: String = Paths.get(Global.BASE_DIR, "data", "flink", "input", "words.txt").toAbsolutePath.toString
     private val hostName: String = "hadoop103"
     private val port: Int = 7777
 
-    def main(args: Array[String]): Unit = {
+    def doRun(): Unit = {
         // 创建执行环境对象并配置并行度（获取执行环境对象）
         val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
@@ -29,10 +25,10 @@ object ch02_03_StreamUnbounded {
 
         // 格式转换
         val sum: DataStream[(String, Int)] = lineDs
-            .flatMap(x => x.split(" "))
-            .map(x => (x, 1))
-            .keyBy(x => x._1)
-            .sum(1)
+          .flatMap(x => x.split(" "))
+          .map(x => (x, 1))
+          .keyBy(x => x._1)
+          .sum(1)
 
         // 3> (hello,1)
         // 1> (scala,1)
@@ -44,5 +40,9 @@ object ch02_03_StreamUnbounded {
 
         // 执行任务：数据逐个处理，每来一条数据就会处理输出一次
         env.execute()
+    }
+
+    def main(args: Array[String]): Unit = {
+        doRun()
     }
 }
