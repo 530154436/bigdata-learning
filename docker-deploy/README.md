@@ -55,16 +55,16 @@ Linux version 6.6.32-linuxkit (root@buildkitsandbox)
 
 `常用WebUI列表`：<br>
 
-| 组件      | 服务                   | 链接                         | 备注      | 页面示例                                                                                      |
-|:--------|:---------------------|:---------------------------|:--------|:------------------------------------------------------------------------------------------|
-| Hadoop  | HDFS-Namenode        | http://localhost:9870/     |         | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
-| Hadoop  | HDFS-Datanode        | http://localhost:9864/     |         | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
-| Hadoop  | Yarn-ResourceManager | http://localhost:8088/     |         | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
-| Hadoop  | Yarn-NodeManager     | http://localhost:8042/node |         | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
-| Hadoop  | mapred-historyserver | http://localhost:19888/    |         | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
-| Hive    | HiveServer2          | http://localhost:10002/    |         | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
-| Flink   | JobManager           | http://localhost:8081/     |         | <img src="images/docker/flink_job_manager.png" width="30%" height="30%" alt="">           |
-| Flink   | HistoryServer        | http://localhost:8082/     | 有报错，待解决 | <img src="images/docker/flink_historyserver.png" width="30%" height="30%" alt="">         |
+| 组件      | 服务                   | 链接                         | 备注  | 页面示例                                                                                      |
+|:--------|:---------------------|:---------------------------|:----|:------------------------------------------------------------------------------------------|
+| Hadoop  | HDFS-Namenode        | http://localhost:9870/     |     | <img src="images/docker/hadoop_hdfs_nn.png" width="30%" height="30%" alt="">              |
+| Hadoop  | HDFS-Datanode        | http://localhost:9864/     |     | <img src="images/docker/hadoop_hdfs_dn.png" width="30%" height="30%" alt="">              |
+| Hadoop  | Yarn-ResourceManager | http://localhost:8088/     |     | <img src="images/docker/hadoop_yarn_rm.png" width="30%" height="30%" alt="">              |
+| Hadoop  | Yarn-NodeManager     | http://localhost:8042/node |     | <img src="images/docker/hadoop_yarn_nm.png" width="30%" height="30%" alt="">              |
+| Hadoop  | mapred-historyserver | http://localhost:19888/    |     | <img src="images/docker/hadoop_mapred_historyserver.png" width="30%" height="30%" alt=""> |
+| Hive    | HiveServer2          | http://localhost:10002/    |     | <img src="images/docker/hivesever2_webui.png" width="30%" height="30%" alt="">            |
+| Flink   | JobManager           | http://localhost:8081/     |     | <img src="images/docker/flink_job_manager.png" width="30%" height="30%" alt="">           |
+| Flink   | HistoryServer        | http://localhost:8082/     |     | <img src="images/docker/flink_historyserver.png" width="30%" height="30%" alt="">         |
 
 
 #### 1.1 基础镜像构建

@@ -136,7 +136,7 @@ ETL 作业通常会周期性地触发，将数据从事务型数据库拷贝到�
 
 ### 1.4 Flink中的统一数据处理（无界和有界）
 
-任何类型的数据都可以形成一种事件流，数据可以被作为 `无界` 或者 `有界` 流来处理。
+任何类型的数据都可以形成一种事件流，根据数据的产生方式，可以把数据集分为两种类型：有界数据集（`有界流`）和无界数据集（`无界流`）。
 
 <img src="images/flink01/Flink中的统一数据处理.png" width="100%" height="100%" alt=""><br>
 
@@ -147,28 +147,54 @@ ETL 作业通常会周期性地触发，将数据从事务型数据库拷贝到�
 + `有界流`：有定义流的开始，也有定义流的结束，有界流可以在摄取所有数据后再进行计算。<br>
   有界流所有数据可以被排序，所以并不需要有序摄取，有界流处理通常被称为批处理。<br>
 
-Flink 擅长处理无界和有界数据集，精确的时间控制和状态化使得 Flink 的运行时(runtime)能够运行任何处理无界流的应用。<br>
-
+Flink 擅长处理无界和有界数据集，精确的时间控制和状态化使得 Flink 的运行时(runtime)能够运行任何处理无界流的应用。
 对于Flink而言，它把有界数据集看成无界数据集的一个子集，因此，将批处理与流处理混合到同一套引擎当中，用户使用Flink引擎能够同时实现批处理与流处理任务。
 对于Spark而言，它会使用一系列连续的微小批处理来模拟流处理，也就是说，它会在特定的时间间隔内发起一次计算，而不是每条数据都触发计算。
 
+### 1.5 Flink技术栈
 
-#### 1.4.2 状态
-#### 1.4.3 时间
-#### 1.4.4 分层 API
+<img src="images/flink01/Flink技术栈.png" width="100%" height="100%" alt=""><br>
 
+各层详细介绍：
++ **物理部署层**：Flink支持多种部署模式：本地、集群(Standalone、YARN)、云(GCE/EC2)、Kubenetes。
++ **Runtime核心层**：提供了支持Flink计算的全部核心实现。<br>
+  主要负责对上层不同接口提供基础服务，也是Flink分布式计算框架的核心实现层；<br>
+  支持分布式Stream作业的执行、JobGraph到ExecutionGraph的映射转换、任务调度等；<br>
+  将DataSteam和DataSet转成统一的可执行的Task Operator，达到在流式引擎下同时处理批量计算和流式计算的目的。
++ **API&Libraries层**：提供了支撑流和批计算的接口，两者都提供给用户丰富的数据处理高级API。<br>
+  支持 Scala、 Java 和 Python；<br>
+  包括 DataStream、DataSet、Table、SQL API，例如Map、FlatMap操作等；<br>
+  也提供比较低级的Process Function API，用户可以直接操作状态和时间等底层数据。
++ **扩展库**：包括用于复杂事件处理的`CEP`，机器学习库`FlinkML`，图处理库`Gelly`等。<br>
+  Table 是一种接口化的 SQL 支持，也就是 API 支持(DSL)，而不是文本化的SQL解析和执行。
 
-Flink 明确支持以下三种时间语义:
+### 1.6 Flink 基石
+Flink四大基石分别是：Time（时间）、Window（窗口）、State（状态）、Checkpoint（检查点）。
 
-事件时间(event time)： 事件产生的时间，记录的是设备生产(或者存储)事件的时间
+<img src="images/flink01/Flink基石.png" width="80%" height="80%" alt=""><br>
 
-摄取时间(ingestion time)： Flink 读取事件时记录的时间
+### 1.7 Flink工作原理
+Flink系统主要由两个组件组成，分别为JobManager和TaskManager，Flink 架构也遵循Master-Slave架构设计原则，JobManager为Master节点，TaskManager为Slave节点。
 
-处理时间(processing time)： Flink pipeline 中具体算子处理事件的时间
+<img src="images/flink01/Flink的作业提交和任务处理系统架构图.png" width="100%" height="100%" alt=""><br>
+
++ **JobManager**：扮演集群管理者的角色。<br>
+  负责调度任务、协调 checkpoints、协调故障恢复、收集 Job 的状态信息，并管理 Flink 集群中的从节点 TaskManager。
++ **TaskManager**：实际负责执行计算的 Worker。<br>
+  执行 Flink Job 的一组 Task；TaskManager是所在节点的管理员，负责把该节点上的服务器信息比如内存、磁盘、任务运行情况等向 JobManager 汇报。
++ **Client**：<br>
+用户在提交编写好的 Flink 工程时，会先创建一个客户端再进行提交。
+
+#### 1.7.1 StandAlone作业提交流程
+#### 1.7.2 Yarn作业提交流程
+
+### 1.8 Flink中的数据一致性
+
 
 ## 参考引用
 [1] [林子雨编著《Flink编程基础（Scala版）》教材官网](https://dblab.xmu.edu.cn/post/flink/)<br>
 [2] [剑指大数据——Flink学习精要Scala版](https://weread.qq.com/web/reader/c3f32e90813ab8449g01292dke4d32d5015e4da3b7fbb1fa) <br>
 [3] [【尚硅谷】Flink1.13教程（Scala版）-B站](https://www.bilibili.com/video/BV1zr4y157XV/?spm_id_from=333.999.0.0&vd_source=71e4d156399aae8c8b7f7b0a30d24516) <br>
 [4] [Github-Flink学习精要.md](https://github.com/blueskeys/document_classfication/blob/master/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E6%A0%88/%E6%95%B0%E6%8D%AE%E8%AE%A1%E7%AE%97/flink/Flink%E5%AD%A6%E4%B9%A0%E7%B2%BE%E8%A6%81.md)<br>
-[4] [Apache Flink 应用场景](https://flink.apache.org/zh/what-is-flink/use-cases/)<br>
+[5] [Apache Flink 应用场景](https://flink.apache.org/zh/what-is-flink/use-cases/)<br>
+[6] [Apache Flink 是什么？处理无界和有界数据](https://flink.apache.org/zh/what-is-flink/flink-architecture/#run-applications-at-any-scale)<br>
