@@ -196,6 +196,25 @@ Spark支持三种不同类型的部署方式，包括：
 <img src="images/spark/spark_满足批处理和流处理需求.png" width="30%" height="20%" alt=""><br>
 
 
+### 重要概念
+Spark应用程序: 包含代码的Driver Program，负责创建SparkContext并启动应用的所有步骤。<br>
+DAG（有向无环图）: Spark将逻辑操作转化为DAG，描述了数据依赖关系和计算流程。<br>
+Job: 当触发一个Action（如save、collect）时，Spark生成一个Job，包含多个任务（Task）。<br>
+Stage: Job被分解为若干Stage，每个Stage由多个Task组成，这些Task可以并行执行。<br>
+分区（Partition）: 数据被划分为多个分区，每个分区对应一个RDD的部分，决定了并行度。分区数目影响Task的数量和资源利用效率。<br>
+任务（Task）: Spark的最小工作单元，每个Task执行一个特定的数据处理操作。<br>
+执行器（Executor）: 在Worker节点上运行的进程，负责执行Task。每个Worker可以启动多个Executor，每个Executor包含多个Core。<br>
+核心（Core）: 每个Executor的工作线程，每个核心一次只能执行一个Task。<br>
+HDFS与块（Block）: 输入数据以多个文件存储在HDFS上，每个文件分成多个块（Block），Spark在读取时将若干块合并为一个输入分片（InputSplit）。<br>
+InputSplit: Spark读取文件后生成的输入分片，不能跨文件，且每个InputSplit对应一个Task。<br>
+Task的执行并发度:计算资源的并发度由Executor数量与每个Executor的Core数目决定。 公式为：<br>
+```
+并发Task数 = Executor数 × 每个Executor的Core数
+并发数 = min(Executor数 × 每个Executor的Core数, Task数)
+```
+任务轮次: 例如，若RDD有100个分区且计算资源为10个Worker，每个Worker有2个Core，可以并行执行20个Task，计算需要5轮。
+
+
 ### 参考引用
 + [子雨大数据之Spark入门：Spark运行架构(Python版)](https://dblab.xmu.edu.cn/blog/1711/)
 + [子雨大数据之Spark入门教程（Scala版）](https://dblab.xmu.edu.cn/blog/924/)
@@ -205,15 +224,5 @@ Spark支持三种不同类型的部署方式，包括：
 + [Spark基本概念解析](https://andr-robot.github.io/Spark%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E8%A7%A3%E6%9E%90/)
 + [spark基本架构及原理](https://zhuanlan.zhihu.com/p/91143069)
 + [Spark原理框架和作业执行流程](https://blog.csdn.net/bocai8058/article/details/83051242)
-
-
-
-
-
-
-
-
-
-
-
++ [Spark分区数、task数目、core数目、worker节点数目、executor数目梳理](https://www.cnblogs.com/lixiaochun/p/9437298.html)
 
