@@ -57,7 +57,46 @@ DROP TABLE dws_algo_rs_smart_panel_ent_keywords_history_tmp;
 `解决方法2`：<br>
 将`union all`改为`union`.
 
-#### 2、Spark读取到的Hive表为空
+#### 3、PySpark rdd2dataframe类型自动推断
+背景：使用PySpark调用线上的服务接口，并将结果写回Hive表，关键代码如下：
+```
+cols = ["a", "b"]
+df = spark.sql(sql)
+  .repartition(10)\
+  .rdd \
+  .mapPartitionsWithIndex(lambda index, iterator: self.deal_partition_with_index(index, iterator))\
+  .toDF(cols)
+  
+spark-submit \
+  --master yarn \
+  --deploy-mode cluster \
+  --num-executors 10 \
+  --executor-memory 2G \
+  --executor-cores 1 \
+  --driver-memory 5G \
+  --py-files ${ROOT_PATH}/spark_task.py \
+  ${ROOT_PATH}/run.py
 
+```
+问题描述：
+执行`mapPartitionsWithIndex`时会触发一个名称为RunJob的Stage，只有1个core在运行。
+运行结束后才根据分配的10个core执行，导致分区0被重复计算，DAG里看到第1次执行的时候是做了转换成PythonRDD的操作。<br>
 
+<img src="images_qa/pyspark_rdd2dataframe.png" width="50%" height="50%" alt=""><br>
 
+原因：调用`toDF()`时PySpark自动采样数据并推断每列的类型，所以分区0会被重复计算。<br>
+方案：
+```
+schema = StructType([
+    StructField("a", StringType()),
+    StructField("b", StringType()),
+])
+df = spark.sql(sql)
+  .repartition(10)\
+  .rdd \
+  .mapPartitionsWithIndex(lambda index, iterator: self.deal_partition_with_index(index, iterator))\
+  .toDF(schema=schema)
+```
+> 从RDD转换到DataFrame，共计有两种方式。<br>
+第一种是直接把json格式的数据给Dataframe，让spark自动推断是什么类型，这也叫反射推断模式。<br>
+另一种是定义StructTtpe定义schema，在CreateDataFrame的时候指定schema，这种叫编程指定模式。<br>
