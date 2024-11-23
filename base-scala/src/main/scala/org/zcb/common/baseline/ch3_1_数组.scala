@@ -49,6 +49,12 @@ object ch3_1_数组 {
         val myCube = Array.ofDim[String](3, 2, 4)
         myMatrix.foreach(x => println(x.mkString("Array(", ", ", ")")))
         myCube.foreach(x => println(x.mkString("Array(", ", ", ")")))
+
+        // 合并两个数组
+        val oldCities: Array[String] = Array("苏州市", "常州市")
+        val newCities: Array[String] = Array("北京市", "深圳市")
+        val combinedArray: Array[String] = Array.concat(oldCities, newCities)
+        println(combinedArray.mkString("Array(", ", ", ")"))
     }
 
     def mutableArray(): Unit ={
@@ -76,6 +82,6 @@ object ch3_1_数组 {
 
     def main(args: Array[String]): Unit = {
         immutableArray()
-        mutableArray()
+        // mutableArray()
     }
 }
