@@ -340,6 +340,8 @@ describe function extended find_in_set;
 + 日期比较函数: datediff
 + 日期增加函数: date_add
 + 日期减少函数: date_sub
++ 日期差值函数: datediff
++ 计算日期之间的月份差: months_between
 
 ```sql
 --获取当前日期: current_date
@@ -378,6 +380,56 @@ select date_add('2012-02-28',10);
 
 --日期减少函数: date_sub
 select date_sub('2012-01-1',10);
+
+-- 计算日期差值
+SELECT datediff('2023-03-21', '2023-03-20');
+SELECT datediff(to_date('2023-03-20 20:02:02'), to_date('2023-03-15 20:02:02'));
+
+-- 计算日期之间的月份差
+SELECT ceil(months_between(end_date, start_date)) AS num_months
+FROM (
+       select
+         '2020-01-01' as start_date,
+         '2020-03-05' as end_date
+     ) t
+;
+
+-- 列出两个日期之间的所有日期
+select
+  start_date,
+  end_date,
+  date_add(start_date, pos) as mid_date,
+  pos
+from(
+      select
+        '2020-01-01' as start_date,
+        '2020-03-05' as end_date
+    ) tmp
+      lateral view posexplode(split(space(datediff(end_date, start_date)), '')) t as pos, val
+;
+
+-- 列出两个月份之间的所有月份
+select
+  start_date,
+  end_date,
+  mid_month
+from (
+       select
+         start_date,
+         end_date,
+         CONCAT(YEAR(start_date), '-', LPAD(MONTH(start_date), 2, '0')) AS start_month,
+         CONCAT(YEAR(end_date), '-', LPAD(MONTH(end_date), 2, '0')) AS end_month,
+         CONCAT(YEAR(add_months(start_date, pos)), '-', LPAD(MONTH(add_months(start_date, pos)), 2, '0')) as mid_month,
+         pos
+       from(
+             select
+               '2020-01-30' as start_date,
+               '2023-05-01' as end_date
+           ) tmp
+             lateral view posexplode(split(space(CAST(ceil(months_between(end_date, start_date)) AS INT)), '')) t as pos, val
+     ) t
+WHERE start_month <= mid_month AND mid_month <= end_month
+;
 ```
 
 #### 2.2.3 数学函数（Mathematical Functions）

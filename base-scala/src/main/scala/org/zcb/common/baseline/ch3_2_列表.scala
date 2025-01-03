@@ -36,5 +36,7 @@ object ch3_2_列表 {
         val list4: List[Int] = list1 ::: list3
         println(list4, list4.getClass)
         println(list4.sum)
+
+        println(List("0", "1", "2", "3", "4").map(x => s"'$x'").mkString(","))
     }
 }
