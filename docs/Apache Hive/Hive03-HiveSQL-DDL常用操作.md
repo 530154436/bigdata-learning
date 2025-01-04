@@ -113,7 +113,10 @@ ALTER TABLE new_table_name RENAME TO table_name;
 --2、更改表属性
 -- ALTER TABLE table_name SET TBLPROPERTIES (property_name = property_value, ... );
 ALTER TABLE table_name SET TBLPROPERTIES ("createdBy" = "Edward");
-
+ALTER TABLE table_name SET TBLPROPERTIES ('external.table.purge'='TRUE', 'transactional'='false');
+-- external.table.purge属性设置为true：DROP TABLE命令删除外部表中的实际数据
+-- transactional属性设置为false：创建一个非事务表
+    
 --更改表注释
 ALTER TABLE table_name SET TBLPROPERTIES ('comment' = "new comment for student table");
 
