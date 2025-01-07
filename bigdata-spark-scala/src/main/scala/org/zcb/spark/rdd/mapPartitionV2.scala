@@ -42,7 +42,10 @@ class BatchIterator(iter: Iterator[Row], batchSize: Int, threshold: Int = 0) ext
         // 组装一批数据
         while (count < batchSize && iter.hasNext) {
             val data = iter.next()
-            val id = data.getAs[Long](0)
+            // 根据索引访问
+            // val id = data.getAs[Long](0)
+            // 根据fieldName访问，并处理可能的null
+            val id: Long = Option[Long](data.getAs[Long]("id")).getOrElse(0)
             raw.append(id)
             count += 1
         }
