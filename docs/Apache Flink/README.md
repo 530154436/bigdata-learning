@@ -8,3 +8,4 @@ Flink 1.13.2
 
 + 视频：<br>
 [1] [【尚硅谷】Flink1.13教程（Scala版）-B站](https://www.bilibili.com/video/BV1zr4y157XV/?spm_id_from=333.999.0.0&vd_source=71e4d156399aae8c8b7f7b0a30d24516) <br>
+[2] [付费学习资源：慕课网 Michael PK 的系列课程](https://www.imooc.com/t/2781843)<br>
