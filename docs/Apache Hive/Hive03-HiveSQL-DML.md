@@ -9,6 +9,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#23-dynamic-partition-insert动态分区插入">2.3 dynamic partition insert（动态分区插入）</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#24-insert-directory导出数据">2.4 insert + directory（导出数据）</a><br/>
 <a href="#三updatedelete更新删除数据">三、Update、Delete更新、删除数据</a><br/>
+<a href="#四导出数据">四、导出数据</a><br/>
 <a href="#参考引用">参考引用</a><br/>
 </nav>
 
@@ -193,6 +194,15 @@ insert overwrite local directory '/root/hive_export/e1.txt' select * from studen
 
 ## 三、Update、Delete更新、删除数据
 详见[Hive03-HiveSQL-DDL 3.4 Hive Transactional Tables事务表](https://github.com/530154436/bigdata-learning/blob/main/docs/Apache%20Hive/Hive03-HiveSQL-DDL.md#34-hive-transactional-tables%E4%BA%8B%E5%8A%A1%E8%A1%A8)
+
+## 四、导出数据
+```shell
+-- csv文件
+$HIVE_HOME/bin/beeline -u "jdbc:hive2://hive:10000" -n hive --outputformat=csv -e "select * from itheima.student" > ./result.csv
+
+-- dsv文件
+$HIVE_HOME/bin/beeline -u "jdbc:hive2://hive:10000" -n hive --outputformat=dsv -e "select * from itheima.student" > ./result.dsv
+```
 
 ## 参考引用
 [1] [黑马程序员-Apache Hive 3.0](https://book.itheima.net/course/1269935677353533441/1269937996044476418/1269942232408956930) <br>
