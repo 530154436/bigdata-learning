@@ -100,3 +100,19 @@ df = spark.sql(sql)
 > 从RDD转换到DataFrame，共计有两种方式。<br>
 第一种是直接把json格式的数据给Dataframe，让spark自动推断是什么类型，这也叫反射推断模式。<br>
 另一种是定义StructTtpe定义schema，在CreateDataFrame的时候指定schema，这种叫编程指定模式。<br>
+
+#### 4、ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+任务之前正常执行未出现问题，查看Executor节点日志发现Error如下：
+```l
+ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+```
+估计是导致堆外内存不足的节点Container 被Kill掉，增加堆外内存解决当前问题。
+```
+--conf spark.executor.memoryOverhead=4g \
+--conf spark.driver.memoryOverhead=4g \
+```
+[官方文档](https://spark.apache.org/docs/latest/configuration.html)：
+```
+spark.executor.memoryOverhead：executorMemory * spark.executor.memoryOverheadFactor, with minimum of 384
+spark.driver.memoryOverhead：driverMemory * spark.driver.memoryOverheadFactor, with minimum of 384
+```
