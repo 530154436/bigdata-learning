@@ -116,3 +116,17 @@ ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
 spark.executor.memoryOverhead：executorMemory * spark.executor.memoryOverheadFactor, with minimum of 384
 spark.driver.memoryOverhead：driverMemory * spark.driver.memoryOverheadFactor, with minimum of 384
 ```
+
+#### 5、CREATE TABLE AS SELECT 问题
+在 Hive 中，使用 `CREATE TABLE AS SELECT（CTAS）`创建表时，默认存储格式为 TextFile。<br>
+当源表数据包含特殊字符（如 \n、\t）或源表存储格式为 `Parquet/ORC` 时，直接使用 CTAS 会导致 数据行数异常（如**单行拆分为多行**）。<br>
+**根本原因**：TextFile 以换行符为行分隔符，而 Parquet/ORC 等格式可能将字段内换行符编码为普通字符，导致解析冲突。<br>
+
+```hiveql
+-- 显式指定存储格式: 在 CTAS 语句中强制定义存储格式（如 Parquet/ORC），避免默认 TextFile 的解析问题
+CREATE TABLE target_table
+STORED AS ORC  -- 或 PARQUET
+AS
+SELECT * FROM source_table;
+```
+   
