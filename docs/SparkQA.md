@@ -129,4 +129,24 @@ STORED AS ORC  -- 或 PARQUET
 AS
 SELECT * FROM source_table;
 ```
-   
+
+#### 5、DataFrame saveAsTable 与 insertInto 导致的问题
+在 Hive 中，使用 `saveAsTable`存表时，指定了存储格式为 "hive"，发现会改变原始的表结构，导致出现脏数据。<br>
+<img src="images_qa/hive_save_as_table问题.png" width="60%" height="60%" alt=""><br>
+
+**根本原因**：
+当源表数据包含特殊字符（如 \n、\t）或源表存储格式为 `hive` 时，写表会导致数据行数异常（如**单行拆分为多行**）。TextFile 以`换行符`为行分隔符，而 Parquet/ORC 等格式可能将字段内换行符编码为普通字符，导致解析冲突。<br>
+
+```spark
+-- saveAsTable：可能修改表结构（危险！）
+df.write.format("orc").mode("overwrite").saveAsTable("my_table") 
+ 
+-- insertInto：仅覆盖数据，表结构不变（安全）
+df.write.format("orc").mode("overwrite").insertInto("my_table") 
+```
++ DataFrame saveAsTable 与 insertInto 行为及适用场景
+
+| 方法            | 行为                                                                                                                                            | 适用场景                                   |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
+| `saveAsTable` | 若表不存在，自动创建新表，Schema 由 DataFrame 定义；<br>若表存在且 `overwrite=True`，删除整个表数据目录（如 `hdfs://.../my_table`），重建表元数据，全量写入新数据。<br>若表为分区表，所有分区被清除，仅保留新数据。    | 需要动态管理表结构的情况（例如新增字段、修改存储格式等）。          |
+| `insertInto`  | 表必须预先存在，且 DataFrame 的列名、顺序、数据类型需与目标表严格一致；仅操作数据，不修改元数据。<br>当 `overwrite=True` 时：<br>- **分区表**：仅覆盖匹配分区的数据。<br>- **非分区表**：全表覆盖，但保留表属性（如注释、存储格式）。 | 表结构固定，仅需更新数据的情况（例如进行分区覆盖等操作而不改变现有表结构）。 |
