@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+  <!-- 设置主节点 --> 
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://hadoop101:9000</value> 
+  </property>
+
+  <!-- 指定缓存文件存储的路径 --> 
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/home/hadoop_files/hadoop_tmp/hadoop/data/tmp</value> 
+  </property>
+
+  <!-- 配置 hdfs 文件被永久删除前保留的时间(单位:分钟)，默认值为 0 表明垃圾回收站功能关闭 --> 
+  <property>
+    <name>fs.trash.interval</name>
+    <value>1440</value> 
+  </property>
+
+  <!-- hiveserver2配置 -->
+  <property>
+    <name>hadoop.proxyuser.hive.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.hive.groups</name>
+    <value>*</value>
+  </property>
+
+</configuration>
+
+

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+  
+  <!-- NodeManager 上运行的附属服务，需配置成 mapreduce_shuffle 才可运行 MapReduce 程序 -->
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value> 
+  </property>
+
+  <!-- 配置 Web Application Proxy 安全代理(防止 yarn 被攻击) -->
+  <property>
+    <name>yarn.web-proxy.address</name>
+    <value>hadoop102:8888</value> 
+  </property>
+
+  <!-- 开启日志 -->
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value> 
+  </property>
+
+  <!-- 配置日志删除时间为 7 天，-1 为禁用，单位为秒 -->
+  <property>
+    <name>yarn.log-aggregation.retain-seconds</name>
+    <value>604800</value> 
+  </property>
+
+  <!-- 修改日志目录 -->
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir</name>
+    <value>/home/hadoop_files/hadoop_logs/yarn</value> 
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.address</name>
+    <value>hadoop101:8032</value> 
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.scheduler.address</name>
+    <value>hadoop101:8030</value> 
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.resource-tracker.address</name>
+    <value>hadoop101:8031</value> 
+  </property>
+
+  <!-- 配置 nodemanager 可用的资源内存 -->
+  <property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>20480</value>
+  </property>
+
+  <!-- 配置 nodemanager 可用的资源 CPU -->
+  <property>
+    <name>yarn.nodemanager.resource.cpu-vcores</name>
+    <value>24</value>
+  </property>
+
+  <!-- 容器job内存限制 -->
+  <property>
+    <name>yarn.scheduler.maximum-allocation-mb</name>
+    <value>8192</value>
+  </property>
+  <!-- 是否对容器强制执行虚拟内存限制，如果任务超出分配值，则直接将其杀掉，默认是true -->
+  <property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+  </property>
+  <!-- 为容器设置内存限制时虚拟内存与物理内存之间的比率 -->
+  <property>
+    <name>yarn.nodemanager.vmem-pmem-ratio</name>
+    <value>4</value>
+  </property>
+
+</configuration>
+
