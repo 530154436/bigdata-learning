@@ -1,18 +1,19 @@
 <nav>
-<a href="#问题集锦">问题集锦</a><br/>
+<a href="#问题列表">问题列表</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#1rddmap-内部可以使用sparksql读另一张表吗">1、rdd.map() 内部可以使用spark.sql()读另一张表吗</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#2spark读取到的hive表为空">2、Spark读取到的Hive表为空</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#3pyspark-rdd2dataframe类型自动推断">3、PySpark rdd2dataframe类型自动推断</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#4error-coarsegrainedexecutorbackend-received-signal-term">4、ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#5create-table-as-select-问题">5、CREATE TABLE AS SELECT 问题</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="#6dataframe-saveastable-与-insertinto-导致的问题">6、DataFrame saveAsTable 与 insertInto 导致的问题</a><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7spark30-on-hive-left-join-时报错-bigger-than-sparkdrivermaxresultsize">7、Spark3.0 on Hive LEFT JOIN 时报错 bigger than spark.driver.maxResultSize</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7spark-on-hive-left-join-时报错-bigger-than-sparkdrivermaxresultsize">7、Spark on Hive LEFT JOIN 时报错 bigger than spark.driver.maxResultSize</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#8spark-shuffle超时时间">8、Spark shuffle超时时间</a><br/>
 <a href="#参考引用">参考引用</a><br/>
 </nav>
 
 
-### 问题集锦
-#### 1、rdd.map() 内部可以使用spark.sql()读另一张表吗
+## 问题列表
+### 1、rdd.map() 内部可以使用spark.sql()读另一张表吗
 在 Spark 中，rdd.map 是一种分布式操作，它会在集群的每个执行节点上运行代码。因此，在 map 函数内部使用 spark.sql() 读取另一张表是不合适的。
 
 `主要原因`：<br>
@@ -25,7 +26,7 @@
   （2）使用 DataFrame API：在 map 操作之前完成所有 SQL 操作。
 
 
-#### 2、Spark读取到的Hive表为空
+### 2、Spark读取到的Hive表为空
 `具体报错`：<br>
 ```
 Unable to infer schema for table bigdata_application_dev.ads_iur_kd_nsfc_gov_cn from file format ORC (inference mode: INFER_AND_SAVE). Using metastore schema.
@@ -69,7 +70,7 @@ DROP TABLE dws_algo_rs_smart_panel_ent_keywords_history_tmp;
 `解决方法2`：<br>
 将`union all`改为`union`.
 
-#### 3、PySpark rdd2dataframe类型自动推断
+### 3、PySpark rdd2dataframe类型自动推断
 背景：使用PySpark调用线上的服务接口，并将结果写回Hive表，关键代码如下：
 ```
 cols = ["a", "b"]
@@ -113,7 +114,7 @@ df = spark.sql(sql)
 第一种是直接把json格式的数据给Dataframe，让spark自动推断是什么类型，这也叫反射推断模式。<br>
 另一种是定义StructTtpe定义schema，在CreateDataFrame的时候指定schema，这种叫编程指定模式。<br>
 
-#### 4、ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+### 4、ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
 任务之前正常执行未出现问题，查看Executor节点日志发现Error如下：
 ```l
 ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
@@ -129,7 +130,7 @@ spark.executor.memoryOverhead：executorMemory * spark.executor.memoryOverheadFa
 spark.driver.memoryOverhead：driverMemory * spark.driver.memoryOverheadFactor, with minimum of 384
 ```
 
-#### 5、CREATE TABLE AS SELECT 问题
+### 5、CREATE TABLE AS SELECT 问题
 在 Hive 中，使用 `CREATE TABLE AS SELECT（CTAS）`创建表时，默认存储格式为 TextFile。<br>
 当源表数据包含特殊字符（如 \n、\t）或源表存储格式为 `Parquet/ORC` 时，直接使用 CTAS 会导致 数据行数异常（如**单行拆分为多行**）。<br>
 **根本原因**：TextFile 以换行符为行分隔符，而 Parquet/ORC 等格式可能将字段内换行符编码为普通字符，导致解析冲突。<br>
@@ -142,7 +143,7 @@ AS
 SELECT * FROM source_table;
 ```
 
-#### 6、DataFrame saveAsTable 与 insertInto 导致的问题
+### 6、DataFrame saveAsTable 与 insertInto 导致的问题
 在 Hive 中，使用 `saveAsTable`存表时，指定了存储格式为 "hive"，发现会改变原始的表结构，导致出现脏数据。<br>
 <img src="images_qa/hive_save_as_table问题.png" width="60%" height="60%" alt=""><br>
 
@@ -163,7 +164,9 @@ df.write.format("orc").mode("overwrite").insertInto("my_table")
 | `saveAsTable` | 若表不存在，自动创建新表，Schema 由 DataFrame 定义；<br>若表存在且 `overwrite=True`，删除整个表数据目录（如 `hdfs://.../my_table`），重建表元数据，全量写入新数据。<br>若表为分区表，所有分区被清除，仅保留新数据。    | 需要动态管理表结构的情况（例如新增字段、修改存储格式等）。          |
 | `insertInto`  | 表必须预先存在，且 DataFrame 的列名、顺序、数据类型需与目标表严格一致；仅操作数据，不修改元数据。<br>当 `overwrite=True` 时：<br>- **分区表**：仅覆盖匹配分区的数据。<br>- **非分区表**：全表覆盖，但保留表属性（如注释、存储格式）。 | 表结构固定，仅需更新数据的情况（例如进行分区覆盖等操作而不改变现有表结构）。 |
 
-#### 7、Spark3.0 on Hive LEFT JOIN 时报错 bigger than spark.driver.maxResultSize
+### 7、Spark on Hive LEFT JOIN 时报错 bigger than spark.driver.maxResultSize
+> Spark3.3.1
+
 **问题描述**：在执行`left join`语句时
 + ✅ 不加 WHERE day="20251105" 的 LEFT JOIN（即全表 join） → 能正常运行
 + ❌ 加上 WHERE day="20251105" 限制右表后 → 反而报错：spark.driver.maxResultSize 超限
@@ -236,5 +239,39 @@ SET spark.sql.autoBroadcastJoinThreshold=-1;
 SET spark.driver.maxResultSize=3g;
 ```
 
-### 参考引用
+### 8、Spark shuffle task failed 导致整体效率低
+当前环境：Python3.10.11 Spark3.3.1（YARN 模式）<br>
+问题描述：每天凌晨集群有大量离线任务在运行、负载较高，在执行专利翻译任务过程涉及大量的shuffle操作，经常会遇到部分Task失败反复重试的情况，导致整体耗时较大、不稳定。
+```
+2025-11-11 22:29:42: 第8组完成, 耗时3258.0142278671265 秒, 成功数量=336217, 失败数量=7994. 
+2025-11-12 01:39:27: 第10组完成, 耗时5523.682699680328 秒, 成功数量=334825, 失败数量=7775. 
+2025-11-12 02:35:22: 第11组完成, 耗时3354.846656560898 秒, 成功数量=333849, 失败数量=7888. 
+```
+查看Spark Executor 日志，报错信息如下：
+```
+19:26:24.446 [shuffle-client-7-4] ERROR org.apache.spark.network.client.TransportResponseHandler - Still have 16 requests outstanding when connection from ed05-s03b1506.prd.qizhidao.com/172.18.5.15:7337 is closed
+19:30:41.695 [Executor task launch worker for task 53.0 in stage 23.0 (TID 10349)] ERROR org.apache.spark.TaskContextImpl - Error in TaskCompletionListener
+java.lang.InterruptedException: null
+	at java.lang.Object.wait(Native Method) ~[?:1.8.0_152]
+	at java.lang.Thread.join(Thread.java:1252) ~[?:1.8.0_152]
+19:34:53.709 [Executor task launch worker for task 183.0 in stage 23.0 (TID 10479)] ERROR org.apache.spark.TaskContextImpl - Error in TaskCompletionListener
+java.lang.InterruptedException: null
+	at java.lang.Object.wait(Native Method) ~[?:1.8.0_152]
+	at java.lang.Thread.join(Thread.java:1252) ~[?:1.8.0_152]
+```
+日志表明：远程 Executor 被强制终止（YARN 发送 SIGTERM），导致Shuffle 连接突然关闭、本地 task 被 Driver 中断（InterruptedException）。原因可能是在资源紧张环境下，`shuffle超出设定的超时时间` 或 `Executor因心跳丢失被YARN主动kill`。<br>
+解决方案：调整以下参数
+```shell
+--conf spark.network.timeout=800s             # 默认值：120s，所有网络交互的默认超时时间
+--conf spark.executor.heartbeatInterval=60s   # Executor 定期向 Driver 发送心跳的时间间隔。
+```
+调整之后最终看起来还比较稳定。
+```
+2025-11-12 23:30:46: 第28组完成, 耗时2868.9812927246094 秒, 成功数量=336174, 失败数量=7703. 
+2025-11-13 00:22:18: 第29组完成, 耗时3091.7108387947083 秒, 成功数量=337263, 失败数量=7834. 
+```
+
+
+## 参考引用
 [1] [弱鸡了吧？背各种SparkSQL调优参数？这个东西才是SparkSQL必须要懂的](https://zhuanlan.zhihu.com/p/336693158)<br>
+[2] [spark-configuration](https://spark.apache.org/docs/latest/configuration.html)<br>
